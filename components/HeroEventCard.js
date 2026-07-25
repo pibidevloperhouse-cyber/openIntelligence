@@ -72,21 +72,17 @@ export default function HeroEventCard({ meeting, isPast = false }) {
     return (
       <>
         {/* Past Session Card UI */}
-        <div className="past-event-card">
+        <div className="past-event-card" style={{ height: '100%' }}>
           {/* Image Side */}
           <div className="past-event-img-container">
             <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
               {coverPhoto ? (
                 <img src={coverPhoto} alt={title} className="past-event-img" />
               ) : (
-                 <div style={{ width: '100%', height: '100%', minHeight: '220px', aspectRatio: '4/3', background: '#1e293b', display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', justifyContent: 'center' }}>
-                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                     <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                     <polyline points="21 15 16 10 5 21"></polyline>
-                     <line x1="3" y1="3" x2="21" y2="21" stroke="#64748b" opacity="0.5"></line>
-                   </svg>
-                   <span style={{ color: '#94a3b8', fontSize: '0.85rem', fontWeight: 500 }}>No poster available</span>
+                 <div style={{ width: '100%', height: '100%', minHeight: '220px', aspectRatio: '4/3', background: 'linear-gradient(135deg, #1e293b, #0f172a)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1.5rem', textAlign: 'center' }}>
+                   <h3 style={{ color: '#818cf8', fontSize: '1.5rem', fontWeight: 800, fontFamily: 'var(--font-display)', margin: 0, lineHeight: 1.2 }}>
+                     Madurai AI Community
+                   </h3>
                  </div>
               )}
               

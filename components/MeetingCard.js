@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-export default function MeetingCard({ meeting, isPast = false }) {
+export default function MeetingCard({ meeting, isPast = false, hideOutcome = false }) {
   const {
     title, description, date, venue, registration_link,
     status, outcome_title, outcome_summary, attendees_count,
@@ -41,7 +41,7 @@ export default function MeetingCard({ meeting, isPast = false }) {
       }}
     >
       {/* Top row: date block + content */}
-      <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start', flexWrap: 'nowrap' }}>
 
         {/* Date block */}
         <div style={{
@@ -149,7 +149,7 @@ export default function MeetingCard({ meeting, isPast = false }) {
       </div>
 
       {/* ── Outcome section — completed events only ── */}
-      {isCompleted && (outcome_title || outcome_summary) && (
+      {!hideOutcome && isCompleted && (outcome_title || outcome_summary) && (
         <div style={{
           borderTop: '1px solid rgba(52,211,153,0.15)',
           paddingTop: '1rem',

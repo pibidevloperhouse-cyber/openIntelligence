@@ -7,6 +7,7 @@ import WaveHero from '@/components/WaveHero';
 import HeroEventCard from '@/components/HeroEventCard';
 import BanAlert from '@/components/BanAlert';
 import ExploreSection from '@/components/ExploreSection';
+import PastMeetingsCarousel from '@/components/PastMeetingsCarousel';
 
 
 // 7 categories from the project document are now in ExploreSection.js
@@ -48,6 +49,22 @@ async function getUpcomingMeetings() {
     if (error) throw error;
     return (data || []).map(m => ({ ...m, date: m.date.endsWith('Z') ? m.date : m.date + 'Z' }));
   } catch { return []; }
+}
+
+async function getPastMeetings() {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('meetings')
+      .select('*')
+      .lt('date', new Date().toISOString())
+      .order('date', { ascending: false })
+      .limit(5);
+    if (error) throw error;
+    return (data || []).map(m => ({ ...m, date: m.date.endsWith('Z') ? m.date : m.date + 'Z' }));
+  } catch (err) { 
+    console.error("Past meetings error:", err.message);
+    return []; 
+  }
 }
 
 // DB-based contributors — resource submitters (no GitHub API needed)
@@ -101,9 +118,10 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const [featuredResources, upcomingMeetings, { contributors: topContributors }] = await Promise.all([
+  const [featuredResources, upcomingMeetings, pastMeetings, { contributors: topContributors }] = await Promise.all([
     getFeaturedResources(),
     getUpcomingMeetings(),
+    getPastMeetings(),
     getTopContributors(),
   ]);
 
@@ -135,6 +153,11 @@ export default async function HomePage() {
             </Link>
           </div>
         </section>
+      )}
+
+      {/* ── PAST MEETINGS (Carousel) ─────────────────────────── */}
+      {pastMeetings.length > 0 && (
+        <PastMeetingsCarousel meetings={pastMeetings} />
       )}
 
       {/* ── CATEGORIES (GSAP Animated) ─────────────────────────── */}
