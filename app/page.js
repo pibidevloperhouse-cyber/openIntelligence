@@ -7,7 +7,7 @@ import WaveHero from '@/components/WaveHero';
 import HeroEventCard from '@/components/HeroEventCard';
 import BanAlert from '@/components/BanAlert';
 import ExploreSection from '@/components/ExploreSection';
-import PastMeetingsCarousel from '@/components/PastMeetingsCarousel';
+import PastEventsCard from '@/components/PastEventsCard';
 
 
 // 7 categories from the project document are now in ExploreSection.js
@@ -61,9 +61,9 @@ async function getPastMeetings() {
       .limit(5);
     if (error) throw error;
     return (data || []).map(m => ({ ...m, date: m.date.endsWith('Z') ? m.date : m.date + 'Z' }));
-  } catch (err) { 
+  } catch (err) {
     console.error("Past meetings error:", err.message);
-    return []; 
+    return [];
   }
 }
 
@@ -135,7 +135,7 @@ export default async function HomePage() {
 
       {/* ── UPCOMING EVENTS (Hero Banner) ───────────────────────── */}
       {upcomingMeetings.length > 0 && (
-        <section style={{ padding: '3rem 1rem 0rem', display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'center' }}>
+        <section style={{ padding: '3rem 1rem 4rem', display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'center' }}>
           <div style={{ textAlign: 'center', marginBottom: '0.5rem', width: '100%', maxWidth: '1100px' }}>
             <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 800, fontFamily: 'var(--font-display)', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
               Upcoming Sessions
@@ -155,9 +155,9 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ── PAST MEETINGS (Carousel) ─────────────────────────── */}
+      {/* ── PAST MEETINGS (Grid) ─────────────────────────── */}
       {pastMeetings.length > 0 && (
-        <PastMeetingsCarousel meetings={pastMeetings} />
+        <PastEventsCard pastMeetings={pastMeetings} />
       )}
 
       {/* ── CATEGORIES (GSAP Animated) ─────────────────────────── */}
