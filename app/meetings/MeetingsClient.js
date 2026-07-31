@@ -8,8 +8,9 @@ import Link from 'next/link';
 export default function MeetingsClient({ upcoming, past }) {
   const searchParams = useSearchParams();
   const tabQuery = searchParams.get('tab');
-  
+
   const [activeTab, setActiveTab] = useState(tabQuery === 'past' ? 'past' : 'upcoming');
+  const [showAllUpcoming, setShowAllUpcoming] = useState(false);
 
   useEffect(() => {
     if (tabQuery === 'past' || tabQuery === 'upcoming') {
@@ -20,115 +21,93 @@ export default function MeetingsClient({ upcoming, past }) {
   return (
     <>
       <style>{`
-        .past-event-card {
-          display: flex;
-          flex-direction: row;
-          background: linear-gradient(135deg, rgba(13,17,28,0.9), rgba(15,23,42,0.9));
-          border: 1px solid rgba(255,255,255,0.05);
-          border-radius: 16px;
-          overflow: hidden;
-          box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-        }
-        .past-event-img-container {
-          width: 250px;
-          flex-shrink: 0;
-          position: relative;
-        }
-        .past-event-img {
-          width: 100%;
-          height: auto;
-          object-fit: cover;
-          display: block;
-        }
-        .upcoming-card {
-          display: flex;
-          flex-direction: row;
-          gap: 2rem;
-          padding: 2rem;
-          background: linear-gradient(135deg, rgba(13,17,28,0.9), rgba(15,23,42,0.9));
-          border: 1px solid rgba(99,102,241,0.2);
-          border-radius: 24px;
-          box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-          width: 100%;
-        }
-        .upcoming-content {
-          flex: 1;
-        }
-        .upcoming-img-container {
-          flex: 1;
-          background: rgba(5, 8, 20, 0.5);
-          border: 1px solid rgba(255,255,255,0.08);
-          position: relative;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 16px;
-          overflow: hidden;
-          min-height: 250px;
-          box-shadow: 0 10px 30px -5px rgba(0,0,0,0.5);
-        }
         @media (max-width: 768px) {
-          .past-event-card {
-            flex-direction: column;
-          }
-          .past-event-img-container {
-            width: 100%;
-            height: auto;
-          }
-          .upcoming-card {
-            flex-direction: column-reverse;
-            padding: 1.25rem;
-            gap: 1.5rem;
-          }
-          .upcoming-img-container {
-            min-height: 200px;
-            width: 100%;
-          }
           .desktop-tabs {
-            display: none !important;
+            justify-content: center;
           }
         }
         .desktop-tabs {
           display: flex;
         }
       `}</style>
-      
-      {/* ── Desktop Tabs ── */}
-      <div className="desktop-tabs" style={{ 
-        gap: '2rem', marginBottom: '2.5rem', borderBottom: '1px solid var(--border)',
-        position: 'sticky', top: '68px', zIndex: 90, background: 'rgba(5,8,16,0.95)', backdropFilter: 'blur(12px)', padding: '0 10px'
+
+      {/* ── Tabs Container ── */}
+      <div className="desktop-tabs" style={{
+        gap: '1rem',
+        marginBottom: '2.5rem',
+        position: 'sticky',
+        top: '68px',
+        zIndex: 90,
+        background: '#ffffff',
+        padding: '0.75rem 0',
+        borderBottom: '1px solid #E7E5E4'
       }}>
-        <button 
+        {/* Upcoming Sessions Tab */}
+        <button
           onClick={() => setActiveTab('upcoming')}
-          style={{ 
-            padding: '1rem 0', 
-            background: 'none', 
-            border: 'none', 
-            borderBottom: activeTab === 'upcoming' ? '2px solid #818cf8' : '2px solid transparent', 
-            color: activeTab === 'upcoming' ? '#818cf8' : 'var(--text-muted)', 
-            fontWeight: 600, 
-            fontSize: '1rem',
+          style={{
+            padding: '0.65rem 1.25rem',
+            background: activeTab === 'upcoming'
+              ? 'linear-gradient(135deg, #1f6fb2, #2ec4b6)'
+              : '#F5F5F4',
+            border: 'none',
+            borderRadius: '10px',
+            color: activeTab === 'upcoming' ? '#ffffff' : '#57534E',
+            fontWeight: 700,
+            fontSize: '0.95rem',
             cursor: 'pointer',
             fontFamily: 'var(--font-display)',
-            transition: 'all 0.2s'
+            transition: 'all 0.2s ease',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            boxShadow: activeTab === 'upcoming' ? '0 4px 14px rgba(31, 111, 178, 0.25)' : 'none'
           }}>
-          Upcoming Sessions <span style={{ marginLeft: '4px', padding: '2px 8px', borderRadius: '12px', background: activeTab === 'upcoming' ? 'rgba(129,140,248,0.2)' : 'rgba(255,255,255,0.05)', fontSize: '0.75rem' }}>{upcoming.length}</span>
+          Upcoming Sessions
+          <span style={{
+            padding: '2px 8px',
+            borderRadius: '12px',
+            background: activeTab === 'upcoming' ? 'rgba(255, 255, 255, 0.25)' : '#E7E5E4',
+            fontSize: '0.75rem',
+            color: activeTab === 'upcoming' ? '#ffffff' : '#57534E',
+            fontWeight: 700
+          }}>
+            {upcoming.length}
+          </span>
         </button>
-        <button 
+
+        {/* Past Sessions Tab */}
+        <button
           onClick={() => setActiveTab('past')}
-          style={{ 
-            padding: '1rem 0', 
-            background: 'none', 
-            border: 'none', 
-            borderBottom: activeTab === 'past' ? '2px solid #34d399' : '2px solid transparent', 
-            color: activeTab === 'past' ? '#34d399' : 'var(--text-muted)', 
-            fontWeight: 600, 
-            fontSize: '1rem',
+          style={{
+            padding: '0.65rem 1.25rem',
+            background: activeTab === 'past'
+              ? 'linear-gradient(135deg, #1f6fb2, #2ec4b6)'
+              : '#F5F5F4',
+            border: 'none',
+            borderRadius: '10px',
+            color: activeTab === 'past' ? '#ffffff' : '#57534E',
+            fontWeight: 700,
+            fontSize: '0.95rem',
             cursor: 'pointer',
             fontFamily: 'var(--font-display)',
-            transition: 'all 0.2s'
+            transition: 'all 0.2s ease',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            boxShadow: activeTab === 'past' ? '0 4px 14px rgba(31, 111, 178, 0.25)' : 'none'
           }}>
-          Past Sessions <span style={{ marginLeft: '4px', padding: '2px 8px', borderRadius: '12px', background: activeTab === 'past' ? 'rgba(52,211,153,0.2)' : 'rgba(255,255,255,0.05)', fontSize: '0.75rem' }}>{past.length}</span>
+          Past Sessions
+          <span style={{
+            padding: '2px 8px',
+            borderRadius: '12px',
+            background: activeTab === 'past' ? 'rgba(255, 255, 255, 0.25)' : '#E7E5E4',
+            fontSize: '0.75rem',
+            color: activeTab === 'past' ? '#ffffff' : '#57534E',
+            fontWeight: 700
+          }}>
+            {past.length}
+          </span>
         </button>
       </div>
 
@@ -136,17 +115,55 @@ export default function MeetingsClient({ upcoming, past }) {
         {activeTab === 'upcoming' && (
           <section>
             {upcoming.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                {upcoming.map((m) => <HeroEventCard key={m.id} meeting={m} isPast={false} />)}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ width: '100%', maxWidth: '950px', margin: '0 auto', display: 'grid', gap: '1.75rem', gridTemplateColumns: '1fr' }}>
+                  {(showAllUpcoming ? upcoming : upcoming.slice(0, 2)).map((m, idx) => <HeroEventCard key={m.id} meeting={m} isPast={false} weekNumber={past.length + 1 + idx} />)}
+                </div>
+                {upcoming.length > 2 && !showAllUpcoming && (
+                  <div style={{ width: '100%', maxWidth: '950px', marginTop: '1.75rem' }}>
+                    <div
+                      onClick={() => setShowAllUpcoming(true)}
+                      className="hero-single-card upcoming-card"
+                      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2.5rem', cursor: 'pointer', background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)', border: '2px dashed #cbd5e1', width: '100%', minHeight: '180px', transition: 'all 0.2s ease', borderRadius: '20px' }}
+                      onMouseOver={(e) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.borderColor = '#94a3b8'; }}
+                      onMouseOut={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #f8fafc, #f1f5f9)'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
+                    >
+                      <div style={{ background: '#e2e8f0', width: '50px', height: '50px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.75rem' }}>
+                        <svg width="20" height="20" fill="none" stroke="#334155" strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </div>
+                      <h3 style={{ color: '#0f172a', fontWeight: 800, fontSize: '1.15rem', margin: 0, fontFamily: 'var(--font-display)', textAlign: 'center' }}>Show {upcoming.length - 2} More Upcoming Events</h3>
+                      <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '0.25rem', fontWeight: 500 }}>Click to expand the schedule</p>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="glass-card" style={{ padding: '3rem', textAlign: 'center' }}>
+              <div style={{
+                padding: '3.5rem 2rem',
+                textAlign: 'center',
+                background: '#ffffff',
+                borderRadius: '16px',
+                border: '1px solid #E7E5E4',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
+              }}>
                 <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🗓️</div>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>
+                <p style={{ color: '#57534E', fontSize: '0.95rem', marginBottom: '1.5rem' }}>
                   No upcoming sessions scheduled yet. Check back soon!
                 </p>
-                <Link href="/" style={{ color: '#818cf8', fontSize: '0.85rem', textDecoration: 'none', fontWeight: 600 }}>
-                  ← Back to Home
+                <Link href="/" style={{ textDecoration: 'none' }}>
+                  <button style={{
+                    background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
+                    color: '#ffffff',
+                    border: 'none',
+                    padding: '0.6rem 1.25rem',
+                    borderRadius: '8px',
+                    fontWeight: 600,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(31, 111, 178, 0.2)'
+                  }}>
+                    ← Back to Home
+                  </button>
                 </Link>
               </div>
             )}
@@ -157,11 +174,17 @@ export default function MeetingsClient({ upcoming, past }) {
           <section>
             {past.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                {past.map((m) => <HeroEventCard key={m.id} meeting={m} isPast={true} />)}
+                {past.map((m, idx) => <HeroEventCard key={m.id} meeting={m} isPast={true} weekNumber={past.length - idx} />)}
               </div>
             ) : (
-              <div className="glass-card" style={{ padding: '3rem', textAlign: 'center' }}>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>No past sessions found.</p>
+              <div style={{
+                padding: '3rem',
+                textAlign: 'center',
+                background: '#ffffff',
+                borderRadius: '16px',
+                border: '1px solid #E7E5E4'
+              }}>
+                <p style={{ color: '#57534E', fontSize: '0.95rem' }}>No past sessions found.</p>
               </div>
             )}
           </section>

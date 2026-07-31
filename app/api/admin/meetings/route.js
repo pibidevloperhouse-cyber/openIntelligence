@@ -19,7 +19,7 @@ export async function POST(request) {
   try {
     if (!(await isAdmin())) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-    const { title, description, date, venue, registration_link, cover_image, speakers } = await request.json();
+    const { title, description, date, start_time, end_time, venue, registration_link, cover_image, speakers } = await request.json();
 
     if (!title || !description || !date || !venue) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -30,6 +30,8 @@ export async function POST(request) {
       title,
       description,
       date:              new Date(date).toISOString(),
+      start_time:        start_time || null,
+      end_time:          end_time || null,
       venue,
       registration_link: registration_link || '',
       status:            'UPCOMING',

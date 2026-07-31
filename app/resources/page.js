@@ -5,7 +5,7 @@ import Link from 'next/link';
 import ResourceListItem from '@/components/ResourceListItem';
 
 const ICONS = {
-  all: <svg width="14" height="14" viewBox="0 0 24 24" fill="#D97706" stroke="none"><path d="M12 2l2.4 7.6 7.6 2.4-7.6 2.4-2.4 7.6-2.4-7.6-7.6-2.4 7.6-2.4z" /></svg>,
+  all: <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 7.6 7.6 2.4-7.6 2.4-2.4 7.6-2.4-7.6-7.6-2.4 7.6-2.4z" /></svg>,
   dataset: <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /></svg>,
   'open-repository': <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z" /></svg>,
   'prompt-library': <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></svg>,
@@ -91,7 +91,7 @@ export default function ResourcesPage() {
     .slice(0, 15);
 
   return (
-    <div style={{ minHeight: '100vh', paddingTop: '3rem', paddingBottom: '5rem', background: '#FCFBF9' }}>
+    <div className="animate-fade-up" style={{ minHeight: '100vh', paddingTop: '3rem', paddingBottom: '5rem', backgroundColor: '#ffffff' }}>
       <style>{`
         .resources-layout {
           display: grid;
@@ -108,14 +108,19 @@ export default function ResourcesPage() {
         .search-bar {
           display: flex;
           align-items: center;
-          background: #FFFFFF;
+          background: #ffffff;
           border: 1px solid #E7E5E4;
-          border-radius: 8px;
-          padding: 0.6rem 1rem;
-          margin-bottom: 1rem;
-          box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-          gap: 0.5rem;
+          border-radius: 12px;
+          padding: 0.8rem 1.25rem;
+          margin-bottom: 1.5rem;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+          gap: 0.75rem;
           flex-wrap: wrap;
+          transition: all 0.2s;
+        }
+        .search-bar:focus-within {
+          box-shadow: 0 10px 25px -5px rgba(31, 111, 178, 0.15);
+          border-color: rgba(31, 111, 178, 0.4);
         }
         @media (max-width: 1024px) {
           .resources-layout {
@@ -150,6 +155,17 @@ export default function ResourcesPage() {
             padding: 0 1rem !important;
           }
         }
+        
+        button:hover:not([data-active="true"]) .hover-gradient-target {
+          background: linear-gradient(135deg, #1f6fb2, #2ec4b6) !important;
+          -webkit-background-clip: text !important;
+          -webkit-text-fill-color: transparent !important;
+          background-clip: text !important;
+          color: transparent !important;
+        }
+        button:hover:not([data-active="true"]) .hover-icon-target {
+          color: #1f6fb2 !important;
+        }
       `}</style>
       <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
 
@@ -157,33 +173,41 @@ export default function ResourcesPage() {
         <div className="header-layout">
           <div>
             <h1 style={{
-              fontSize: '1.75rem',
-              fontWeight: 600,
-              color: '#1C1917',
-              marginBottom: '0.25rem',
+              fontSize: '2.5rem',
+              fontWeight: 900,
+              fontFamily: 'var(--font-display)',
+              marginBottom: '0.5rem',
+              letterSpacing: '-0.03em',
+              background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
             }}>
               Resources
             </h1>
-            <p style={{ color: '#57534E', fontSize: '0.85rem', fontWeight: 400, margin: 0 }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: 400, margin: 0 }}>
               {globalTotal} open-source AI resources from the Madurai AI community
             </p>
           </div>
           <Link href="/contribute" style={{ textDecoration: 'none' }}>
             <button style={{
-              background: '#FFFFFF',
-              border: '1px solid #E7E5E4',
-              color: '#1C1917',
-              padding: '0.4rem 1rem',
-              borderRadius: '6px',
-              fontWeight: 500,
-              fontSize: '0.85rem',
-              cursor: 'pointer',
+              background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
+              border: 'none',
+              color: '#ffffff',
+              padding: '0.65rem 1.35rem',
+              borderRadius: '8px',
+              fontWeight: 600,
+              fontSize: '0.9rem',
               display: 'flex',
               alignItems: 'center',
               gap: '0.5rem',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
-            }}>
-              <span style={{ color: '#D97706', fontWeight: 600 }}>+</span> Submit a resource
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(31, 111, 178, 0.25)',
+              transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              <span style={{ color: '#ffffff', fontWeight: 800 }}>+</span> Submit a resource
             </button>
           </Link>
         </div>
@@ -205,28 +229,28 @@ export default function ResourcesPage() {
                   onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
                   style={{
                     width: '100%',
-                    padding: '0.75rem 1rem',
-                    borderRadius: '8px',
-                    border: '1px solid #E7E5E4',
-                    backgroundColor: '#FFFFFF',
-                    fontSize: '0.9rem',
-                    color: '#1C1917',
+                    padding: '0.85rem 1.25rem',
+                    borderRadius: '12px',
+                    border: '1px solid var(--border)',
+                    backgroundColor: '#ffffff',
+                    fontSize: '0.95rem',
+                    color: 'var(--text-primary)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     cursor: 'pointer',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ display: 'flex', alignItems: 'center', color: category === 'all' ? '#D97706' : '#57534E' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', color: '#1f6fb2' }}>
                       {ICONS[category] || ICONS['documentation']}
                     </span>
-                    <span style={{ fontWeight: 500 }}>
+                    <span style={{ fontWeight: 600 }}>
                       {CATEGORIES.find(c => c.slug === category)?.name || 'Select Category'}
                     </span>
                   </div>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#57534E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isMobileDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isMobileDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
                     <polyline points="6 9 12 15 18 9"></polyline>
                   </svg>
                 </button>
@@ -238,10 +262,10 @@ export default function ResourcesPage() {
                     left: 0,
                     right: 0,
                     marginTop: '0.5rem',
-                    background: '#FFFFFF',
-                    border: '1px solid #E7E5E4',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                    background: '#ffffff',
+                    border: '1px solid var(--border)',
+                    borderRadius: '12px',
+                    boxShadow: '0 15px 35px -5px rgba(0,0,0,0.1)',
                     overflow: 'hidden',
                     display: 'flex',
                     flexDirection: 'column'
@@ -264,20 +288,20 @@ export default function ResourcesPage() {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            padding: '0.75rem 1rem',
+                            padding: '0.85rem 1.25rem',
                             border: 'none',
-                            background: isActive ? '#F5F5F4' : '#FFFFFF',
-                            color: isActive ? '#1C1917' : '#57534E',
-                            fontWeight: isActive ? 600 : 400,
-                            fontSize: '0.85rem',
+                            background: isActive ? 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' : '#ffffff',
+                            color: isActive ? '#ffffff' : 'var(--text-secondary)',
+                            fontWeight: isActive ? 600 : 500,
+                            fontSize: '0.9rem',
                             cursor: 'pointer',
                             textAlign: 'left',
-                            borderBottom: '1px solid #F5F5F4'
+                            borderBottom: '1px solid var(--border)'
                           }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                             <span style={{
-                              color: isActive ? (slug === 'all' ? '#D97706' : '#1C1917') : '#A8A29E',
+                              color: isActive ? '#ffffff' : 'var(--text-muted)',
                               display: 'flex',
                               alignItems: 'center'
                             }}>
@@ -285,7 +309,7 @@ export default function ResourcesPage() {
                             </span>
                             {name}
                           </div>
-                          <span style={{ fontSize: '0.75rem', color: isActive ? '#A8A29E' : '#D6D3D1', fontWeight: 500 }}>
+                          <span style={{ fontSize: '0.75rem', color: isActive ? '#ffffff' : 'var(--text-muted)', fontWeight: 600 }}>
                             {count}
                           </span>
                         </button>
@@ -296,7 +320,7 @@ export default function ResourcesPage() {
               </div>
 
               {/* Desktop Sidebar */}
-              <div className="sidebar-categories">
+              <div className="sidebar-categories" style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                 {CATEGORIES.map(({ slug, name }) => {
                   const isActive = category === slug;
                   const count = slug === 'all' ? globalTotal : (categoryCounts[slug] || 0);
@@ -305,41 +329,47 @@ export default function ResourcesPage() {
                   return (
                     <button
                       key={slug}
+                      data-active={isActive ? "true" : "false"}
                       onClick={() => { setCategory(slug); setSelectedTag(null); }}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         width: '100%',
-                        padding: '0.45rem 0.6rem',
-                        borderRadius: '6px',
+                        padding: '0.65rem 0.85rem',
+                        borderRadius: '8px',
                         border: 'none',
-                        background: isActive ? '#1C1917' : 'transparent',
-                        color: isActive ? '#FFFFFF' : '#57534E',
-                        fontWeight: isActive ? 500 : 400,
-                        fontSize: '0.85rem',
+                        background: isActive ? 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' : 'transparent',
                         cursor: 'pointer',
                         textAlign: 'left',
-                        transition: 'background-color 0.15s',
+                        transition: 'all 0.2s ease',
+                        boxShadow: isActive ? '0 4px 12px rgba(31, 111, 178, 0.25)' : 'none'
                       }}
-                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = '#F5F5F4'; }}
+                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'; }}
                       onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{
-                          color: isActive ? (slug === 'all' ? '#D97706' : '#FFFFFF') : '#A8A29E',
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        <span className="hover-icon-target" style={{
+                          color: isActive ? '#ffffff' : 'var(--text-muted)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
+                          transition: 'color 0.2s ease'
                         }}>
                           {icon}
                         </span>
-                        {name}
+                        <span className="hover-gradient-target" style={{
+                          color: isActive ? '#ffffff' : 'var(--text-secondary)',
+                          fontWeight: isActive ? 600 : 500,
+                          fontSize: '0.9rem'
+                        }}>
+                          {name}
+                        </span>
                       </div>
-                      <span style={{
+                      <span className="hover-gradient-target" style={{
                         fontSize: '0.75rem',
-                        color: isActive ? '#A8A29E' : '#D6D3D1',
-                        fontWeight: isActive ? 500 : 400
+                        color: isActive ? '#ffffff' : 'var(--text-muted)',
+                        fontWeight: isActive ? 700 : 500
                       }}>
                         {count}
                       </span>
@@ -351,37 +381,35 @@ export default function ResourcesPage() {
 
             {/* Popular Tags */}
             {popularTags.length > 0 && (
-              <div className="mobile-hide">
-                <h4 style={{ fontSize: '0.65rem', fontWeight: 600, color: '#A8A29E', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '1rem' }}>
+              <div className="mobile-hide" style={{ marginTop: '3rem' }}>
+                <h4 style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '1rem' }}>
                   POPULAR TAGS
                 </h4>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                   {popularTags.map(([tag, count]) => {
                     const isActive = selectedTag === tag;
                     return (
                       <button
                         key={tag}
+                        data-active={isActive ? "true" : "false"}
                         onClick={() => {
                           setSelectedTag(isActive ? null : tag);
                           if (!isActive) setCategory('all');
                         }}
                         style={{
-                          background: isActive ? '#1C1917' : '#FFFFFF',
-                          color: isActive ? '#FFFFFF' : '#57534E',
-                          border: `1px solid ${isActive ? '#1C1917' : '#E7E5E4'}`,
-                          padding: '0.2rem 0.5rem',
-                          borderRadius: '12px',
-                          fontSize: '0.75rem',
-                          fontWeight: 500,
+                          background: isActive ? 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' : '#ffffff',
+                          border: isActive ? 'none' : '1px solid var(--border)',
+                          padding: '0.35rem 0.75rem',
+                          borderRadius: '20px',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '0.3rem',
+                          gap: '0.4rem',
                           transition: 'all 0.15s',
-                          boxShadow: isActive ? 'none' : '0 1px 2px rgba(0,0,0,0.01)'
+                          boxShadow: isActive ? '0 4px 12px rgba(31, 111, 178, 0.25)' : '0 1px 2px rgba(0,0,0,0.02)'
                         }}
                       >
-                        {tag} <span style={{ color: isActive ? '#A8A29E' : '#D6D3D1' }}>{count}</span>
+                        <span className="hover-gradient-target" style={{ color: isActive ? '#ffffff' : 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600 }}>{tag}</span> <span className="hover-gradient-target" style={{ color: isActive ? 'rgba(255,255,255,0.85)' : 'var(--text-muted)', fontSize: '0.75rem' }}>{count}</span>
                       </button>
                     )
                   })}
@@ -419,19 +447,20 @@ export default function ResourcesPage() {
             </div>
 
             {/* List */}
-            <div style={{
-              background: '#FFFFFF',
-              borderRadius: '8px',
-              border: '1px solid #E7E5E4',
-              overflow: 'hidden'
+            <div className="glass-card" style={{
+              overflow: 'hidden',
+              boxShadow: '0 10px 30px -5px rgba(0,0,0,0.04)',
+              background: '#ffffff',
+              border: '1px solid var(--border)',
+              borderRadius: '12px'
             }}>
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} style={{ padding: '1.5rem', borderBottom: '1px solid #F5F5F4', display: 'flex', gap: '1rem' }}>
-                    <div style={{ width: 40, height: 40, background: '#F5F5F4', borderRadius: 8, animation: 'pulse 1.5s infinite' }} />
+                  <div key={i} style={{ padding: '1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', gap: '1rem' }}>
+                    <div style={{ width: 40, height: 40, background: 'var(--bg-secondary)', borderRadius: 8, animation: 'pulse 1.5s infinite' }} />
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      <div style={{ width: '40%', height: 16, background: '#F5F5F4', borderRadius: 4, animation: 'pulse 1.5s infinite' }} />
-                      <div style={{ width: '80%', height: 14, background: '#F5F5F4', borderRadius: 4, animation: 'pulse 1.5s infinite' }} />
+                      <div style={{ width: '40%', height: 16, background: 'var(--bg-secondary)', borderRadius: 4, animation: 'pulse 1.5s infinite' }} />
+                      <div style={{ width: '80%', height: 14, background: 'var(--bg-secondary)', borderRadius: 4, animation: 'pulse 1.5s infinite' }} />
                     </div>
                   </div>
                 ))
@@ -442,10 +471,10 @@ export default function ResourcesPage() {
                   ))}
                 </div>
               ) : (
-                <div style={{ padding: '4rem 2rem', textAlign: 'center' }}>
-                  <div style={{ fontSize: '2rem', marginBottom: '1rem', color: '#D6D3D1' }}>🔍</div>
-                  <h3 style={{ color: '#1C1917', fontWeight: 600, marginBottom: '0.5rem' }}>No resources found</h3>
-                  <p style={{ color: '#78716C', fontSize: '0.85rem' }}>Try adjusting your filters or search query.</p>
+                <div style={{ padding: '5rem 2rem', textAlign: 'center' }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '1rem', color: 'var(--text-muted)' }}>🔍</div>
+                  <h3 style={{ color: 'var(--text-primary)', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-display)', fontSize: '1.5rem' }}>No resources found</h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>Try adjusting your filters or search query.</p>
                 </div>
               )}
             </div>

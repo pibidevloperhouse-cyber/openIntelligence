@@ -117,7 +117,7 @@ export default function SubmitPage() {
 
   if (loading || !user) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem' }}>
+      <div className="light-theme" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem' }}>
         <span style={{ color: 'var(--text-muted)' }}>Redirecting to GitHub Login...</span>
       </div>
     );
@@ -125,7 +125,7 @@ export default function SubmitPage() {
 
   if (success) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+      <div className="light-theme" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
         <div className="glass-card" style={{ padding: '3rem 2rem', textAlign: 'center', maxWidth: '480px', width: '100%' }}>
           <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>🎉</div>
           <h2 style={{ color: 'var(--text-primary)', fontWeight: 800, fontFamily: 'var(--font-display)', marginBottom: '0.75rem' }}>
@@ -144,13 +144,13 @@ export default function SubmitPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', paddingTop: '2.5rem', paddingBottom: '4rem' }}>
+    <div className="light-theme" style={{ minHeight: '100vh', paddingTop: '2.5rem', paddingBottom: '4rem' }}>
       <div className="container" style={{ maxWidth: '720px' }}>
 
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>
           <h1 style={{ fontSize: 'clamp(1.6rem, 4vw, 2.2rem)', fontWeight: 900, fontFamily: 'var(--font-display)', color: 'var(--text-primary)', marginBottom: '0.4rem' }}>
-            Submit a <span className="gradient-text">Resource</span>
+            Submit a <span style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', color: 'transparent' }}>Resource</span>
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
             Share an open-source AI resource with the Madurai community. GitHub URL → auto-fetch details.
@@ -162,7 +162,7 @@ export default function SubmitPage() {
           {/* Step 1: GitHub URL */}
           <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1rem' }}>
             <h2 style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '0.95rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', color: 'white', width: 22, height: 22, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>1</span>
+              <span style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)', color: 'white', width: 22, height: 22, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>1</span>
               GitHub Repository URL
             </h2>
 
@@ -209,10 +209,57 @@ export default function SubmitPage() {
             )}
           </div>
 
+          {/* Custom Styles for Buttons */}
+          <style>{`
+            .category-btn {
+              padding: 0.6rem 0.75rem;
+              border-radius: 10px;
+              border: 1px solid var(--border);
+              background: transparent;
+              color: var(--text-secondary);
+              cursor: pointer;
+              font-size: 0.82rem;
+              font-weight: 500;
+              text-align: left;
+              transition: all 0.2s ease;
+            }
+            .category-btn:hover {
+              background: linear-gradient(135deg, rgba(31,111,178,0.1), rgba(46,196,182,0.1));
+              border-color: #1f6fb2;
+              color: #1f6fb2;
+            }
+            .category-btn.active {
+              background: linear-gradient(135deg, #1f6fb2, #2ec4b6);
+              border-color: transparent;
+              color: #ffffff;
+            }
+            .tag-btn {
+              padding: 0.25rem 0.65rem;
+              border-radius: 6px;
+              border: 1px solid var(--border);
+              background: transparent;
+              color: var(--text-muted);
+              font-size: 0.78rem;
+              font-weight: 500;
+              cursor: pointer;
+              transition: all 0.2s ease;
+            }
+            .tag-btn:hover {
+              background: linear-gradient(135deg, rgba(31,111,178,0.1), rgba(46,196,182,0.1));
+              border-color: #1f6fb2;
+              color: #1f6fb2;
+            }
+            .tag-btn.active {
+              background: linear-gradient(135deg, #1f6fb2, #2ec4b6);
+              border-color: transparent;
+              color: #ffffff;
+            }
+          `}</style>
+
           {/* Step 2: Category */}
           <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1rem' }}>
             <h2 style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '0.95rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', color: 'white', width: 22, height: 22, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>2</span>
+              <span style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)', color: 'white', width: 22, height: 22, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>2</span>
               Category
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.5rem' }}>
@@ -221,19 +268,7 @@ export default function SubmitPage() {
                   key={slug}
                   type="button"
                   onClick={() => setCategorySlug(slug)}
-                  style={{
-                    padding: '0.6rem 0.75rem',
-                    borderRadius: '10px',
-                    border: '1px solid',
-                    borderColor: categorySlug === slug ? '#6366f1' : 'var(--border)',
-                    background: categorySlug === slug ? 'rgba(99,102,241,0.12)' : 'transparent',
-                    color: categorySlug === slug ? '#818cf8' : 'var(--text-secondary)',
-                    cursor: 'pointer',
-                    fontSize: '0.82rem',
-                    fontWeight: 500,
-                    textAlign: 'left',
-                    transition: 'all 0.2s',
-                  }}
+                  className={`category-btn ${categorySlug === slug ? 'active' : ''}`}
                 >
                   {icon} {name}
                 </button>
@@ -244,7 +279,7 @@ export default function SubmitPage() {
           {/* Step 3: Tags */}
           <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1rem' }}>
             <h2 style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '0.95rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', color: 'white', width: 22, height: 22, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>3</span>
+              <span style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)', color: 'white', width: 22, height: 22, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>3</span>
               Tags (optional)
             </h2>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.75rem' }}>
@@ -253,18 +288,7 @@ export default function SubmitPage() {
                   key={tag}
                   type="button"
                   onClick={() => toggleTag(tag)}
-                  style={{
-                    padding: '0.25rem 0.65rem',
-                    borderRadius: '6px',
-                    border: '1px solid',
-                    fontSize: '0.78rem',
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    borderColor: selectedTags.includes(tag) ? '#6366f1' : 'var(--border)',
-                    background: selectedTags.includes(tag) ? 'rgba(99,102,241,0.15)' : 'transparent',
-                    color: selectedTags.includes(tag) ? '#818cf8' : 'var(--text-muted)',
-                  }}
+                  className={`tag-btn ${selectedTags.includes(tag) ? 'active' : ''}`}
                 >
                   {tag}
                 </button>
@@ -287,7 +311,7 @@ export default function SubmitPage() {
           {/* Step 4: Use Case */}
           <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
             <h2 style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '0.95rem', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', color: 'white', width: 22, height: 22, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>4</span>
+              <span style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)', color: 'white', width: 22, height: 22, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 700 }}>4</span>
               How can others use this?
             </h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginBottom: '0.75rem' }}>Describe the use case — who benefits, how to get started, what problems it solves.</p>

@@ -80,14 +80,14 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="light-theme" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Loading profile...</div>
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: '100vh', paddingTop: '2.5rem', paddingBottom: '4rem' }}>
+    <div className="light-theme" style={{ minHeight: '100vh', paddingTop: '2.5rem', paddingBottom: '4rem' }}>
       <div className="container" style={{ maxWidth: '1000px' }}>
 
         {/* Profile header */}
