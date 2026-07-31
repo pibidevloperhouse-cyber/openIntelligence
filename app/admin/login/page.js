@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 function TypingText({ text }) {
   const [displayedText, setDisplayedText] = useState('');
-  
+
   useEffect(() => {
     let i = 0;
     const interval = setInterval(() => {
@@ -29,10 +29,10 @@ function TypingText({ text }) {
 export default function AdminLoginPage() {
   const router = useRouter();
 
-  const [email, setEmail]       = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e) => {
@@ -41,10 +41,10 @@ export default function AdminLoginPage() {
     setError('');
 
     try {
-      const res  = await fetch('/api/admin/login', {
-        method:  'POST',
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
 
@@ -61,13 +61,13 @@ export default function AdminLoginPage() {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'var(--font-sans)', backgroundColor: '#ffffff', flexWrap: 'wrap' }}>
-      
+
       {/* ── LEFT SIDE (Graphic & Text) ── */}
       <div className="hex-left-side" style={{
-        flex: '1 1 500px', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center', 
+        flex: '1 1 500px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
         justifyContent: 'center',
         padding: '3rem',
         borderRight: '1px solid #f1f5f9',
@@ -117,10 +117,10 @@ export default function AdminLoginPage() {
         <svg className="hex-svg" width="280" height="280" viewBox="0 0 200 200" fill="none" stroke="#0f172a" strokeWidth="2.5">
           {/* Outer Hexagon */}
           <polygon className="hex-path" pathLength="1" points="100,20 169.28,60 169.28,140 100,180 30.72,140 30.72,60" />
-          
+
           {/* Inner Hexagon (faded) */}
           <polygon className="hex-path" pathLength="1" points="100,60 134.64,80 134.64,120 100,140 65.36,120 65.36,80" stroke="#cbd5e1" strokeWidth="1" />
-          
+
           {/* Lines from center to outer vertices */}
           <line className="hex-path" pathLength="1" x1="100" y1="100" x2="100" y2="20" stroke="#cbd5e1" strokeWidth="1.2" />
           <line className="hex-path" pathLength="1" x1="100" y1="100" x2="169.28" y2="60" stroke="#cbd5e1" strokeWidth="1.2" />
@@ -128,7 +128,7 @@ export default function AdminLoginPage() {
           <line className="hex-path" pathLength="1" x1="100" y1="100" x2="100" y2="180" stroke="#cbd5e1" strokeWidth="1.2" />
           <line className="hex-path" pathLength="1" x1="100" y1="100" x2="30.72" y2="140" stroke="#cbd5e1" strokeWidth="1.2" />
           <line className="hex-path" pathLength="1" x1="100" y1="100" x2="30.72" y2="60" stroke="#cbd5e1" strokeWidth="1.2" />
-          
+
           {/* Outer Nodes */}
           <circle className="hex-node" cx="100" cy="20" r="4.5" fill="#0f172a" />
           <circle className="hex-node" cx="169.28" cy="60" r="4.5" fill="#0f172a" />
@@ -136,7 +136,7 @@ export default function AdminLoginPage() {
           <circle className="hex-node" cx="100" cy="180" r="4.5" fill="#0f172a" />
           <circle className="hex-node" cx="30.72" cy="140" r="4.5" fill="#0f172a" />
           <circle className="hex-node" cx="30.72" cy="60" r="4.5" fill="#0f172a" />
-          
+
           {/* Center Node */}
           <circle className="hex-node" cx="100" cy="100" r="5" fill="#0f172a" style={{ animationDelay: '0.75s' }} />
         </svg>
@@ -146,16 +146,16 @@ export default function AdminLoginPage() {
 
       {/* ── RIGHT SIDE (Login Form) ── */}
       <div style={{
-        flex: '1 1 500px', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center', 
+        flex: '1 1 500px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
         justifyContent: 'center',
         padding: '3rem 2rem',
         backgroundColor: '#f8fafc'
       }}>
         <div style={{ width: '100%', maxWidth: '420px' }}>
-          
+
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h1 style={{
@@ -181,7 +181,7 @@ export default function AdminLoginPage() {
             border: '1px solid rgba(226, 232, 240, 0.8)'
           }}>
             <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              
+
               {/* Email */}
               <div>
                 <label style={{ display: 'block', color: '#475569', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.5rem', letterSpacing: '0.05em' }}>
@@ -285,8 +285,8 @@ export default function AdminLoginPage() {
             </div>
 
             {/* Back to site */}
-            
-             <a href="/"
+
+            <a href="/"
               style={{
                 display: 'block', textAlign: 'center',
                 color: '#64748b', fontSize: '0.85rem', textDecoration: 'none'

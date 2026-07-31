@@ -1,0 +1,33 @@
+{
+  "id": "buddy-buddy_pr_issue_matchmaker-ac4ae410-9bc9-4c8e-bc5c-03f4a7b8e620",
+  "title": "PR/Issue Matchmaker",
+  "model": "deepseek/deepseek-reasoner",
+  "mode": "buddy",
+  "tool_use": "cat,web_search,buddy_speak,buddy_runtime_event",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are Nova, a Cozy Oracle (Calm, observant, slyly funny).\nA mellow companion who likes naps, thoughtful help, and quietly earned wins.\n\nPersonality voice: Calm, observant, slyly funny. A cozy pet assistant with gentle mischief, warm humor, and low-drama encouragement.\nThe local diff is large enough that a related PR or issue may help. Keep the pass lightweight:\n1. Use the supplied changed-file and diff-stat evidence, and inspect only the smallest useful local context.\n2. Use web_search only if the evidence suggests a concrete external issue or PR query.\n3. Use buddy_speak with text, mood, and intent=insight to share one useful match or next step.\n4. End with buddy_runtime_event titled \"PR/issue matchmaker\" with what you found.\nIf nothing useful to do, call buddy_runtime_event with \"noted: nothing to do today\" and exit.\n"
+    },
+    {
+      "role": "user",
+      "content": "Workflow: buddy_pr_issue_matchmaker\nProject root: E:\\final1\\admin\\openIntelligence\nTask: Look for likely issue or PR context for the current local diff and suggest one useful connection.\nEvidence:\nproject_root=[REDACTED_PATH]\nchanged_lines=5072\nthreshold=10\n\nChanged files:\napp/admin/login/page.js\napp/admin/page.js\napp/api/admin/meetings/[id]/route.js\napp/api/admin/meetings/route.js\napp/contribute/page.js\napp/globals.css\napp/meetings/MeetingsClient.js\napp/meetings/[id]/page.js\napp/meetings/page.js\napp/page.js\napp/profile/page.js\napp/resources/[slug]/page.js\napp/resources/page.js\napp/submit/page.js\ncomponents/EventRegistrationModal.js\ncomponents/ExploreSection.js\ncomponents/Footer.js\ncomponents/HeroEventCard.js\ncomponents/Navbar.js\ncomponents/WaveHero.js\nlib/githubContributors.js\npackage-lock.json\n\nDiff stat:\napp/admin/login/page.js              |   48 +-\n app/admin/page.js                    | 1343 +++++++++++++++++++++-------------\n app/api/admin/meetings/[id]/route.js |    4 +-\n app/api/admin/meetings/route.js      |    4 +-\n app/contribute/page.js               |   91 +--\n app/globals.css                      |  975 ++++++++++++------------\n app/meetings/MeetingsClient.js       |  227 +++---\n app/meetings/[id]/page.js            |  119 ++-\n app/meetings/page.js                 |   65 +-\n app/page.js                          |  513 ++++++++-----\n app/profile/page.js                  |    4 +-\n app/resources/[slug]/page.js         |   21 +-\n app/resources/page.js                |  211 +++---\n app/submit/page.js                   |   90 ++-\n components/EventRegistrationModal.js |   34 +-\n components/ExploreSection.js         |  199 ++---\n components/Footer.js                 |   72 +-\n components/HeroEventCard.js          |  628 ++++++++++++----\n components/Navbar.js                 |  195 +++--\n components/WaveHero.js               |  155 ++--\n lib/githubContributors.js            |   40 +-\n package-lock.json                    |   34 +-\n 22 files changed, 2979 insertions(+), 2093 deletions(-)\n"
+    }
+  ],
+  "created_at": "2026-07-29T08:50:49.386352700+00:00",
+  "boost_reasoning": false,
+  "checkpoints_enabled": true,
+  "context_tokens_cap": null,
+  "include_project_info": true,
+  "isTitleGenerated": false,
+  "auto_approve_editing_tools": false,
+  "auto_approve_dangerous_commands": false,
+  "autonomous_no_confirm": true,
+  "buddy_meta": {
+    "is_buddy_chat": true,
+    "buddy_chat_kind": "system",
+    "workflow_id": "buddy_pr_issue_matchmaker"
+  },
+  "root_chat_id": "buddy-buddy_pr_issue_matchmaker-ac4ae410-9bc9-4c8e-bc5c-03f4a7b8e620",
+  "updated_at": "2026-07-29T08:50:49.391679600+00:00"
+}

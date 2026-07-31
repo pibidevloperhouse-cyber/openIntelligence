@@ -25,7 +25,7 @@ export default function Footer() {
   return (
     <footer style={{
       borderTop: '1px solid var(--border)',
-      background: 'var(--bg-secondary)',
+      background: '#f4f5f7',
       marginTop: 'auto',
     }}>
       <div className="container" style={{ padding: '3rem 1.5rem 2rem' }}>
@@ -75,35 +75,57 @@ export default function Footer() {
               gap: 1rem;
             }
           }
+          .footer-link {
+            color: #000000;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+          }
+          .footer-link:hover {
+            background: linear-gradient(135deg, #1f6fb2, #2ec4b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
         `}</style>
         <div className="footer-top-grid">
 
           {/* Brand */}
           <div className="footer-brand">
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.75rem', marginTop: '12px' }}>
-              <div style={{
-                width: 34, height: 34,
-                background: 'linear-gradient(135deg, #6366f1, #06b6d4)',
-                borderRadius: '9px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '0.9rem', fontWeight: 800, color: 'white',
+              <img
+                src="/logo (1).webp"
+                alt="OpenIntelligence Logo"
+                style={{
+                  width: 40,
+                  height: 40,
+                  objectFit: 'contain',
+                }}
+              />
+              <span style={{
+                fontFamily: 'var(--font-display)',
+                fontWeight: 800,
+                fontSize: '1.15rem',
+                color: '#000000'
               }}>
-                OI
-              </div>
-              <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)' }}>
-                Open<span style={{ color: '#6366f1' }}>Intelligence</span>
+                OpenIntelligence
               </span>
             </div>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.6, maxWidth: '240px' }}>
+            <p style={{ color: '#000000', fontSize: '0.85rem', lineHeight: 1.6, maxWidth: '240px' }}>
               Building AI commons — open and free. A platform by{' '}
-              <span style={{ color: 'var(--accent-primary)' }}>PiBi Foundation</span> for the Madurai AI Community.
+              <span style={{
+                background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: 600
+              }}>PiBi Foundation</span> for the Madurai AI Community.
             </p>
           </div>
 
           {/* Links */}
           {Object.entries(footerLinks).map(([group, links]) => (
             <div key={group}>
-              <h4 style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: '0.85rem', marginBottom: '0.75rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+              <h4 style={{ color: '#000000', fontWeight: 600, fontSize: '0.85rem', marginBottom: '0.75rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                 {group}
               </h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -113,14 +135,7 @@ export default function Footer() {
                       href={href}
                       target={external ? '_blank' : undefined}
                       rel={external ? 'noopener noreferrer' : undefined}
-                      style={{
-                        color: 'var(--text-muted)',
-                        textDecoration: 'none',
-                        fontSize: '0.85rem',
-                        transition: 'color 0.2s',
-                      }}
-                      onMouseEnter={e => e.target.style.color = '#6366f1'}
-                      onMouseLeave={e => e.target.style.color = 'var(--text-muted)'}
+                      className="footer-link"
                     >
                       {label}
                     </Link>
@@ -133,8 +148,13 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="footer-bottom-bar">
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0 }}>
-            © {new Date().getFullYear()} PiBi Foundation · Open Intelligence Hub
+          <p style={{ color: '#000000', fontSize: '0.8rem', margin: 0 }}>
+            © {new Date().getFullYear()} <span style={{
+              background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              fontWeight: 600
+            }}>PiBi Foundation</span> · Open Intelligence Hub
           </p>
           <div className="footer-bottom-info">
             <span style={{
@@ -142,13 +162,13 @@ export default function Footer() {
               padding: '0.2rem 0.6rem',
               borderRadius: '20px',
               background: 'rgba(16,185,129,0.1)',
-              color: '#34d399',
+              color: '#000000',
               border: '1px solid rgba(16,185,129,0.2)',
               whiteSpace: 'nowrap',
             }}>
               Open Source
             </span>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+            <span style={{ color: '#000000', fontSize: '0.8rem' }}>
               Built with ❤️ for Madurai AI Community
             </span>
           </div>

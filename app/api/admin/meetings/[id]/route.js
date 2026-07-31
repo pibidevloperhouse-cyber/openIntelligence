@@ -20,7 +20,7 @@ export async function PUT(request, { params }) {
   const body = await request.json();
 
   const {
-    title, description, date, venue, registration_link, cover_image,
+    title, description, date, start_time, end_time, venue, registration_link, cover_image,
     // outcome fields
     outcome_title, outcome_summary, attendees_count, photos, tags, speakers,
     status,
@@ -32,6 +32,8 @@ export async function PUT(request, { params }) {
   if (title !== undefined)             data.title             = title;
   if (description !== undefined)       data.description       = description;
   if (date !== undefined)              data.date              = new Date(date);
+  if (start_time !== undefined)        data.start_time        = start_time;
+  if (end_time !== undefined)          data.end_time          = end_time;
   if (venue !== undefined)             data.venue             = venue;
   if (registration_link !== undefined) data.registration_link = registration_link || '';
   if (cover_image !== undefined)       data.cover_image       = cover_image;

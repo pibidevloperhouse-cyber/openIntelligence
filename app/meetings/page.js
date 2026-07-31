@@ -23,9 +23,9 @@ async function getMeetings() {
         .lt('date', new Date().toISOString())
         .order('date', { ascending: false }),
     ]);
-    return { 
-      upcoming: (upcomingRes.data || []).map(m => ({ ...m, date: m.date.endsWith('Z') ? m.date : m.date + 'Z' })), 
-      past: (pastRes.data || []).map(m => ({ ...m, date: m.date.endsWith('Z') ? m.date : m.date + 'Z' })) 
+    return {
+      upcoming: (upcomingRes.data || []).map(m => ({ ...m, date: m.date.endsWith('Z') ? m.date : m.date + 'Z' })),
+      past: (pastRes.data || []).map(m => ({ ...m, date: m.date.endsWith('Z') ? m.date : m.date + 'Z' }))
     };
   } catch {
     return { upcoming: [], past: [] };
@@ -36,48 +36,65 @@ export default async function MeetingsPage() {
   const { upcoming, past } = await getMeetings();
 
   return (
-    <div style={{ minHeight: '100vh', paddingTop: '5rem', paddingBottom: '4rem' }}>
-      <div className="container" style={{ maxWidth: '1200px' }}>
+    <div className="animate-fade-up" style={{ minHeight: '100vh', paddingTop: '5rem', paddingBottom: '4rem', backgroundColor: '#ffffff' }}>
+      <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem' }}>
 
         {/* ── Page Header ── */}
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-            marginBottom: '1rem', padding: '0.3rem 1rem', borderRadius: '20px',
-            background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)',
-            color: '#818cf8', fontSize: '0.8rem', fontWeight: 600,
+            marginBottom: '1.25rem', padding: '0.4rem 1.25rem', borderRadius: '24px',
+            background: '#ffffff', border: '1px solid #E7E5E4',
+            color: '#1f6fb2', fontSize: '0.85rem', fontWeight: 700,
+            boxShadow: '0 4px 12px rgba(31, 111, 178, 0.08)'
           }}>
             📅 Madurai AI Community
           </div>
           <h1 style={{
-            fontSize: 'clamp(1.8rem, 4vw, 2.6rem)',
+            fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
             fontWeight: 900, fontFamily: 'var(--font-display)',
-            color: 'var(--text-primary)', marginBottom: '0.6rem',
+            marginBottom: '0.75rem',
+            letterSpacing: '-0.02em',
+            background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
           }}>
-            Community <span className="gradient-text">Sessions</span>
+            Community Sessions
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, maxWidth: '500px', margin: '0 auto' }}>
+          <p style={{ color: '#57534E', fontSize: '1.05rem', lineHeight: 1.7, maxWidth: '600px', margin: '0 auto' }}>
             Join us every week for hands-on AI learning. 52+ weeks of consistent community building by PiBi Foundation.
           </p>
         </div>
 
-        {/* ── Stats strip ── */}
-        <div className="glass-card" style={{ marginBottom: '3rem', padding: '1.25rem', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '1rem', textAlign: 'center' }}>
+        {/* ── Stats Strip Box ── */}
+        <div style={{
+          marginBottom: '3.5rem',
+          padding: '2rem 1.5rem',
+          display: 'flex',
+          justifyContent: 'space-around',
+          flexWrap: 'wrap',
+          gap: '2rem',
+          textAlign: 'center',
+          background: '#ffffff',
+          border: '1px solid #E7E5E4',
+          borderRadius: '16px',
+          boxShadow: '0 10px 30px -10px rgba(0,0,0,0.05)'
+        }}>
           {[
-            { label: 'Upcoming',       value: upcoming.length || '0',  color: '#818cf8' },
-            { label: 'Past Sessions',  value: past.length     || '0',  color: '#34d399' },
-            { label: 'Weeks of AI',    value: '52+',                   color: '#06b6d4' },
-            { label: 'Location',       value: 'Madurai',               color: '#f472b6' },
+            { label: 'Upcoming', value: upcoming.length || '0', color: '#1f6fb2' },
+            { label: 'Past Sessions', value: past.length || '0', color: '#2ec4b6' },
+            { label: 'Weeks of AI', value: '52+', color: '#0284c7' },
+            { label: 'Location', value: 'Madurai', color: '#0d9488' },
           ].map(({ label, value, color }) => (
-            <div key={label}>
-              <div style={{ fontSize: '1.6rem', fontWeight: 900, color, fontFamily: 'var(--font-display)' }}>{value}</div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{label}</div>
+            <div key={label} style={{ flex: '1 1 120px' }}>
+              <div style={{ fontSize: '2rem', fontWeight: 900, color, fontFamily: 'var(--font-display)', marginBottom: '0.2rem' }}>{value}</div>
+              <div style={{ color: '#78716C', fontSize: '0.85rem', fontWeight: 500 }}>{label}</div>
             </div>
           ))}
         </div>
 
         {/* ── Sessions Tabs ── */}
-        <Suspense fallback={<div>Loading sessions...</div>}>
+        <Suspense fallback={<div style={{ textAlign: 'center', color: '#78716C', padding: '2rem' }}>Loading sessions...</div>}>
           <MeetingsClient upcoming={upcoming} past={past} />
         </Suspense>
       </div>

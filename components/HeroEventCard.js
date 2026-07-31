@@ -3,21 +3,70 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import EventRegistrationModal from './EventRegistrationModal';
 
-export default function HeroEventCard({ meeting, isPast = false }) {
-  const { title, description, date, venue, registration_link, photos, cover_image, outcome_title, outcome_summary, attendees_count } = meeting;
+function formatTimeNormal(timeStr) {
+  if (!timeStr) return '';
+  return timeStr.replace(/\b([01]?\d|2[0-3]):([0-5]\d)\b/g, (match, h, m) => {
+    let hour = parseInt(h, 10);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12;
+    return `${hour}:${m} ${ampm}`;
+  });
+}
+
+export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
+  const {
+    title,
+    description,
+    date,
+    venue,
+    location,
+    registration_link,
+    photos,
+    cover_image,
+    outcome_title,
+    outcome_summary,
+    attendees_count,
+    duration,
+    eyebrow,
+    entry_fee,
+  } = meeting;
+
   const coverPhoto = cover_image || null;
 
   const meetingDate = new Date(date);
   const dayStr = meetingDate.toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric', weekday: 'long' });
-  const timeStr = meetingDate.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+  const rawTimeStr = meetingDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 
   let finalDescription = description;
-  let displayTime = timeStr;
-  
+  let displayTime = rawTimeStr;
+
+  if (meeting.start_time || meeting.end_time) {
+    const formatTime = (timeStr) => {
+      if (!timeStr) return '';
+      if (timeStr.toLowerCase().includes('am') || timeStr.toLowerCase().includes('pm')) return timeStr;
+      const [h, min] = timeStr.split(':');
+      let hours = parseInt(h, 10);
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      return `${hours}:${min} ${ampm}`;
+    };
+    const start = formatTime(meeting.start_time);
+    const end = formatTime(meeting.end_time);
+    if (start && end) {
+      displayTime = `${start} to ${end}`;
+    } else if (start) {
+      displayTime = start;
+    }
+  }
+
+  // Fallback for old events that had timing embedded in description
   if (finalDescription) {
     const timingMatch = finalDescription.match(/\n\nTiming:\s*(.*)/);
     if (timingMatch) {
-      displayTime = timingMatch[1];
+      if (!meeting.start_time && !meeting.end_time) {
+        displayTime = timingMatch[1];
+        displayTime = formatTimeNormal(displayTime);
+      }
       finalDescription = finalDescription.replace(timingMatch[0], '');
     }
   }
@@ -26,6 +75,13 @@ export default function HeroEventCard({ meeting, isPast = false }) {
   const mDay = meetingDate.getDate();
   const shortDateStr = `${meetingDate.toLocaleDateString('en-US', { month: 'short' })} ${mDay}, ${meetingDate.getFullYear()}`;
   const fullDateStr = meetingDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  const shortWeekdayDateStr = meetingDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  
+  const dDay = String(meetingDate.getDate()).padStart(2, '0');
+  const dMonth = String(meetingDate.getMonth() + 1).padStart(2, '0');
+  const dYear = meetingDate.getFullYear();
+  const numericDateStr = `${dDay}-${dMonth}-${dYear}`;
+
   const tags = Array.isArray(meeting.tags) ? meeting.tags : [];
 
   // Countdown Logic
@@ -47,6 +103,7 @@ export default function HeroEventCard({ meeting, isPast = false }) {
   const [isClient, setIsClient] = useState(false);
   const [showOutcome, setShowOutcome] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
+  const [activeTab, setActiveTab] = useState('about'); // 'about' | 'outcome'
 
   useEffect(() => {
     setIsClient(true);
@@ -60,186 +117,457 @@ export default function HeroEventCard({ meeting, isPast = false }) {
   const format = (num) => String(num || 0).padStart(2, '0');
 
   const Box = ({ value, label }) => (
-    <div style={{ background: 'rgba(5, 8, 20, 0.7)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '8px', padding: '0.5rem 0.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '55px', boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.5)' }}>
-      <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-display)', lineHeight: 1 }}>{format(value)}</span>
+    <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.5rem 0.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '55px', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
+      <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-display)', lineHeight: 1 }}>{format(value)}</span>
       <span style={{ fontSize: '0.5rem', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.5px', marginTop: '4px', fontWeight: 600 }}>{label}</span>
     </div>
   );
 
   if (isPast) {
-    const descText = outcome_summary || finalDescription || '';
+    const descText = finalDescription || '';
+    const outcomeImage = Array.isArray(photos) && photos.length > 0 ? photos[0] : (coverPhoto || null);
+    const aboutImage = coverPhoto;
+
+    // Clean up outcomes for display
+    const rawOutcomes = outcome_summary || outcome_title || "Practical agent workflows.\nThe Rise of AI-Driven Commerce.\nCareer pathways in applied AI.";
+    const outcomesList = rawOutcomes.split('\n').filter(l => l.trim());
 
     return (
-      <>
-        {/* Past Session Card UI */}
-        <div className="past-event-card" style={{ height: '100%' }}>
-          {/* Image Side */}
-          <div className="past-event-img-container">
-            <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
-              {coverPhoto ? (
-                <img src={coverPhoto} alt={title} className="past-event-img" />
-              ) : (
-                 <div style={{ width: '100%', height: '100%', minHeight: '220px', aspectRatio: '4/3', background: 'linear-gradient(135deg, #1e293b, #0f172a)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1.5rem', textAlign: 'center' }}>
-                   <h3 style={{ color: '#818cf8', fontSize: '1.5rem', fontWeight: 800, fontFamily: 'var(--font-display)', margin: 0, lineHeight: 1.2 }}>
-                     Madurai AI Community
-                   </h3>
-                 </div>
-              )}
-              
-              {/* Date Badge */}
-              <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(15,23,42,0.85)', backdropFilter: 'blur(4px)', borderRadius: '6px', padding: '4px 6px', textAlign: 'center', boxShadow: '0 2px 10px rgba(0,0,0,0.5)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                <div style={{ fontSize: '0.6rem', fontWeight: 700, color: '#94a3b8', lineHeight: 1, marginBottom: '2px' }}>{mMonth}</div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#f8fafc', lineHeight: 1 }}>{mDay}</div>
-              </div>
+      <div style={{ background: '#ffffff', borderRadius: '24px', overflow: 'hidden', padding: '1.5rem', display: 'flex', gap: '1.5rem', color: '#0f172a', flexDirection: 'row', alignItems: 'flex-start', flexWrap: 'wrap', textAlign: 'left', border: '1px solid rgba(226, 232, 240, 0.9)', boxShadow: '0 10px 30px -10px rgba(15,23,42,0.05)', width: '100%' }}>
+        <style>{`
+          /* Custom styles for past events can go here */
+        `}</style>
+        {/* Main Content */}
+        <div style={{ flex: '1 1 100%', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-              {/* Attendees Badge */}
-              {attendees_count && (
-                <div style={{ position: 'absolute', bottom: '8px', left: '8px', background: 'rgba(30,41,59,0.85)', color: '#ffffff', padding: '4px 8px', borderRadius: '6px', fontSize: '0.65rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', backdropFilter: 'blur(4px)' }}>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                  {attendees_count}
-                </div>
-              )}
+          {/* Header & Badges */}
+          <div>
+            <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
+              <span style={{ padding: '6px 16px', background: '#f1f5f9', color: '#64748b', borderRadius: '24px', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>WEEK {weekNumber || 37}</span>
+              <span style={{ padding: '6px 16px', background: 'rgba(16,185,129,0.1)', color: '#047857', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '24px', fontSize: '0.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Completed
+              </span>
+            </div>
+            <Link href={`/meetings/${meeting.id || ''}`} style={{ textDecoration: 'none' }}>
+              <h3 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', margin: 0, fontFamily: 'var(--font-display)', lineHeight: 1.3, transition: 'color 0.2s ease' }}
+                onMouseOver={(e) => e.currentTarget.style.color = '#1f6fb2'}
+                onMouseOut={(e) => e.currentTarget.style.color = '#0f172a'}
+              >
+                {title}
+              </h3>
+            </Link>
+          </div>
+
+          {/* Info Details (No Box) */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2.5rem', marginBottom: '0.5rem' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> DATE
+              </div>
+              <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 600 }}>{numericDateStr}</div>
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> TIME
+              </div>
+              <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 600 }}>4:00 PM - 6:00 PM</div>
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> DURATION
+              </div>
+              <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 600 }}>2 Hours</div>
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg> ATTENDEES
+              </div>
+              <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 600 }}>{attendees_count || 42} joined</div>
+            </div>
+            <div style={{ flex: '1 1 200px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> VENUE
+              </div>
+              <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 600, lineHeight: 1.4 }}>{venue || location || 'Online'}</div>
             </div>
           </div>
 
-          {/* Content Side */}
-          <div className="past-event-content" style={{ padding: '1.5rem', flex: '999 1 320px', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
-              <span style={{ padding: '4px 12px', background: 'rgba(148,163,184,0.1)', color: '#94a3b8', borderRadius: '16px', fontSize: '0.75rem', fontWeight: 600 }}>Completed</span>
-              {(outcome_title || outcome_summary) && (
-                <span style={{ padding: '4px 12px', background: 'rgba(52,211,153,0.15)', color: '#34d399', borderRadius: '16px', fontSize: '0.75rem', fontWeight: 600 }}>Outcome published</span>
-              )}
-            </div>
-
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#f8fafc', marginBottom: '12px', fontFamily: 'var(--font-display)', lineHeight: 1.3 }}>{title}</h3>
-            
-            <p
+          {/* Tabs */}
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <button
+              onClick={() => setActiveTab('about')}
               style={{
-                color: '#94a3b8',
-                fontSize: '0.95rem',
-                lineHeight: 1.6,
-                marginBottom: '16px',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                whiteSpace: 'pre-wrap',
+                background: activeTab === 'about' ? '#2563eb' : 'transparent',
+                color: activeTab === 'about' ? '#ffffff' : '#64748b',
+                border: activeTab === 'about' ? '1px solid #2563eb' : '1px solid #e2e8f0',
+                padding: '0.5rem 1.25rem',
+                borderRadius: '20px',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
               }}
             >
-              {descText}
-            </p>
-
-
-            {tags.length > 0 && (
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
-                {tags.map(tag => (
-                  <span key={tag} style={{ padding: '4px 10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', borderRadius: '16px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '16px', flexWrap: 'wrap', gap: '12px' }}>
-              <div style={{ display: 'flex', gap: '16px', color: '#94a3b8', fontSize: '0.85rem', flexWrap: 'wrap' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                  {shortDateStr}
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                  {venue}
-                </span>
-              </div>
-              <Link href={`/meetings/${meeting.id}`} style={{ color: '#fb923c', fontWeight: 600, fontSize: '0.95rem', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                View recap →
-              </Link>
-            </div>
+              About
+            </button>
+            <button
+              onClick={() => setActiveTab('outcome')}
+              style={{
+                background: activeTab === 'outcome' ? '#2563eb' : 'transparent',
+                color: activeTab === 'outcome' ? '#ffffff' : '#64748b',
+                border: activeTab === 'outcome' ? '1px solid #2563eb' : '1px solid #e2e8f0',
+                padding: '0.5rem 1.25rem',
+                borderRadius: '20px',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              Outcome
+            </button>
           </div>
-        </div>
 
-      </>
-    );
-  }
-
-  // Original Upcoming Session UI
-  return (
-    <div className="upcoming-card">
-      {/* Left Content */}
-      <div className="upcoming-content">
-        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem' }}>
-          <span style={{ padding: '0.2rem 0.6rem', background: 'rgba(99,102,241,0.15)', color: '#818cf8', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 600, border: '1px solid rgba(99,102,241,0.3)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <span style={{ color: '#fbbf24' }}>✨</span> Featured
-          </span>
-          <span style={{ padding: '0.2rem 0.6rem', background: 'rgba(16,185,129,0.15)', color: '#34d399', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 600, border: '1px solid rgba(16,185,129,0.3)' }}>
-            Limited Seats
-          </span>
-        </div>
-
-        <h2 style={{ fontSize: 'clamp(1.3rem, 3vw, 1.8rem)', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-display)', marginBottom: '0.5rem', lineHeight: 1.2 }}>
-          {title}
-        </h2>
-        
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: '1rem', whiteSpace: 'pre-wrap' }}>
-          {finalDescription}
-        </p>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginBottom: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-            <span style={{ fontSize: '0.9rem' }}>📅</span> {dayStr}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-            <span style={{ fontSize: '0.9rem' }}>⏰</span> {displayTime}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-            <span style={{ fontSize: '0.9rem' }}>📍</span> {venue}
-          </div>
-        </div>
-
-        {/* Countdown */}
-        {isClient && !timeLeft.expired && (
-          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-            {timeLeft.days !== undefined && (
+          {/* Tab Content */}
+          <div style={{ background: '#f8fafc', borderRadius: '16px', overflow: 'hidden', display: 'flex', flexWrap: 'wrap', border: '1px solid #e2e8f0' }}>
+            {activeTab === 'outcome' ? (
               <>
-                <Box value={timeLeft.days} label="Days" />
-                <Box value={timeLeft.hours} label="Hours" />
-                <Box value={timeLeft.minutes} label="Mins" />
-                <Box value={timeLeft.seconds} label="Secs" />
+                <div style={{ flex: '1 1 300px', minHeight: '250px', maxHeight: '400px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {outcomeImage ? (
+                    <img src={outcomeImage} alt="Outcome" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8' }}>No Outcome Image Available</div>
+                  )}
+                </div>
+                <div style={{ flex: '1 1 300px', padding: '2rem' }}>
+                  <h4 style={{ color: '#2563eb', fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.25rem', letterSpacing: '1px' }}>LEARNING OUTCOMES</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {outcomesList.map((line, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span style={{ fontSize: '0.95rem', color: '#475569', lineHeight: 1.5 }}>{line.replace(/^[-*•]\s*/, '')}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ flex: '1 1 300px', minHeight: '250px', maxHeight: '400px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {aboutImage ? (
+                    <img src={aboutImage} alt="Event Poster" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8' }}>No Poster Available</div>
+                  )}
+                </div>
+                <div style={{ flex: '1 1 300px', padding: '2rem' }}>
+                  <h4 style={{ color: '#2563eb', fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.25rem', letterSpacing: '1px' }}>ABOUT THE EVENT</h4>
+                  <p style={{ fontSize: '0.95rem', color: '#475569', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+                    {descText || "No description provided for this event."}
+                  </p>
+                </div>
               </>
             )}
           </div>
-        )}
+        </div>
+      </div>
+    );
+  }
 
-        {registration_link ? (
-          <Link href={registration_link} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', padding: '0.8rem 1.5rem', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', color: '#818cf8', borderRadius: '8px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.2s', alignItems: 'center', gap: '6px' }}>
-            Register (External) →
-          </Link>
+  // Upcoming Session UI — matches the reference design:
+  // eyebrow tag -> title -> date/time/duration row -> feature bullets -> location -> registration
+  const displayVenue = venue || location || 'Online';
+  const eyebrowText = eyebrow || (tags.length > 0 ? tags[0].toUpperCase() : 'CODE LOCAL, THINK GLOBAL');
+  const durationText = duration || '2 Hours';
+
+  return (
+    <div className="hero-single-card upcoming-card">
+      <style>{`
+        .hero-single-card {
+          background: #ffffff;
+          border-radius: 20px;
+          overflow: hidden;
+          display: grid;
+          grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+          align-items: stretch;
+          border: 1px solid #e2e8f0;
+          width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
+          box-shadow: 0 10px 30px -10px rgba(15,23,42,0.06);
+        }
+        .hero-img-side {
+          position: relative;
+          min-width: 0;
+          min-height: 260px;
+          background: #f1f5f9;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .hero-img {
+          width: 100%;
+          height: auto;
+          display: block;
+          object-fit: contain;
+        }
+        .hero-week-badge {
+          position: absolute;
+          top: 16px;
+          left: 16px;
+          background: #ffffff;
+          color: #0f172a;
+          font-size: 0.85rem;
+          font-weight: 700;
+          padding: 0.4rem 1rem;
+          border-radius: 999px;
+          box-shadow: 0 4px 12px rgba(15,23,42,0.15);
+          letter-spacing: 0.3px;
+        }
+        .hero-content-side {
+          min-width: 0;
+          padding: clamp(1.25rem, 3vw, 2.25rem) clamp(1.25rem, 4vw, 2.75rem);
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          box-sizing: border-box;
+        }
+        .hero-eyebrow {
+          color: #0ea5e9;
+          font-size: 0.8rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 1.5px;
+          margin: 0 0 0.5rem 0;
+        }
+        .hero-divider {
+          border: none;
+          border-top: 1px solid #e2e8f0;
+          margin: 1.25rem 0;
+        }
+        .hero-meta-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 2.5rem;
+        }
+        .hero-meta-label {
+          color: #64748b;
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 4px;
+        }
+        .hero-meta-value {
+          color: #0f172a;
+          font-size: 1rem;
+          font-weight: 700;
+        }
+        .hero-location-row {
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+          color: #64748b;
+          font-size: 0.95rem;
+          font-weight: 500;
+          margin-top: 1.25rem;
+          padding-top: 1.25rem;
+          border-top: 1px solid #e2e8f0;
+          word-break: break-word;
+          overflow-wrap: anywhere;
+        }
+        .hero-footer-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 1rem;
+          margin-top: auto;
+        }
+        .hero-registration-label {
+          color: #64748b;
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 2px;
+        }
+        .hero-registration-value {
+          color: #0ea5e9;
+          font-size: 1.15rem;
+          font-weight: 800;
+        }
+        .hero-register-btn {
+          display: inline-flex;
+          padding: 0.75rem 1.75rem;
+          background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+          border: none;
+          color: #fff;
+          border-radius: 10px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          align-items: center;
+          gap: 6px;
+          text-decoration: none;
+        }
+        @media (max-width: 768px) {
+          .hero-single-card {
+            grid-template-columns: 1fr;
+          }
+          .hero-img-side {
+            height: 250px;
+            min-height: auto;
+            width: 100%;
+          }
+          .hero-img {
+            height: 100%;
+            max-height: 250px;
+            object-fit: contain;
+          }
+          .hero-content-side {
+            padding: 1.5rem;
+          }
+          .hero-meta-row {
+            gap: 1.5rem;
+          }
+          .hero-footer-row {
+            margin-top: 1.5rem;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: nowrap;
+          }
+          .hero-register-btn {
+            width: auto;
+            padding: 0.6rem 1.1rem;
+            font-size: 0.9rem;
+          }
+        }
+      `}</style>
+
+      {/* Left Side: Image */}
+      <div className="hero-img-side">
+        {coverPhoto ? (
+          <img src={coverPhoto} alt={title} className="hero-img" />
         ) : (
-          <>
-            <button onClick={() => setShowRegistration(true)} style={{ display: 'inline-flex', padding: '0.8rem 1.5rem', background: '#4f46e5', border: '1px solid #6366f1', color: '#fff', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', alignItems: 'center', gap: '6px', boxShadow: '0 4px 14px 0 rgba(99, 102, 241, 0.39)' }}>
-              Register Free →
-            </button>
-            {showRegistration && (
-              <EventRegistrationModal meeting={meeting} onClose={() => setShowRegistration(false)} />
-            )}
-          </>
+          <div style={{ color: '#94a3b8', padding: '2rem', display: 'flex', alignItems: 'center' }}>No Poster Available</div>
         )}
       </div>
 
-      {/* Right Image/Banner */}
-      <div className="upcoming-img-container">
-        {coverPhoto ? (
-          <>
-            <img src={coverPhoto} alt="" aria-hidden="true" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0, filter: 'blur(20px)', opacity: 0.4, transform: 'scale(1.1)' }} />
-            <img src={coverPhoto} alt={title} style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'absolute', inset: 0, padding: '1rem', zIndex: 1 }} />
-          </>
-        ) : (
-          <div style={{ padding: '3rem', textAlign: 'center', width: '100%' }}>
-            <h3 style={{ color: '#818cf8', fontSize: '1.5rem', fontWeight: 800, fontFamily: 'var(--font-display)', marginBottom: '0.5rem' }}>{title}</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>No cover image available</p>
+      {/* Right Side: Content */}
+      <div className="hero-content-side upcoming-content">
+
+        {/* Top Badge */}
+        <div style={{ marginBottom: '1rem', display: 'flex' }}>
+          <span style={{ 
+            display: 'inline-flex', 
+            alignItems: 'center', 
+            gap: '6px', 
+            padding: '0.4rem 1rem', 
+            background: '#e6f9f2', 
+            color: '#047857', 
+            borderRadius: '30px', 
+            fontSize: '0.85rem', 
+            fontWeight: 800, 
+            border: '1px solid #a7f3d0' 
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Upcoming
+          </span>
+        </div>
+
+        {/* Title */}
+        <Link href={`/meetings/${meeting.id || ''}`} style={{ textDecoration: 'none' }}>
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', margin: 0, fontFamily: 'var(--font-display)', lineHeight: 1.15, letterSpacing: '-0.02em', transition: 'color 0.2s ease' }}
+              onMouseOver={(e) => e.currentTarget.style.color = '#1f6fb2'}
+              onMouseOut={(e) => e.currentTarget.style.color = '#0f172a'}
+          >
+            {title}
+          </h2>
+        </Link>
+
+        <hr className="hero-divider" />
+
+        {/* Date / Time / Duration */}
+        <div className="hero-meta-row">
+          <div>
+            <div className="hero-meta-label">Date</div>
+            <div className="hero-meta-value">{numericDateStr}</div>
+          </div>
+          <div>
+            <div className="hero-meta-label">Time</div>
+            <div className="hero-meta-value">4:00 PM - 6:00 PM</div>
+          </div>
+          <div>
+            <div className="hero-meta-label">Duration</div>
+            <div className="hero-meta-value">{durationText}</div>
+          </div>
+        </div>
+
+        {/* Location & Speaker */}
+        <div className="hero-location-row">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span style={{ lineHeight: 1.4 }}>{displayVenue}</span>
+        </div>
+        <div className="hero-location-row" style={{ marginTop: '0.75rem' }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span style={{ lineHeight: 1.4 }}>Speaker: <span style={{ fontWeight: 700 }}>{meeting.speaker || 'Nagaraj'}</span></span>
+        </div>
+        {registration_link && (
+          <div className="hero-location-row" style={{ marginTop: '0.75rem', alignItems: 'center' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            <a href={registration_link} target="_blank" rel="noopener noreferrer" style={{ 
+              lineHeight: 1, 
+              color: '#1d4ed8', 
+              textDecoration: 'none', 
+              background: '#eff6ff',
+              padding: '6px 12px',
+              borderRadius: '8px',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              border: '1px solid #bfdbfe',
+              display: 'inline-block',
+              maxWidth: '90%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              transition: 'background 0.2s ease'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.background = '#dbeafe'}
+            onMouseOut={(e) => e.currentTarget.style.background = '#eff6ff'}
+            >
+              {registration_link.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+            </a>
           </div>
         )}
+
+        <hr className="hero-divider" />
+
+        {/* Registration + Button */}
+        <div className="hero-footer-row">
+          <div>
+            <div className="hero-registration-label">Registration</div>
+            <div className="hero-registration-value">{entry_fee || 'ENTRY FREE'}</div>
+          </div>
+
+          {registration_link ? (
+            <Link href={registration_link} target="_blank" rel="noopener noreferrer" className="hero-register-btn">
+              Register Free &rarr;
+            </Link>
+          ) : (
+            <>
+              <button onClick={() => setShowRegistration(true)} className="hero-register-btn">
+                Register Free &rarr;
+              </button>
+              {showRegistration && (
+                <EventRegistrationModal meeting={meeting} onClose={() => setShowRegistration(false)} />
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
