@@ -36,9 +36,10 @@ export default function PastEventsPagination({ pastMeetings, totalCount = 37 }) 
           position: relative;
           flex: 0 0 35%;
           aspect-ratio: 4/5;
-          background-size: cover;
+          background-size: contain;
+          background-repeat: no-repeat;
           background-position: center;
-          background-color: #111827;
+          background-color: #ffffff;
         }
         @media (max-width: 768px) {
           .past-events-grid {
@@ -48,9 +49,9 @@ export default function PastEventsPagination({ pastMeetings, totalCount = 37 }) 
             flex-direction: column;
           }
           .past-event-img-wrap {
-            aspect-ratio: 16/9;
             flex: none;
             width: 100%;
+            /* Removed aspect-ratio: 16/9 to keep the tall 4/5 ratio on mobile */
           }
         }
       `}</style>

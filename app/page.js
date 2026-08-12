@@ -168,6 +168,44 @@ export default async function HomePage() {
           box-shadow: 0 20px 40px -8px rgba(59, 130, 246, 0.25);
           border-color: rgba(59, 130, 246, 0.6);
         }
+
+        /* 📱 RESPONSIVE CONTRIBUTOR CARD */
+        .contributor-card {
+          padding: 1.25rem 1.5rem;
+          display: grid;
+          grid-template-columns: auto auto 1fr auto;
+          align-items: center;
+          gap: 1.25rem;
+        }
+        
+        @media (max-width: 550px) {
+          .contributor-card {
+            padding: 1rem;
+            gap: 0.75rem;
+            grid-template-columns: auto auto 1fr;
+          }
+          .contributor-badge-container {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 0.25rem;
+          }
+          .contributor-rank {
+            min-width: 32px !important;
+            height: 32px !important;
+            font-size: 0.8rem !important;
+          }
+          .contributor-avatar {
+            width: 40px !important;
+            height: 40px !important;
+          }
+          .contributor-name {
+            font-size: 1rem !important;
+          }
+          .contributor-handle {
+            font-size: 0.8rem !important;
+          }
+        }
       `}</style>
 
       <Suspense fallback={null}>
@@ -315,20 +353,14 @@ export default async function HomePage() {
                     rel="noopener noreferrer"
                     style={{ textDecoration: 'none', display: 'block' }}
                   >
-                    <div className={idx === 0 ? "rank-card-1" : "white-card"} style={{
-                      padding: '1.25rem 1.5rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '1.25rem',
-                    }}>
+                    <div className={`contributor-card ${idx === 0 ? "rank-card-1" : "white-card"}`}>
                       {/* Rank Badge */}
-                      <div style={{
+                      <div className="contributor-rank" style={{
                         minWidth: 40, height: 40, borderRadius: '50%',
                         background: idx === 0 ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : '#f1f5f9',
                         color: idx === 0 ? '#ffffff' : '#64748b',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontSize: '0.9rem', fontWeight: 900,
-                        flexShrink: 0,
                         border: idx === 0 ? 'none' : '1px solid #e2e8f0'
                       }}>
                         #{idx + 1}
@@ -339,19 +371,20 @@ export default async function HomePage() {
                         src={c.avatar_url}
                         alt={c.login}
                         width={48} height={48}
-                        style={{ borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '2px solid #ffffff', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+                        className="contributor-avatar"
+                        style={{ borderRadius: '50%', objectFit: 'cover', border: '2px solid #ffffff', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
                       />
 
                       {/* Contributor Info */}
-                      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '0.1rem' }}>
-                        <div style={{ color: '#0f172a', fontWeight: 800, fontSize: '1.1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'var(--font-display)' }}>
+                      <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: '0.1rem' }}>
+                        <div className="contributor-name" style={{ color: '#0f172a', fontWeight: 800, fontSize: '1.1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'var(--font-display)' }}>
                           {c.login}
                         </div>
-                        <div style={{ color: '#64748b', fontSize: '0.85rem' }}>@{c.login}</div>
+                        <div className="contributor-handle" style={{ color: '#64748b', fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>@{c.login}</div>
                       </div>
 
                       {/* Count Badge */}
-                      <div>
+                      <div className="contributor-badge-container">
                         <span style={{
                           padding: '0.4rem 0.9rem',
                           background: 'rgba(59, 130, 246, 0.08)',
