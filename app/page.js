@@ -15,7 +15,7 @@ async function getFeaturedResources() {
   try {
     const { data: resources, error } = await supabaseAdmin
       .from('resources')
-      .select('*, category:categories(*), contributor:users(username, avatar_url, bio), resource_tags(tag:tags(*))')
+      .select('*, resource_categories(category:categories(*)), contributor:users(username, avatar_url, bio), resource_tags(tag:tags(*))')
       .in('status', ['FEATURED', 'APPROVED'])
       .order('status', { ascending: true })
       .order('created_at', { ascending: false })
@@ -27,6 +27,7 @@ async function getFeaturedResources() {
       .filter(r => !r.contributor || r.contributor.bio !== '__BANNED__')
       .map(r => ({
         ...r,
+        categories: (r.resource_categories || []).map(rc => rc.category),
         tags: r.resource_tags || []
       }));
   } catch (err) {
@@ -95,7 +96,7 @@ async function getTopContributors() {
         };
       })
       .sort((a, b) => b.resource_count - a.resource_count)
-      .slice(0, 5);
+      .slice(0, 6);
 
     return { contributors };
   } catch (err) {
@@ -310,7 +311,7 @@ export default async function HomePage() {
                 gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 340px), 1fr))',
                 gap: '1.5rem',
               }}>
-                {featuredResources.map((resource) => (
+                {featuredResources.slice(0, 6).map((resource) => (
                   <ResourceCard key={resource.id} resource={resource} variant="minimal" />
                 ))}
               </div>
@@ -335,17 +336,22 @@ export default async function HomePage() {
         {topContributors.length > 0 && (
           <section className="section" style={{ padding: '5rem 1rem', position: 'relative' }}>
             <div className="container" style={{ maxWidth: '900px' }}>
-              <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                <h2 className="clean-blue-text" style={{ fontSize: 'clamp(2rem, 4vw, 2.5rem)', fontWeight: 900, fontFamily: 'var(--font-display)', margin: '0 0 0.5rem', letterSpacing: '-0.03em' }}>
-                  Community Contributors
-                </h2>
-                <p style={{ color: '#475569', fontSize: '1.05rem', margin: 0 }}>
-                  People powering the Open Intelligence Hub with AI resources
-                </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                <div>
+                  <h2 className="clean-blue-text" style={{ fontSize: 'clamp(2rem, 4vw, 2.5rem)', fontWeight: 900, fontFamily: 'var(--font-display)', margin: '0 0 0.5rem', letterSpacing: '-0.03em' }}>
+                    Community Contributors
+                  </h2>
+                  <p style={{ color: '#475569', fontSize: '1.05rem', margin: 0 }}>
+                    People powering the Open Intelligence Hub with AI resources
+                  </p>
+                </div>
+                <Link href="/resources" style={{ fontSize: '0.9rem', fontWeight: 700, color: '#2563eb', textDecoration: 'none' }}>
+                  View all &rarr;
+                </Link>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {topContributors.map((c, idx) => (
+                {topContributors.slice(0, 6).map((c, idx) => (
                   <a
                     key={c.login}
                     href={c.profile_url}

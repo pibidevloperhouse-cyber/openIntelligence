@@ -30,15 +30,16 @@ export async function POST(request) {
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await request.json();
-    const { github_url, categorySlug, tags = [], use_case, title, description, github_stars, github_language, github_last_updated } = body;
+    const { github_url, categorySlugs = [], tags = [], use_case, title, description, github_stars, github_language, github_last_updated } = body;
 
-    if (!github_url || !categorySlug || !use_case || !title) {
+    if (!github_url || categorySlugs.length === 0 || !use_case || !title) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Get category
-    const { data: category } = await supabaseAdmin.from('categories').select('id').eq('slug', categorySlug).single();
-    if (!category) return NextResponse.json({ error: 'Invalid category' }, { status: 400 });
+    // Get categories
+    const { data: categories } = await supabaseAdmin.from('categories').select('id').in('slug', categorySlugs);
+    if (!categories || categories.length === 0) return NextResponse.json({ error: 'Invalid category' }, { status: 400 });
+    const categoryIds = categories.map(c => c.id);
 
     // Get or create user profile
     let { data: profile } = await supabaseAdmin.from('users').select('id, bio').eq('id', user.id).single();
@@ -89,7 +90,6 @@ export async function POST(request) {
       slug,
       description:         description || '',
       github_url,
-      category_id:         category.id,
       contributor_id:      profile.id,
       status:              'PENDING',
       github_stars:        github_stars || 0,
@@ -104,6 +104,13 @@ export async function POST(request) {
     if (tagIds.length > 0) {
       await supabaseAdmin.from('resource_tags').insert(
         tagIds.map(tag_id => ({ resource_id: resource.id, tag_id }))
+      );
+    }
+
+    // Attach categories
+    if (categoryIds.length > 0) {
+      await supabaseAdmin.from('resource_categories').insert(
+        categoryIds.map(category_id => ({ resource_id: resource.id, category_id }))
       );
     }
 

@@ -22,12 +22,13 @@ export default function ResourceCard({ resource, variant = 'light' }) {
     github_last_updated,
     status,
     use_case,
-    category,
+    categories = [],
     contributor,
     tags = [],
   } = resource;
 
-  const colors = categoryColors[category?.slug] || { from: '#6366f1', to: '#8b5cf6' };
+  const primaryCategory = categories[0];
+  const colors = categoryColors[primaryCategory?.slug] || { from: '#6366f1', to: '#8b5cf6' };
   const isFeatured = status === 'FEATURED';
 
   const timeAgo = (dateStr) => {
@@ -121,21 +122,24 @@ export default function ResourceCard({ resource, variant = 'light' }) {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: 1, minWidth: 0 }}>
-            {/* Category icon pill */}
-            {category && (
-              <span style={{
-                padding: '0.2rem 0.55rem',
-                borderRadius: '6px',
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                background: `linear-gradient(135deg, ${colors.from}22, ${colors.to}22)`,
-                color: colors.from,
-                border: `1px solid ${colors.from}44`,
-                whiteSpace: 'nowrap',
-              }}>
-                {category.icon} {category.name}
-              </span>
-            )}
+            {/* Category icon pills */}
+            {categories.map((cat, idx) => {
+              const catColors = categoryColors[cat.slug] || { from: '#6366f1', to: '#8b5cf6' };
+              return (
+                <span key={cat.slug || idx} style={{
+                  padding: '0.2rem 0.55rem',
+                  borderRadius: '6px',
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  background: `linear-gradient(135deg, ${catColors.from}22, ${catColors.to}22)`,
+                  color: catColors.from,
+                  border: `1px solid ${catColors.from}44`,
+                  whiteSpace: 'nowrap',
+                }}>
+                  {cat.icon} {cat.name}
+                </span>
+              );
+            })}
           </div>
 
           {/* Stars */}

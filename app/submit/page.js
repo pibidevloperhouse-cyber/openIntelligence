@@ -3,16 +3,16 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { Database, FolderGit2, TerminalSquare, PlugZap, Network, Workflow, BookOpen } from 'lucide-react';
 
 const CATEGORIES = [
-  { id: '', slug: '',              name: 'Select a category...',       icon: '' },
-  { slug: 'dataset',         name: 'Public Dataset',              icon: '📚' },
-  { slug: 'open-repository', name: 'Open GitHub Project',         icon: '💻' },
-  { slug: 'prompt-library',  name: 'Prompt Library',              icon: '✍️' },
-  { slug: 'mcp-server',      name: 'MCP Server',                  icon: '🔌' },
-  { slug: 'rag-template',    name: 'RAG Template',                icon: '🧠' },
-  { slug: 'ai-workflow',     name: 'AI Workflow & Automation',    icon: '⚙️' },
-  { slug: 'documentation',   name: 'Documentation & Tutorial',    icon: '📖' },
+  { slug: 'dataset',         name: 'Public Dataset',              icon: <Database size={18} /> },
+  { slug: 'open-repository', name: 'Open GitHub Project',         icon: <FolderGit2 size={18} /> },
+  { slug: 'prompt-library',  name: 'Prompt Library',              icon: <TerminalSquare size={18} /> },
+  { slug: 'mcp-server',      name: 'MCP Server',                  icon: <PlugZap size={18} /> },
+  { slug: 'rag-template',    name: 'RAG Template',                icon: <Network size={18} /> },
+  { slug: 'ai-workflow',     name: 'AI Workflow & Automation',    icon: <Workflow size={18} /> },
+  { slug: 'documentation',   name: 'Documentation & Tutorial',    icon: <BookOpen size={18} /> },
 ];
 
 const POPULAR_TAGS = ['Python', 'TypeScript', 'LangChain', 'Claude', 'OpenAI', 'Ollama', 'OpenTelemetry', 'RAG', 'Agents', 'FastAPI', 'Hugging Face', 'LlamaIndex'];
@@ -27,7 +27,7 @@ export default function SubmitPage() {
   const [fetching, setFetching]       = useState(false);
   const [fetchError, setFetchError]   = useState('');
   const [preview, setPreview]         = useState(null);
-  const [categorySlug, setCategorySlug] = useState('');
+  const [categorySlugs, setCategorySlugs] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [customTag, setCustomTag]     = useState('');
   const [useCase, setUseCase]         = useState('');
@@ -76,6 +76,12 @@ export default function SubmitPage() {
     );
   };
 
+  const toggleCategory = (slug) => {
+    setCategorySlugs((prev) =>
+      prev.includes(slug) ? prev.filter((c) => c !== slug) : [...prev, slug]
+    );
+  };
+
   const addCustomTag = () => {
     const t = customTag.trim();
     if (t && !selectedTags.includes(t)) {
@@ -86,7 +92,7 @@ export default function SubmitPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!preview || !categorySlug || !useCase.trim()) return;
+    if (!preview || categorySlugs.length === 0 || !useCase.trim()) return;
     setSubmitting(true);
     setSubmitError('');
     try {
@@ -99,7 +105,7 @@ export default function SubmitPage() {
         },
         body: JSON.stringify({
           github_url:   githubUrl,
-          categorySlug,
+          categorySlugs,
           tags:         selectedTags,
           use_case:     useCase,
           ...preview,
@@ -263,14 +269,15 @@ export default function SubmitPage() {
               Category
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '0.5rem' }}>
-              {CATEGORIES.slice(1).map(({ slug, name, icon }) => (
+              {CATEGORIES.map(({ slug, name, icon }) => (
                 <button
                   key={slug}
                   type="button"
-                  onClick={() => setCategorySlug(slug)}
-                  className={`category-btn ${categorySlug === slug ? 'active' : ''}`}
+                  onClick={() => toggleCategory(slug)}
+                  className={`category-btn ${categorySlugs.includes(slug) ? 'active' : ''}`}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                 >
-                  {icon} {name}
+                  {icon} <span>{name}</span>
                 </button>
               ))}
             </div>
@@ -283,7 +290,7 @@ export default function SubmitPage() {
               Tags (optional)
             </h2>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.75rem' }}>
-              {POPULAR_TAGS.map((tag) => (
+              {Array.from(new Set([...POPULAR_TAGS, ...selectedTags])).map((tag) => (
                 <button
                   key={tag}
                   type="button"
@@ -333,9 +340,9 @@ export default function SubmitPage() {
 
           <button
             type="submit"
-            disabled={!preview || !categorySlug || !useCase.trim() || submitting}
+            disabled={!preview || categorySlugs.length === 0 || !useCase.trim() || submitting}
             className="btn-primary"
-            style={{ width: '100%', justifyContent: 'center', padding: '0.85rem', fontSize: '0.95rem', opacity: (!preview || !categorySlug || !useCase.trim() || submitting) ? 0.5 : 1 }}
+            style={{ width: '100%', justifyContent: 'center', padding: '0.85rem', fontSize: '0.95rem', opacity: (!preview || categorySlugs.length === 0 || !useCase.trim() || submitting) ? 0.5 : 1 }}
           >
             {submitting ? '⏳ Submitting...' : '🚀 Submit Resource'}
           </button>

@@ -6,8 +6,9 @@ export async function GET() {
     // Fetch only the necessary fields to compute aggregations across all approved resources.
     const { data: dbResources, error } = await supabaseAdmin
       .from('resources')
-      .select('category:categories!inner(slug), resource_tags(tag:tags(name))')
-      .in('status', ['APPROVED', 'FEATURED']);
+      .select('resource_categories(category:categories(slug)), resource_tags(tag:tags(name)), contributor:users!inner(bio)')
+      .in('status', ['APPROVED', 'FEATURED'])
+      .or('bio.neq.__BANNED__,bio.is.null', { foreignTable: 'contributor' });
 
     if (error) throw error;
 
@@ -19,8 +20,12 @@ export async function GET() {
       totalCount++;
       
       // Category count
-      if (r.category && r.category.slug) {
-        categoryCounts[r.category.slug] = (categoryCounts[r.category.slug] || 0) + 1;
+      if (r.resource_categories) {
+        r.resource_categories.forEach(rc => {
+          if (rc.category && rc.category.slug) {
+            categoryCounts[rc.category.slug] = (categoryCounts[rc.category.slug] || 0) + 1;
+          }
+        });
       }
       
       // Tag count

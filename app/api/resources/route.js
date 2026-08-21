@@ -11,18 +11,22 @@ export async function GET(request) {
   const skip     = (page - 1) * limit;
 
   try {
+    const selectStr = category !== 'all' 
+      ? '*, resource_categories!inner(category:categories!inner(*)), contributor:users!inner(username, avatar_url, bio), resource_tags(tag:tags(*))'
+      : '*, resource_categories(category:categories(*)), contributor:users!inner(username, avatar_url, bio), resource_tags(tag:tags(*))';
+
     let query = supabaseAdmin
       .from('resources')
-      .select('*, category:categories!inner(*), contributor:users!inner(username, avatar_url, bio), resource_tags(tag:tags(*))', { count: 'exact' })
+      .select(selectStr, { count: 'exact' })
       .in('status', ['APPROVED', 'FEATURED'])
-      .or('bio.neq.__BANNED__,bio.is.null', { foreignTable: 'users' });
+      .or('bio.neq.__BANNED__,bio.is.null', { foreignTable: 'contributor' });
 
     if (search) {
       query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%,use_case.ilike.%${search}%`);
     }
 
     if (category !== 'all') {
-      query = query.eq('categories.slug', category);
+      query = query.eq('resource_categories.category.slug', category);
     }
 
     // Build orderBy
@@ -43,6 +47,7 @@ export async function GET(request) {
     // Map nested tags structure to match expected output
     const resources = (dbResources || []).map(r => ({
       ...r,
+      categories: (r.resource_categories || []).map(rc => rc.category),
       tags: r.resource_tags || []
     }));
 

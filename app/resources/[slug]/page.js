@@ -77,7 +77,7 @@ export default async function ResourceDetailPage({ params }) {
   try {
     const { data, error } = await supabaseAdmin
       .from('resources')
-      .select('*, category:categories(*), contributor:users(username, avatar_url, full_name, bio), resource_tags(tag:tags(*))')
+      .select('*, resource_categories(category:categories(*)), contributor:users(username, avatar_url, full_name, bio), resource_tags(tag:tags(*))')
       .eq('slug', slug)
       .single();
       
@@ -86,6 +86,7 @@ export default async function ResourceDetailPage({ params }) {
     } else {
       resource = {
         ...data,
+        categories: (data.resource_categories || []).map(rc => rc.category),
         tags: data.resource_tags || []
       };
     }
@@ -102,7 +103,7 @@ export default async function ResourceDetailPage({ params }) {
     title, description, github_url, github_stars,
     github_language, github_last_updated,
     use_case, status, created_at,
-    category, contributor, tags,
+    categories = [], contributor, tags,
   } = resource;
 
   const updatedAgo = github_last_updated
@@ -272,16 +273,16 @@ export default async function ResourceDetailPage({ params }) {
         <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem', borderRadius: '12px' }}>
           {/* Tags Top Row */}
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '1rem' }}>
-            {category && (
-              <span style={{
+            {categories.map((cat, idx) => (
+              <span key={cat.slug || idx} style={{
                 padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600,
                 background: 'rgba(0,0,0,0.05)', color: 'var(--text-secondary)', border: '1px solid var(--border)',
                 display: 'inline-flex', alignItems: 'center', gap: '0.3rem'
               }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6h16M4 12h16M4 18h7"></path></svg>
-                {category.name}
+                {cat.name}
               </span>
-            )}
+            ))}
             <StatusBadge status={status} />
           </div>
 
@@ -393,7 +394,7 @@ export default async function ResourceDetailPage({ params }) {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', fontSize: '0.85rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>Type</span>
-                  <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{category ? category.name : 'Unknown'}</span>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{categories.length > 0 ? categories.map(c => c.name).join(', ') : 'Unknown'}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>Status</span>

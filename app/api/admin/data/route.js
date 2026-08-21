@@ -29,13 +29,14 @@ export async function GET() {
       supabaseAdmin.from('resources').select('*', { count: 'exact', head: true }).eq('status', 'REJECTED'),
       supabaseAdmin.from('users').select('*', { count: 'exact', head: true }).eq('role', 'CONTRIBUTOR'),
       
-      supabaseAdmin.from('resources').select('*, category:categories(*), contributor:users(username, avatar_url), resource_tags(tag:tags(*))').eq('status', 'PENDING').order('created_at', { ascending: true }),
-      supabaseAdmin.from('resources').select('*, category:categories(*), contributor:users(username)').order('created_at', { ascending: false }).limit(50),
+      supabaseAdmin.from('resources').select('*, resource_categories(category:categories(*)), contributor:users(username, avatar_url), resource_tags(tag:tags(*))').eq('status', 'PENDING').order('created_at', { ascending: true }),
+      supabaseAdmin.from('resources').select('*, resource_categories(category:categories(*)), contributor:users(username)').order('created_at', { ascending: false }).limit(50),
       supabaseAdmin.from('meetings').select('*').order('date', { ascending: false }),
       supabaseAdmin.from('users').select('*, resources(id, status)').order('created_at', { ascending: false })
     ]);
 
-    const pending_list = (pendingListRes.data || []).map(r => ({ ...r, tags: r.resource_tags || [] }));
+    const pending_list = (pendingListRes.data || []).map(r => ({ ...r, categories: (r.resource_categories || []).map(rc => rc.category), tags: r.resource_tags || [] }));
+    const all_resources = (allResourcesRes.data || []).map(r => ({ ...r, categories: (r.resource_categories || []).map(rc => rc.category) }));
     const meetings = (meetingsRes.data || []).map(m => ({
       ...m,
       date: m.date.endsWith('Z') ? m.date : m.date + 'Z'
@@ -51,7 +52,7 @@ export async function GET() {
         contributors: contributorsRes.count || 0
       },
       pending: pending_list,
-      resources: allResourcesRes.data || [],
+      resources: all_resources,
       meetings: meetings,
       users: usersRes.data || [],
     });

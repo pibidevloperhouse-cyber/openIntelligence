@@ -8,6 +8,8 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ─────────────────────────────────────────
@@ -49,7 +51,7 @@ model Category {
   slug        String     @unique
   icon        String                   // emoji
   description String
-  resources   Resource[]
+  resourceCategories ResourceCategory[]
 
   @@map("categories")
 }
@@ -68,7 +70,7 @@ model Resource {
   slug                String          @unique
   description         String
   github_url          String
-  category_id         String
+
   contributor_id      String
   status              ResourceStatus  @default(PENDING)
   github_stars        Int             @default(0)
@@ -78,7 +80,7 @@ model Resource {
   use_case            String
   created_at          DateTime        @default(now())
 
-  category    Category      @relation(fields: [category_id], references: [id])
+  categories  ResourceCategory[]
   contributor User          @relation(fields: [contributor_id], references: [id])
   tags        ResourceTag[]
 
@@ -94,6 +96,17 @@ model ResourceTag {
 
   @@id([resource_id, tag_id])
   @@map("resource_tags")
+}
+
+model ResourceCategory {
+  resource_id String
+  category_id String
+
+  resource Resource @relation(fields: [resource_id], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+
+  @@id([resource_id, category_id])
+  @@map("resource_categories")
 }
 
 enum MeetingStatus {

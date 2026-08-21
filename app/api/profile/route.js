@@ -42,12 +42,13 @@ export async function GET() {
     }
 
     const [resourcesRes, registrationsRes] = await Promise.all([
-      supabaseAdmin.from('resources').select('*, category:categories(*), resource_tags(tag:tags(*))').in('contributor_id', userIdsToSearch).order('created_at', { ascending: false }),
+      supabaseAdmin.from('resources').select('*, resource_categories(category:categories(*)), resource_tags(tag:tags(*))').in('contributor_id', userIdsToSearch).order('created_at', { ascending: false }),
       supabaseAdmin.from('event_registrations').select('*').in('email', emailsToSearch)
     ]);
 
     const resources = (resourcesRes.data || []).map(r => ({
       ...r,
+      categories: (r.resource_categories || []).map(rc => rc.category),
       tags: r.resource_tags || []
     }));
 
