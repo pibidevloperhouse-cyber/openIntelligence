@@ -37,6 +37,23 @@ export default function PastEventsCard({ pastMeetings, totalCount = 37 }) {
                 const d = new Date(meeting.date);
                 fullDateStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
                 timeStr = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+                const timeMatch = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                if (timeMatch) {
+                  let h = parseInt(timeMatch[1], 10);
+                  const m = timeMatch[2];
+                  const ampm = timeMatch[3].toUpperCase();
+                  let hoursToAdd = (h === 10 && ampm === 'AM') ? 4 : 2;
+                  if (meeting.duration && typeof meeting.duration === 'string') {
+                    const dMatch = meeting.duration.match(/(\d+)/);
+                    if (dMatch) hoursToAdd = parseInt(dMatch[1], 10);
+                  }
+                  let h24 = ampm === 'PM' && h !== 12 ? h + 12 : (ampm === 'AM' && h === 12 ? 0 : h);
+                  let endH24 = h24 + hoursToAdd;
+                  let endAmpm = endH24 >= 12 && endH24 < 24 ? 'PM' : 'AM';
+                  let endH12 = endH24 % 12 || 12;
+                  timeStr = `${h}:${m} ${ampm} - ${endH12}:${m} ${endAmpm}`;
+                }
               }
 
               // Get a cover image or fallback
@@ -179,10 +196,12 @@ export default function PastEventsCard({ pastMeetings, totalCount = 37 }) {
                       </div>
 
                       {/* Speaker */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569', fontSize: '0.85rem', fontWeight: 600 }}>
-                        <svg width="16" height="16" style={{ flexShrink: 0, color: '#64748b' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        <span>Speaker: {meeting.speaker || 'Nagaraj'}</span>
-                      </div>
+                      {meeting.speaker && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569', fontSize: '0.85rem', fontWeight: 600 }}>
+                          <svg width="16" height="16" style={{ flexShrink: 0, color: '#64748b' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                          <span>Speaker: {meeting.speaker}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

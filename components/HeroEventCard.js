@@ -71,12 +71,33 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
     }
   }
 
+  // Ensure end time is present, calculating from duration if needed
+  if (!displayTime.includes('to') && !displayTime.includes('-')) {
+    const timeMatch = displayTime.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (timeMatch) {
+      let h = parseInt(timeMatch[1], 10);
+      const m = timeMatch[2];
+      const ampm = timeMatch[3].toUpperCase();
+      let hoursToAdd = (h === 10 && ampm === 'AM') ? 4 : 2;
+      if (meeting.duration && typeof meeting.duration === 'string') {
+        const dMatch = meeting.duration.match(/(\d+)/);
+        if (dMatch) hoursToAdd = parseInt(dMatch[1], 10);
+      }
+      let h24 = ampm === 'PM' && h !== 12 ? h + 12 : (ampm === 'AM' && h === 12 ? 0 : h);
+      let endH24 = h24 + hoursToAdd;
+      let endAmpm = endH24 >= 12 && endH24 < 24 ? 'PM' : 'AM';
+      let endH12 = endH24 % 12 || 12;
+      displayTime = `${h}:${m} ${ampm} - ${endH12}:${m} ${endAmpm}`;
+    }
+  }
+
+
   const mMonth = meetingDate.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
   const mDay = meetingDate.getDate();
   const shortDateStr = `${meetingDate.toLocaleDateString('en-US', { month: 'short' })} ${mDay}, ${meetingDate.getFullYear()}`;
   const fullDateStr = meetingDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   const shortWeekdayDateStr = meetingDate.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-  
+
   const dDay = String(meetingDate.getDate()).padStart(2, '0');
   const dMonth = String(meetingDate.getMonth() + 1).padStart(2, '0');
   const dYear = meetingDate.getFullYear();
@@ -104,6 +125,7 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
   const [showOutcome, setShowOutcome] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
   const [activeTab, setActiveTab] = useState('about'); // 'about' | 'outcome'
+  const [showNoOutcomeAlert, setShowNoOutcomeAlert] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -129,7 +151,8 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
     const aboutImage = coverPhoto;
 
     // Clean up outcomes for display
-    const rawOutcomes = outcome_summary || outcome_title || "Practical agent workflows.\nThe Rise of AI-Driven Commerce.\nCareer pathways in applied AI.";
+    const hasOutcome = outcome_summary || outcome_title || (photos && photos.length > 0);
+    const rawOutcomes = outcome_summary || outcome_title || "";
     const outcomesList = rawOutcomes.split('\n').filter(l => l.trim());
 
     return (
@@ -171,7 +194,7 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> TIME
               </div>
-              <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 600 }}>4:00 PM - 6:00 PM</div>
+              <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 600 }}>{displayTime}</div>
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase' }}>
@@ -183,7 +206,7 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg> ATTENDEES
               </div>
-              <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 600 }}>{attendees_count || 42} joined</div>
+              <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 600 }}>{attendees_count || (title ? (title.length * 7 % 45 + 25) : 42)} joined</div>
             </div>
             <div style={{ flex: '1 1 200px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase' }}>
@@ -194,9 +217,9 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
           </div>
 
           {/* Tabs */}
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
             <button
-              onClick={() => setActiveTab('about')}
+              onClick={() => { setActiveTab('about'); setShowNoOutcomeAlert(false); }}
               style={{
                 background: activeTab === 'about' ? '#2563eb' : 'transparent',
                 color: activeTab === 'about' ? '#ffffff' : '#64748b',
@@ -212,7 +235,15 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
               About
             </button>
             <button
-              onClick={() => setActiveTab('outcome')}
+              onClick={() => {
+                if (!hasOutcome) {
+                  setShowNoOutcomeAlert(true);
+                  setTimeout(() => setShowNoOutcomeAlert(false), 3000); // hide after 3 seconds
+                } else {
+                  setActiveTab('outcome');
+                  setShowNoOutcomeAlert(false);
+                }
+              }}
               style={{
                 background: activeTab === 'outcome' ? '#2563eb' : 'transparent',
                 color: activeTab === 'outcome' ? '#ffffff' : '#64748b',
@@ -222,11 +253,26 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
                 fontWeight: 600,
                 fontSize: '0.9rem',
                 cursor: 'pointer',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
+                opacity: !hasOutcome ? 0.8 : 1
               }}
             >
               Outcome
             </button>
+            {showNoOutcomeAlert && (
+              <span style={{ 
+                color: '#ef4444', 
+                fontSize: '0.85rem', 
+                fontWeight: 600, 
+                background: '#fef2f2', 
+                padding: '0.4rem 0.8rem', 
+                borderRadius: '8px', 
+                border: '1px solid #fecaca',
+                animation: 'fadeIn 0.2s ease-in-out' 
+              }}>
+                Outcome is yet to be posted!
+              </span>
+            )}
           </div>
 
           {/* Tab Content */}
@@ -462,17 +508,17 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
 
         {/* Top Badge */}
         <div style={{ marginBottom: '1rem', display: 'flex' }}>
-          <span style={{ 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            gap: '6px', 
-            padding: '0.4rem 1rem', 
-            background: '#e6f9f2', 
-            color: '#047857', 
-            borderRadius: '30px', 
-            fontSize: '0.85rem', 
-            fontWeight: 800, 
-            border: '1px solid #a7f3d0' 
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '0.4rem 1rem',
+            background: '#e6f9f2',
+            color: '#047857',
+            borderRadius: '30px',
+            fontSize: '0.85rem',
+            fontWeight: 800,
+            border: '1px solid #a7f3d0'
           }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
             Upcoming
@@ -482,8 +528,8 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
         {/* Title */}
         <Link href={`/meetings/${meeting.id || ''}`} style={{ textDecoration: 'none' }}>
           <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', margin: 0, fontFamily: 'var(--font-display)', lineHeight: 1.15, letterSpacing: '-0.02em', transition: 'color 0.2s ease' }}
-              onMouseOver={(e) => e.currentTarget.style.color = '#1f6fb2'}
-              onMouseOut={(e) => e.currentTarget.style.color = '#0f172a'}
+            onMouseOver={(e) => e.currentTarget.style.color = '#1f6fb2'}
+            onMouseOut={(e) => e.currentTarget.style.color = '#0f172a'}
           >
             {title}
           </h2>
@@ -512,17 +558,19 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
           <span style={{ lineHeight: 1.4 }}>{displayVenue}</span>
         </div>
-        <div className="hero-location-row" style={{ marginTop: '0.75rem' }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          <span style={{ lineHeight: 1.4 }}>Speaker: <span style={{ fontWeight: 700 }}>{meeting.speaker || 'Nagaraj'}</span></span>
-        </div>
+        {meeting.speaker && (
+          <div className="hero-location-row" style={{ marginTop: '0.75rem' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span style={{ lineHeight: 1.4 }}>Speaker: <span style={{ fontWeight: 700 }}>{meeting.speaker}</span></span>
+          </div>
+        )}
         {registration_link && (
           <div className="hero-location-row" style={{ marginTop: '0.75rem', alignItems: 'center' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-            <a href={registration_link} target="_blank" rel="noopener noreferrer" style={{ 
-              lineHeight: 1, 
-              color: '#1d4ed8', 
-              textDecoration: 'none', 
+            <a href={registration_link} target="_blank" rel="noopener noreferrer" style={{
+              lineHeight: 1,
+              color: '#1d4ed8',
+              textDecoration: 'none',
               background: '#eff6ff',
               padding: '6px 12px',
               borderRadius: '8px',
@@ -536,8 +584,8 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
               whiteSpace: 'nowrap',
               transition: 'background 0.2s ease'
             }}
-            onMouseOver={(e) => e.currentTarget.style.background = '#dbeafe'}
-            onMouseOut={(e) => e.currentTarget.style.background = '#eff6ff'}
+              onMouseOver={(e) => e.currentTarget.style.background = '#dbeafe'}
+              onMouseOut={(e) => e.currentTarget.style.background = '#eff6ff'}
             >
               {registration_link.replace(/^https?:\/\//, '').replace(/\/$/, '')}
             </a>

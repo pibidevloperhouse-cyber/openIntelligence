@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import StatusBadge from '@/components/StatusBadge';
 import './admin.css';
 
-const TABS = ['overview', 'redaction', 'pending', 'resources', 'events', 'users', 'contributors', 'teams', 'analytics', 'settings'];
+const TABS = ['overview', 'pending', 'resources', 'events', 'users', 'contributors', 'settings'];
 
 // ─── Reusable UI Components ───────────────────────────────────────────────────
 function Field({ label, children }) {
@@ -142,17 +142,17 @@ function CustomMobileDropdown({ value, onChange }) {
 
 function ResourceMobileDropdown({ value, onChange, allResources, pending }) {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   const options = ['pending', 'approved', 'featured', 'rejected', 'all'].map(tab => {
-    const count = tab === 'all' ? allResources.length : 
-                 tab === 'pending' ? pending.length : 
-                 allResources.filter(r => r.status === tab.toUpperCase()).length;
-    
+    const count = tab === 'all' ? allResources.length :
+      tab === 'pending' ? pending.length :
+        allResources.filter(r => r.status === tab.toUpperCase()).length;
+
     return {
       value: tab,
-      label: tab === 'all' ? `All (${count})` : 
-             tab === 'pending' ? `Pending Review (${count})` : 
-             `${tab.charAt(0).toUpperCase() + tab.slice(1)} (${count})`
+      label: tab === 'all' ? `All (${count})` :
+        tab === 'pending' ? `Pending Review (${count})` :
+          `${tab.charAt(0).toUpperCase() + tab.slice(1)} (${count})`
     };
   });
 
@@ -494,8 +494,8 @@ export default function AdminPage() {
         return `${String(hours).padStart(2, '0')}:${m} ${ampm}`;
       };
 
-      const payload = { 
-        ...eventForm, 
+      const payload = {
+        ...eventForm,
         date: dateTime,
         start_time: eventForm.time ? format12(eventForm.time) : null,
         end_time: eventForm.end_time ? format12(eventForm.end_time) : null
@@ -606,13 +606,10 @@ export default function AdminPage() {
 
   const navItems = [
     { id: 'overview', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>, label: 'Overview' },
-    { id: 'redaction', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>, label: 'Redaction' },
     { id: 'resources', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>, label: 'Resources', count: pending.length },
     { id: 'events', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>, label: 'Events', count: meetings.length },
     { id: 'users', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4-4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>, label: 'Users', count: users.length },
     { id: 'contributors', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>, label: 'Contributors', count: ghData?.summary?.contributors || 0 },
-    { id: 'analytics', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline><polyline points="17 18 23 18 23 12"></polyline></svg>, label: 'Analytics' },
-    { id: 'teams', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M14 19a6 6 0 0 0-12 0" /><circle cx="8" cy="9" r="4" /><path d="M22 19a6 6 0 0 0-6-6 4 4 0 1 0 0-8" /></svg>, label: 'Teams' },
     { id: 'settings', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>, label: 'Settings' },
   ];
 
@@ -854,23 +851,23 @@ export default function AdminPage() {
           {/* ── RESOURCES (includes Pending) ─────────────────────────────────── */}
           {activeTab === 'resources' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              
+
               <div className="outcome-filter-desktop" style={{ display: 'flex', gap: '1.5rem', borderBottom: '1px solid var(--border)', marginBottom: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
                 {['pending', 'approved', 'featured', 'rejected', 'all'].map(tab => {
-                  const count = tab === 'all' ? allResources.length : 
-                               tab === 'pending' ? pending.length : 
-                               allResources.filter(r => r.status === tab.toUpperCase()).length;
+                  const count = tab === 'all' ? allResources.length :
+                    tab === 'pending' ? pending.length :
+                      allResources.filter(r => r.status === tab.toUpperCase()).length;
                   return (
                     <button
                       key={tab}
                       onClick={() => { setResourceTab(tab); setResourcePage(1); }}
-                      style={{ 
-                        background: 'none', border: 'none', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', 
-                        padding: '0.5rem 0', 
-                        borderBottom: resourceTab === tab ? '2px solid #2ec4b6' : '2px solid transparent', 
-                        transition: 'all 0.2s', 
+                      style={{
+                        background: 'none', border: 'none', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer',
+                        padding: '0.5rem 0',
+                        borderBottom: resourceTab === tab ? '2px solid #2ec4b6' : '2px solid transparent',
+                        transition: 'all 0.2s',
                         whiteSpace: 'nowrap',
-                        ...(resourceTab === tab ? { background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' } : { color: 'var(--text-muted)' }) 
+                        ...(resourceTab === tab ? { background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' } : { color: 'var(--text-muted)' })
                       }}
                       onMouseEnter={(e) => {
                         if (resourceTab !== tab) {
@@ -888,9 +885,9 @@ export default function AdminPage() {
                         }
                       }}
                     >
-                      {tab === 'all' ? `All (${count})` : 
-                       tab === 'pending' ? `Pending Review (${count})` : 
-                       `${tab.charAt(0).toUpperCase() + tab.slice(1)} (${count})`}
+                      {tab === 'all' ? `All (${count})` :
+                        tab === 'pending' ? `Pending Review (${count})` :
+                          `${tab.charAt(0).toUpperCase() + tab.slice(1)} (${count})`}
                     </button>
                   );
                 })}
@@ -901,10 +898,10 @@ export default function AdminPage() {
 
               {(() => {
                 const resPerPage = 5;
-                const filteredRes = resourceTab === 'all' ? allResources 
-                  : resourceTab === 'pending' ? pending 
-                  : allResources.filter(r => r.status === resourceTab.toUpperCase());
-                
+                const filteredRes = resourceTab === 'all' ? allResources
+                  : resourceTab === 'pending' ? pending
+                    : allResources.filter(r => r.status === resourceTab.toUpperCase());
+
                 const totalResPages = Math.ceil(filteredRes.length / resPerPage);
                 const currentRes = filteredRes.slice((resourcePage - 1) * resPerPage, resourcePage * resPerPage);
 
@@ -931,14 +928,14 @@ export default function AdminPage() {
                           </div>
                           <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: '0 0 0.5rem', lineHeight: 1.4 }}>{r.description}</p>
                           <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem', color: 'var(--text-muted)', flexWrap: 'wrap', alignItems: 'center' }}>
-                             {r.category && (
-                               <span style={{ padding: '0.1rem 0.4rem', background: 'rgba(99,102,241,0.05)', color: '#6366f1', borderRadius: '4px', border: '1px solid rgba(99,102,241,0.1)' }}>
-                                 {r.category.icon} {r.category.name}
-                               </span>
-                             )}
-                             <span>by @{r.contributor?.username}</span>
-                             {r.github_stars > 0 && <span>⭐ {r.github_stars}</span>}
-                             {r.github_language && <span>💻 {r.github_language}</span>}
+                            {r.category && (
+                              <span style={{ padding: '0.1rem 0.4rem', background: 'rgba(99,102,241,0.05)', color: '#6366f1', borderRadius: '4px', border: '1px solid rgba(99,102,241,0.1)' }}>
+                                {r.category.icon} {r.category.name}
+                              </span>
+                            )}
+                            <span>by @{r.contributor?.username}</span>
+                            {r.github_stars > 0 && <span>⭐ {r.github_stars}</span>}
+                            {r.github_language && <span>💻 {r.github_language}</span>}
                           </div>
                         </div>
                         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignSelf: 'center' }}>
@@ -1617,60 +1614,60 @@ export default function AdminPage() {
                             const appResource = allResources.find(ar => ar.id === r.id);
                             const resourceOwner = users.find(u => u.id === appResource?.contributor_id);
                             const isOwnerBanned = resourceOwner?.bio === '__BANNED__';
-                            
-                            return (
-                            <div key={r.id} style={{ background: isOwnerBanned ? 'rgba(239, 68, 68, 0.02)' : '#ffffff', border: isOwnerBanned ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid var(--border)', borderRadius: '12px', padding: '1rem 1.25rem', opacity: isOwnerBanned ? 0.7 : 1 }}>
-                              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', marginBottom: r.forkers.length > 0 ? '0.75rem' : 0 }}>
-                                <div>
-                                  <a href={r.github_url} target="_blank" rel="noopener noreferrer"
-                                    style={{ color: isOwnerBanned ? '#ef4444' : 'var(--text-primary)', fontWeight: 700, fontSize: '0.88rem', textDecoration: isOwnerBanned ? 'line-through' : 'none' }}>
-                                    {r.title} ↗ {isOwnerBanned && <span style={{ fontSize: '0.65rem', fontWeight: 'bold', background: '#ef4444', color: 'white', padding: '2px 6px', borderRadius: '4px', marginLeft: '6px', textDecoration: 'none', display: 'inline-block' }}>BANNED</span>}
-                                  </a>
-                                  <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem', marginTop: '2px', textDecoration: isOwnerBanned ? 'line-through' : 'none' }}>
-                                    {r.owner}/{r.repo}
-                                  </div>
-                                </div>
-                                <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0, alignItems: 'center' }}>
-                                  <span style={{ padding: '0.2rem 0.6rem', background: 'rgba(99,102,241,0.1)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                                    {r.repoInfo.stargazers_count}
-                                  </span>
-                                  <span style={{ padding: '0.2rem 0.6rem', background: 'rgba(6,182,212,0.1)', color: '#06b6d4', border: '1px solid rgba(6,182,212,0.2)', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="6" r="3"></circle><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"></path><path d="M12 12v3"></path></svg>
-                                    {r.repoInfo.forks_count} forks
-                                  </span>
-                                </div>
-                              </div>
 
-                              {/* Forkers avatars */}
-                              {r.forkers.length > 0 ? (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                                  <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>Forked by:</span>
-                                  <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-                                    {r.forkers.map(f => {
-                                      const isBanned = users.some(u => u.username === f.login && u.bio === '__BANNED__');
-                                      return (
-                                        <a key={f.login} href={f.profile_url} target="_blank" rel="noopener noreferrer"
-                                          title={isBanned ? `${f.login} (Banned)` : f.login} style={{ textDecoration: 'none' }}>
-                                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 8px 2px 2px', background: isBanned ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255,255,255,0.04)', border: isBanned ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', opacity: isBanned ? 0.7 : 1 }}>
-                                            <img src={f.avatar_url} alt={f.login} width={18} height={18}
-                                              style={{ borderRadius: '50%', objectFit: 'cover', filter: isBanned ? 'grayscale(100%)' : 'none' }}
-                                              onError={e => { e.target.src = `https://ui-avatars.com/api/?name=${f.login}&background=${isBanned ? 'ef4444' : '6366f1'}&color=fff&size=18`; }}
-                                            />
-                                            <span style={{ color: isBanned ? '#ef4444' : 'var(--text-secondary)', fontSize: '0.7rem', fontWeight: 500, textDecoration: isBanned ? 'line-through' : 'none' }}>{f.login}</span>
-                                          </div>
-                                        </a>
-                                      );
-                                    })}
+                            return (
+                              <div key={r.id} style={{ background: isOwnerBanned ? 'rgba(239, 68, 68, 0.02)' : '#ffffff', border: isOwnerBanned ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid var(--border)', borderRadius: '12px', padding: '1rem 1.25rem', opacity: isOwnerBanned ? 0.7 : 1 }}>
+                                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', marginBottom: r.forkers.length > 0 ? '0.75rem' : 0 }}>
+                                  <div>
+                                    <a href={r.github_url} target="_blank" rel="noopener noreferrer"
+                                      style={{ color: isOwnerBanned ? '#ef4444' : 'var(--text-primary)', fontWeight: 700, fontSize: '0.88rem', textDecoration: isOwnerBanned ? 'line-through' : 'none' }}>
+                                      {r.title} ↗ {isOwnerBanned && <span style={{ fontSize: '0.65rem', fontWeight: 'bold', background: '#ef4444', color: 'white', padding: '2px 6px', borderRadius: '4px', marginLeft: '6px', textDecoration: 'none', display: 'inline-block' }}>BANNED</span>}
+                                    </a>
+                                    <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem', marginTop: '2px', textDecoration: isOwnerBanned ? 'line-through' : 'none' }}>
+                                      {r.owner}/{r.repo}
+                                    </div>
+                                  </div>
+                                  <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0, alignItems: 'center' }}>
+                                    <span style={{ padding: '0.2rem 0.6rem', background: 'rgba(99,102,241,0.1)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                      <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                      {r.repoInfo.stargazers_count}
+                                    </span>
+                                    <span style={{ padding: '0.2rem 0.6rem', background: 'rgba(6,182,212,0.1)', color: '#06b6d4', border: '1px solid rgba(6,182,212,0.2)', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                      <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="6" r="3"></circle><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"></path><path d="M12 12v3"></path></svg>
+                                      {r.repoInfo.forks_count} forks
+                                    </span>
                                   </div>
                                 </div>
-                              ) : (
-                                <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem', fontStyle: 'italic' }}>
-                                  No forks tracked yet
-                                </div>
-                              )}
-                            </div>
-                          );
+
+                                {/* Forkers avatars */}
+                                {r.forkers.length > 0 ? (
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>Forked by:</span>
+                                    <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                                      {r.forkers.map(f => {
+                                        const isBanned = users.some(u => u.username === f.login && u.bio === '__BANNED__');
+                                        return (
+                                          <a key={f.login} href={f.profile_url} target="_blank" rel="noopener noreferrer"
+                                            title={isBanned ? `${f.login} (Banned)` : f.login} style={{ textDecoration: 'none' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '2px 8px 2px 2px', background: isBanned ? 'rgba(239, 68, 68, 0.1)' : 'rgba(255,255,255,0.04)', border: isBanned ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(255,255,255,0.08)', borderRadius: '20px', opacity: isBanned ? 0.7 : 1 }}>
+                                              <img src={f.avatar_url} alt={f.login} width={18} height={18}
+                                                style={{ borderRadius: '50%', objectFit: 'cover', filter: isBanned ? 'grayscale(100%)' : 'none' }}
+                                                onError={e => { e.target.src = `https://ui-avatars.com/api/?name=${f.login}&background=${isBanned ? 'ef4444' : '6366f1'}&color=fff&size=18`; }}
+                                              />
+                                              <span style={{ color: isBanned ? '#ef4444' : 'var(--text-secondary)', fontSize: '0.7rem', fontWeight: 500, textDecoration: isBanned ? 'line-through' : 'none' }}>{f.login}</span>
+                                            </div>
+                                          </a>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem', fontStyle: 'italic' }}>
+                                    No forks tracked yet
+                                  </div>
+                                )}
+                              </div>
+                            );
                           })}
                           {totalCResPages > 1 && (
                             <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', alignItems: 'center', flexWrap: 'wrap', padding: '1rem', background: '#ffffff', borderRadius: '12px', border: '1px solid var(--border)', marginTop: '0.5rem' }}>
@@ -1709,25 +1706,25 @@ export default function AdminPage() {
                               {currentL.map((ghUser, idx) => {
                                 const isBanned = users.some(u => u.username === ghUser.login && u.bio === '__BANNED__');
                                 return (
-                                <a key={ghUser.login} href={ghUser.profile_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-                                  <div style={{ background: isBanned ? 'rgba(239, 68, 68, 0.05)' : '#ffffff', border: isBanned ? '1px solid rgba(239, 68, 68, 0.3)' : (idx === 0 && contribLeaderboardPage === 1 ? '1px solid #2ec4b6' : '1px solid var(--border)'), borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.9rem', boxShadow: idx === 0 && contribLeaderboardPage === 1 ? '0 4px 10px rgba(46, 196, 182, 0.1)' : 'none', opacity: isBanned ? 0.7 : 1 }}>
-                                    <div style={{ minWidth: 28, height: 28, borderRadius: '50%', background: isBanned ? 'rgba(239,68,68,0.1)' : (idx === 0 && contribLeaderboardPage === 1 ? 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' : 'rgba(0,0,0,0.05)'), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 700, color: isBanned ? '#ef4444' : (idx === 0 && contribLeaderboardPage === 1 ? '#fff' : 'var(--text-muted)'), border: idx > 0 || contribLeaderboardPage > 1 ? '1px solid rgba(0,0,0,0.08)' : 'none', flexShrink: 0 }}>
-                                      #{((contribLeaderboardPage - 1) * lPerPage) + idx + 1}
+                                  <a key={ghUser.login} href={ghUser.profile_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                                    <div style={{ background: isBanned ? 'rgba(239, 68, 68, 0.05)' : '#ffffff', border: isBanned ? '1px solid rgba(239, 68, 68, 0.3)' : (idx === 0 && contribLeaderboardPage === 1 ? '1px solid #2ec4b6' : '1px solid var(--border)'), borderRadius: '12px', padding: '1rem', display: 'flex', alignItems: 'center', gap: '0.9rem', boxShadow: idx === 0 && contribLeaderboardPage === 1 ? '0 4px 10px rgba(46, 196, 182, 0.1)' : 'none', opacity: isBanned ? 0.7 : 1 }}>
+                                      <div style={{ minWidth: 28, height: 28, borderRadius: '50%', background: isBanned ? 'rgba(239,68,68,0.1)' : (idx === 0 && contribLeaderboardPage === 1 ? 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' : 'rgba(0,0,0,0.05)'), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', fontWeight: 700, color: isBanned ? '#ef4444' : (idx === 0 && contribLeaderboardPage === 1 ? '#fff' : 'var(--text-muted)'), border: idx > 0 || contribLeaderboardPage > 1 ? '1px solid rgba(0,0,0,0.08)' : 'none', flexShrink: 0 }}>
+                                        #{((contribLeaderboardPage - 1) * lPerPage) + idx + 1}
+                                      </div>
+                                      <img src={ghUser.avatar_url} alt={ghUser.login} width={36} height={36}
+                                        style={{ borderRadius: '50%', objectFit: 'cover', flexShrink: 0, filter: isBanned ? 'grayscale(100%)' : 'none' }}
+                                        onError={e => { e.target.src = `https://ui-avatars.com/api/?name=${ghUser.login}&background=${isBanned ? 'ef4444' : '1f6fb2'}&color=fff`; }}
+                                      />
+                                      <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ color: isBanned ? '#ef4444' : 'var(--text-primary)', fontWeight: 700, fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textDecoration: isBanned ? 'line-through' : 'none' }}>{ghUser.login} {isBanned && <span style={{ fontSize: '0.65rem', fontWeight: 'bold', background: '#ef4444', color: 'white', padding: '2px 6px', borderRadius: '4px', marginLeft: '6px', textDecoration: 'none', display: 'inline-block' }}>BANNED</span>}</div>
+                                        <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem', textDecoration: isBanned ? 'line-through' : 'none' }}>Forked {ghUser.count} resource{ghUser.count !== 1 ? 's' : ''}</div>
+                                      </div>
+                                      <span style={{ padding: '0.2rem 0.6rem', background: isBanned ? 'rgba(239, 68, 68, 0.1)' : 'rgba(46, 196, 182, 0.1)', color: isBanned ? '#ef4444' : '#2ec4b6', border: isBanned ? '1px solid rgba(239, 68, 68, 0.2)' : '1px solid rgba(46, 196, 182, 0.2)', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 700, flexShrink: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="6" r="3"></circle><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"></path><path d="M12 12v3"></path></svg>
+                                        {ghUser.count}
+                                      </span>
                                     </div>
-                                    <img src={ghUser.avatar_url} alt={ghUser.login} width={36} height={36}
-                                      style={{ borderRadius: '50%', objectFit: 'cover', flexShrink: 0, filter: isBanned ? 'grayscale(100%)' : 'none' }}
-                                      onError={e => { e.target.src = `https://ui-avatars.com/api/?name=${ghUser.login}&background=${isBanned ? 'ef4444' : '1f6fb2'}&color=fff`; }}
-                                    />
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                      <div style={{ color: isBanned ? '#ef4444' : 'var(--text-primary)', fontWeight: 700, fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textDecoration: isBanned ? 'line-through' : 'none' }}>{ghUser.login} {isBanned && <span style={{ fontSize: '0.65rem', fontWeight: 'bold', background: '#ef4444', color: 'white', padding: '2px 6px', borderRadius: '4px', marginLeft: '6px', textDecoration: 'none', display: 'inline-block' }}>BANNED</span>}</div>
-                                      <div style={{ color: 'var(--text-muted)', fontSize: '0.7rem', textDecoration: isBanned ? 'line-through' : 'none' }}>Forked {ghUser.count} resource{ghUser.count !== 1 ? 's' : ''}</div>
-                                    </div>
-                                    <span style={{ padding: '0.2rem 0.6rem', background: isBanned ? 'rgba(239, 68, 68, 0.1)' : 'rgba(46, 196, 182, 0.1)', color: isBanned ? '#ef4444' : '#2ec4b6', border: isBanned ? '1px solid rgba(239, 68, 68, 0.2)' : '1px solid rgba(46, 196, 182, 0.2)', borderRadius: '20px', fontSize: '0.7rem', fontWeight: 700, flexShrink: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                      <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="6" r="3"></circle><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"></path><path d="M12 12v3"></path></svg>
-                                      {ghUser.count}
-                                    </span>
-                                  </div>
-                                </a>
+                                  </a>
                                 );
                               })}
                             </div>
@@ -1988,7 +1985,8 @@ function CountdownTimer({ targetDate, onExpire }) {
 function EventRow({ m, onEdit, onDelete, onOutcome, onRefresh, isPast, onViewOutcome }) {
   const dateObj = new Date(m.date);
   let dateStr = dateObj.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-  
+
+  let timeStr = '';
   if (m.start_time || m.end_time) {
     const formatTime = (timeStr) => {
       if (!timeStr) return '';
@@ -2002,13 +2000,34 @@ function EventRow({ m, onEdit, onDelete, onOutcome, onRefresh, isPast, onViewOut
     const start = formatTime(m.start_time);
     const end = formatTime(m.end_time);
     if (start && end) {
-      dateStr += ` • ${start} to ${end}`;
+      timeStr = `${start} to ${end}`;
     } else if (start) {
-      dateStr += ` • ${start}`;
+      timeStr = start;
     }
   } else {
-    dateStr = dateObj.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    timeStr = dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   }
+
+  if (!timeStr.includes('to') && !timeStr.includes('-')) {
+    const timeMatch = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (timeMatch) {
+      let h = parseInt(timeMatch[1], 10);
+      const min = timeMatch[2];
+      const ampm = timeMatch[3].toUpperCase();
+      let hoursToAdd = (h === 10 && ampm === 'AM') ? 4 : 2;
+      if (m.duration && typeof m.duration === 'string') {
+        const dMatch = m.duration.match(/(\d+)/);
+        if (dMatch) hoursToAdd = parseInt(dMatch[1], 10);
+      }
+      let h24 = ampm === 'PM' && h !== 12 ? h + 12 : (ampm === 'AM' && h === 12 ? 0 : h);
+      let endH24 = h24 + hoursToAdd;
+      let endAmpm = endH24 >= 12 && endH24 < 24 ? 'PM' : 'AM';
+      let endH12 = endH24 % 12 || 12;
+      timeStr = `${h}:${min} ${ampm.toLowerCase()} to ${endH12}:${min} ${endAmpm.toLowerCase()}`;
+    }
+  }
+  
+  dateStr = `${dateStr}, ${timeStr}`;
   const monthStr = dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
   const dayStr = dateObj.getDate();
   const isCompleted = m.status === 'COMPLETED';

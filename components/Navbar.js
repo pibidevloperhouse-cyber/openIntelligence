@@ -7,9 +7,9 @@ import { createClient } from '@/lib/supabase/client';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
-  { href: '/resources', label: 'Resources' },
-  { href: '/meetings', label: 'Book Meetings' },
-  { href: '/contribute', label: 'Contribute' },
+  { href: '/resources', label: 'Contribute' },
+  { href: '/meetings', label: 'Events' },
+  { href: '/open-intelligence', label: 'Open Intelligence' },
 ];
 
 export default function Navbar() {
@@ -158,7 +158,7 @@ export default function Navbar() {
           <div style={{ flex: 1, display: 'flex' }}>
             <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <img
-                src="/logo (1).webp"
+                src="/final-logo.webp"
                 alt="OpenIntelligence Logo"
                 style={{
                   width: 44,
@@ -324,7 +324,7 @@ export default function Navbar() {
 
             {/* Nav links */}
             {NAV_LINKS.map(({ href, label }) => {
-              if (label === 'Book Meetings') {
+              if (label === 'Events') {
                 return (
                   <div key={href} style={{ borderBottom: '1px solid rgba(37,99,235,0.08)' }}>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>

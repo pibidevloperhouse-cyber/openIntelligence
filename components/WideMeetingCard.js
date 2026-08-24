@@ -21,6 +21,27 @@ export default function WideMeetingCard({ meeting }) {
     finalDescription = finalDescription.replace(timingMatch[0], '');
   }
 
+  if (!displayTime.includes('to') && !displayTime.includes('-')) {
+    const timeMatch = displayTime.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (timeMatch) {
+      let h = parseInt(timeMatch[1], 10);
+      const min = timeMatch[2];
+      const ampm = timeMatch[3].toUpperCase();
+      let hoursToAdd = (h === 10 && ampm === 'AM') ? 4 : 2;
+      let durationMatch = null;
+      if (meeting.duration) durationMatch = meeting.duration;
+      if (durationMatch && typeof durationMatch === 'string') {
+        const dMatch = durationMatch.match(/(\d+)/);
+        if (dMatch) hoursToAdd = parseInt(dMatch[1], 10);
+      }
+      let h24 = ampm === 'PM' && h !== 12 ? h + 12 : (ampm === 'AM' && h === 12 ? 0 : h);
+      let endH24 = h24 + hoursToAdd;
+      let endAmpm = endH24 >= 12 && endH24 < 24 ? 'PM' : 'AM';
+      let endH12 = endH24 % 12 || 12;
+      displayTime = `${h}:${min} ${ampm.toLowerCase()} to ${endH12}:${min} ${endAmpm.toLowerCase()}`;
+    }
+  }
+
   // Use the first photo if available, otherwise a placeholder
   const imageSrc = (photos && photos.length > 0) 
     ? photos[0] 

@@ -94,7 +94,7 @@ export default function Footer() {
           <div className="footer-brand">
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0.75rem', marginTop: '12px' }}>
               <img
-                src="/logo (1).webp"
+                src="/final-logo.webp"
                 alt="OpenIntelligence Logo"
                 style={{
                   width: 40,

@@ -157,6 +157,25 @@ export default async function HomePage() {
           box-shadow: 0 15px 30px -10px rgba(59, 130, 246, 0.15);
         }
 
+        .logo-box {
+          background: #ffffff;
+          border: 1px solid #E7E5E4;
+          border-radius: 16px;
+          padding: 1.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 200px;
+          height: 100px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+          transition: transform 0.2s, box-shadow 0.2s;
+          cursor: pointer;
+        }
+        .logo-box:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+        }
+
         .rank-card-1 {
           background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
           border: 1px solid rgba(59, 130, 246, 0.35);
@@ -219,6 +238,55 @@ export default async function HomePage() {
       {/* 🤍 UPCOMING-ல் இருந்து WHY CONTRIBUTIONS MATTERS வரை CLEAN WHITE CONTAINER 🤍 */}
       <div className="white-container">
 
+        {/* ── ABOUT THE FOUNDATION ───────────────────────── */}
+        <section style={{ display: 'flex', justifyContent: 'center', padding: '4rem 1.5rem 1rem' }}>
+          <div style={{
+            maxWidth: '1200px',
+            width: '100%',
+            background: 'linear-gradient(135deg, rgba(31, 111, 178, 0.03) 0%, rgba(46, 196, 182, 0.03) 100%)',
+            border: '1px solid rgba(31, 111, 178, 0.15)',
+            borderRadius: '24px',
+            padding: '3rem',
+            boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.05)',
+            textAlign: 'center'
+          }}>
+            <h2 style={{
+              fontSize: '1.75rem',
+              fontWeight: 800,
+              marginBottom: '2.5rem',
+              fontFamily: 'var(--font-display)',
+              background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              display: 'block',
+              textAlign: 'center'
+            }}>
+              Pi Bi Foundation For Open Intelligence
+            </h2>
+
+            {/* Block 1 */}
+            <div style={{ display: 'flex', gap: '2.5rem', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
+              <div style={{ width: '130px', height: '130px', flexShrink: 0, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img src="/final-logo.webp" alt="Pi Bi Technologies" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+              </div>
+              <p style={{ flex: '1 1 400px', color: '#475569', fontSize: '1.05rem', lineHeight: 1.7, margin: 0, textAlign: 'justify' }}>
+                <strong>Pi Bi Foundation For Open Intelligence</strong> is a community driven ecosystem built around learning, experimentation, and contribution. Powered by the <strong>Madurai AI Community</strong> and supported by <strong>Pi Bi Technologies</strong>, we bring together students, developers, researchers, and technology enthusiasts to explore and build with AI, machine learning, computer vision, IoT, infrastructure, and product engineering.
+              </p>
+            </div>
+
+            {/* Block 2 */}
+            <div style={{ display: 'flex', gap: '2.5rem', alignItems: 'center', flexWrap: 'wrap-reverse' }}>
+              <p style={{ flex: '1 1 400px', color: '#475569', fontSize: '1.05rem', lineHeight: 1.7, margin: 0, textAlign: 'justify' }}>
+                We believe meaningful innovation grows when knowledge is shared and people build together. Through practical learning, open-source projects, technical sessions, research, and community contributions, we create a space where people can move beyond learning technology to experiment, build, share, and contribute solutions that others can learn from and build upon.
+              </p>
+              <div style={{ width: '130px', height: '130px', flexShrink: 0, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img src="/ai-logo.png" alt="AI Community" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', transform: 'scale(1.8)' }} />
+              </div>
+            </div>
+
+          </div>
+        </section>
+
         {/* ── UPCOMING EVENTS ───────────────────────── */}
         <section style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 1rem', position: 'relative' }}>
           <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center', width: '100%' }}>
@@ -269,6 +337,72 @@ export default async function HomePage() {
             <PastEventsPagination pastMeetings={pastMeetings} totalCount={totalPastMeetingsCount} />
           </section>
         )}
+
+        {/* ── OUR FOCUS AREAS (5 BOXES) ─────────────────────────── */}
+        <section style={{ padding: '4rem 1rem', background: '#f8fafc' }}>
+          <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
+            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+              <h2 className="clean-blue-text" style={{ fontSize: 'clamp(1.75rem, 3vw, 2.25rem)', fontWeight: 900, fontFamily: 'var(--font-display)', marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>
+                Our Focus Areas
+              </h2>
+              <p style={{ color: '#475569', fontSize: '1.05rem', maxWidth: '600px', margin: '0 auto' }}>
+                Key domains where our community explores, builds, and contributes.
+              </p>
+            </div>
+            
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
+              gap: '1.5rem',
+              justifyContent: 'center'
+            }}>
+              {/* Card 1 */}
+              <div className="white-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(31, 111, 178, 0.1)', color: '#1f6fb2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                </div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.4 }}>Democratizing Data Science & AI Education</h3>
+                <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: 1.6, margin: 0 }}>We provide accessible, step-by-step practical guides and code-first tutorials. We strip away pure mathematical abstractions to focus on real-world implementation, hosting weekly interactive sessions to support local engineers.</p>
+              </div>
+
+              {/* Card 2 */}
+              <div className="white-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(46, 196, 182, 0.1)', color: '#2ec4b6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.4 }}>Advancing Computer Vision & Research Integrity</h3>
+                <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: 1.6, margin: 0 }}>We catalog and build practical applications using state-of-the-art visual models. We focus on linking complex AI research papers with deployable, open-source repositories to solve local and industrial visual processing challenges.</p>
+              </div>
+
+              {/* Card 3 */}
+              <div className="white-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(37, 99, 235, 0.1)', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+                </div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.4 }}>Fusing Hardware with Edge AI (IoT)</h3>
+                <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: 1.6, margin: 0 }}>We encourage open-source hardware contributions, guiding developers to build smart, connected products that deploy machine learning models directly onto edge devices like microcontrollers and single-board computers.</p>
+              </div>
+
+              {/* Card 4 */}
+              <div className="white-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.4 }}>Engineering Production-Ready Systems</h3>
+                <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: 1.6, margin: 0 }}>We emphasize System Engineering Practices, strategic enterprise architectures, and robust product design patterns so that our community's open-source contributions can scale reliably in real-world production environments.</p>
+              </div>
+
+              {/* Card 5 */}
+              <div className="white-card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                </div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0, lineHeight: 1.4 }}>Hybrid Infrastructure Mastery</h3>
+                <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: 1.6, margin: 0 }}>Learn and contribute to modern hybrid infrastructure through practical knowledge of cloud, multi-cloud, containers, on-premise systems, HPC, and networking. Share resources that help build resilient, scalable infrastructure.</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* ── CATEGORIES ─────────────────────────── */}
         <ExploreSection />

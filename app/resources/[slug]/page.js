@@ -99,6 +99,11 @@ export default async function ResourceDetailPage({ params }) {
   // Fetch GitHub forkers for this specific repo (parallel with other data already loaded)
   const { forkers, forkCount } = await getRepoForkers(resource.github_url);
 
+  // Sync forkCount back to database if it has changed
+  if (forkCount > 0 && forkCount !== resource.github_forks) {
+    supabaseAdmin.from('resources').update({ github_forks: forkCount }).eq('id', resource.id).then();
+  }
+
   const {
     title, description, github_url, github_stars,
     github_language, github_last_updated,
@@ -252,22 +257,23 @@ export default async function ResourceDetailPage({ params }) {
       <div className="container" style={{ maxWidth: '1100px' }}>
         
         {/* Back Button */}
-        <Link 
-          href="/resources" 
-          className="glass-card" 
-          style={{ 
-            padding: '0.5rem 1rem', 
-            borderRadius: '8px', 
-            color: 'var(--text-primary)', 
-            textDecoration: 'none',
-            fontSize: '0.9rem',
-            fontWeight: 500,
-            display: 'inline-block',
-            marginBottom: '1.5rem'
-          }}
-        >
-          ← Back to resources
-        </Link>
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          <Link 
+            href="/resources" 
+            className="glass-card" 
+            style={{ 
+              padding: '0.5rem 1rem', 
+              borderRadius: '8px', 
+              color: 'var(--text-primary)', 
+              textDecoration: 'none',
+              fontSize: '0.9rem',
+              fontWeight: 500,
+              display: 'inline-block',
+            }}
+          >
+            ← Back to Contribute
+          </Link>
+        </div>
 
         {/* Top Header Card */}
         <div className="glass-card" style={{ padding: '2rem', marginBottom: '2rem', borderRadius: '12px' }}>

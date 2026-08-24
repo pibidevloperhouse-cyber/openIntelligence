@@ -23,7 +23,7 @@ function drawLayer(ctx, W, H, tick, baseYFrac, amp, spd, phase, ripple, stops, s
     const crestY = baseY - amp * 2.0;
     const grad = ctx.createLinearGradient(0, crestY, 0, H);
     stops.forEach(([p, c]) => grad.addColorStop(p, c));
-    
+
     ctx.save();
     ctx.shadowBlur = 0; // நோ க்ளோ / நோ ஷேடோ
     ctx.beginPath();
@@ -62,9 +62,9 @@ function WaveCanvas({ isTyping, isComplete }) {
         function resize() {
             const dpr = Math.min(window.devicePixelRatio || 1, 2);
             const isMobile = window.innerWidth < 768;
-            canvas.width  = window.innerWidth  * (isMobile ? 1 : dpr);
+            canvas.width = window.innerWidth * (isMobile ? 1 : dpr);
             canvas.height = window.innerHeight * (isMobile ? 1 : dpr);
-            canvas.style.width  = window.innerWidth  + 'px';
+            canvas.style.width = window.innerWidth + 'px';
             canvas.style.height = window.innerHeight + 'px';
             if (!isMobile) ctx.scale(dpr, dpr);
         }
@@ -97,7 +97,7 @@ function WaveCanvas({ isTyping, isComplete }) {
             const H_logical = isMobile ? H : H / Math.min(window.devicePixelRatio || 1, 2);
 
             ctx.clearRect(0, 0, W, H);
-            
+
             // 1. Pure White Background Only
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, W, H);
@@ -105,9 +105,9 @@ function WaveCanvas({ isTyping, isComplete }) {
             // 2. Wave Layer 2 (Back Wave) - மேல்பகுதியில் வெள்ளையாக மட்டுமே இருக்கும்
             drawLayer(ctx, W_logical, H_logical, s.tick, base2, amp * 0.82, 0.4, Math.PI, s.energy * 0.5,
                 [
-                    [0, '#ffffff'], 
-                    [0.15, 'rgba(180, 220, 255, 0.8)'], 
-                    [0.4, 'rgba(40, 110, 210, 0.85)'], 
+                    [0, '#ffffff'],
+                    [0.15, 'rgba(180, 220, 255, 0.8)'],
+                    [0.4, 'rgba(40, 110, 210, 0.85)'],
                     [1, 'rgba(5, 18, 72, 0.95)']
                 ],
                 step
@@ -116,10 +116,10 @@ function WaveCanvas({ isTyping, isComplete }) {
             // 3. Wave Layer 1 (Front Wave) - மேல்பகுதியில் வெள்ளையாக மட்டுமே இருக்கும்
             drawLayer(ctx, W_logical, H_logical, s.tick, base1, amp, 0.56, 0, s.energy,
                 [
-                    [0, '#ffffff'], 
-                    [0.1, '#ffffff'], 
-                    [0.25, 'rgba(100, 180, 250, 0.9)'], 
-                    [0.5, 'rgba(28, 98, 215, 0.95)'], 
+                    [0, '#ffffff'],
+                    [0.1, '#ffffff'],
+                    [0.25, 'rgba(100, 180, 250, 0.9)'],
+                    [0.5, 'rgba(28, 98, 215, 0.95)'],
                     [1, 'rgba(3, 12, 58, 1)']
                 ],
                 step
@@ -147,10 +147,8 @@ const AUDIO_PHASES = [
 //  Typewriter — 4 rotating display lines
 // ═══════════════════════════════════════════════
 const DISPLAY_LINES = [
-    'Welcome to Open Intelligence',
     "Built by Madurai's AI Community",
     'Discover. Contribute. Build Together.',
-    'Open Source AI — For Everyone',
 ];
 
 function Typewriter({ onTypingChange, started }) {
@@ -345,7 +343,7 @@ export default function WaveHero() {
                         letterSpacing: '6px', textTransform: 'uppercase',
                         margin: 0, minHeight: '16px',
                     }}>
-                        {speaking ? PHASE_LABELS[phase] : 'Open Intelligence'}
+                        {speaking ? PHASE_LABELS[phase] : 'Pi Bi Foundation Open Intelligence'}
                     </p>
 
                     <Typewriter onTypingChange={setIsTyping} started={started} />

@@ -24,22 +24,16 @@ export default function ResourceListItem({ resource }) {
     category,
     contributor,
     tags = [],
+    likes = 0,
+    views = 0,
+    github_forks = 0,
   } = resource;
 
   const icon = ICONS[category?.slug] || ICONS['documentation'];
-  
-  // Fake views for the mockup if missing
-  const views = Math.floor(Math.random() * 5000) + 100;
 
-  const timeAgo = (dateStr) => {
+  const formatDate = (dateStr) => {
     if (!dateStr) return null;
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const days = Math.floor(diff / 86400000);
-    if (days < 1) return 'Today';
-    if (days < 7) return `${days}d ago`;
-    if (days < 30) return `${Math.floor(days / 7)}w ago`;
-    if (days < 365) return `${Math.floor(days / 30)}mo ago`;
-    return `${Math.floor(days / 365)}y ago`;
+    return new Date(dateStr).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
   // Base background for tags
@@ -153,6 +147,20 @@ export default function ResourceListItem({ resource }) {
               {github_stars}
             </div>
           )}
+          {github_forks > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#6366f1', fontWeight: 500 }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M21 7V5.5C21 4.1 19.9 3 18.5 3H5.5C4.1 3 3 4.1 3 5.5V7C3 8.4 4.1 9.5 5.5 9.5H7.1l3.4 5.7v3.8c0 1.1.9 2 2 2h.2c1.1 0 2-.9 2-2v-3.8l3.4-5.7h1.4C19.9 9.5 21 8.4 21 7zM5.5 7.5C4.4 7.5 3.5 6.6 3.5 5.5S4.4 3.5 5.5 3.5h13c1.1 0 2 .9 2 2s-.9 2-2 2H5.5z"/>
+              </svg>
+              {github_forks}
+            </div>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#ef4444', fontWeight: 500 }}>
+            <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+            {likes}
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#A8A29E', fontWeight: 500 }}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -162,7 +170,7 @@ export default function ResourceListItem({ resource }) {
           </div>
           {github_last_updated && (
             <div style={{ marginTop: '0.2rem' }}>
-              Updated {timeAgo(github_last_updated)}
+              Updated {formatDate(github_last_updated)}
             </div>
           )}
         </div>

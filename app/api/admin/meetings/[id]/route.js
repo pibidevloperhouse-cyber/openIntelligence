@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 
 async function isAdmin() {
@@ -54,6 +55,12 @@ export async function PUT(request, { params }) {
     const { data: meeting, error } = await supabaseAdmin.from('meetings').update(data).eq('id', id).select().single();
     if (error) throw error;
     if (meeting) meeting.date = meeting.date.endsWith('Z') ? meeting.date : meeting.date + 'Z';
+
+    revalidatePath('/');
+    revalidatePath('/meetings');
+    revalidatePath(`/meetings/${id}`);
+    revalidatePath('/admin');
+
     return NextResponse.json({ success: true, meeting });
   } catch (err) {
     console.error('[PUT /api/admin/meetings/[id]] Error:', err.message);
@@ -70,6 +77,11 @@ export async function DELETE(request, { params }) {
   try {
     const { error } = await supabaseAdmin.from('meetings').delete().eq('id', id);
     if (error) throw error;
+
+    revalidatePath('/');
+    revalidatePath('/meetings');
+    revalidatePath('/admin');
+
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error('[DELETE /api/admin/meetings/[id]] Error:', err.message);

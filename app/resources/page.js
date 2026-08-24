@@ -182,7 +182,7 @@ export default function ResourcesPage() {
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent'
             }}>
-              Resources
+              Contribute
             </h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: 400, margin: 0 }}>
               {globalTotal} open-source AI resources from the Madurai AI community

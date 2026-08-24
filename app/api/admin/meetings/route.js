@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 
 import crypto from 'crypto';
@@ -42,6 +43,10 @@ export async function POST(request) {
 
     if (error) throw error;
     if (meeting) meeting.date = meeting.date.endsWith('Z') ? meeting.date : meeting.date + 'Z';
+
+    revalidatePath('/');
+    revalidatePath('/meetings');
+    revalidatePath('/admin');
 
     return NextResponse.json({ success: true, meeting }, { status: 201 });
   } catch (err) {

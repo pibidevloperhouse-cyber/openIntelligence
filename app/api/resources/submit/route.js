@@ -93,6 +93,7 @@ export async function POST(request) {
       contributor_id:      profile.id,
       status:              'PENDING',
       github_stars:        github_stars || 0,
+      github_forks:        body.github_forks || 0,
       github_language:     github_language || null,
       github_last_updated: github_last_updated ? new Date(github_last_updated).toISOString() : null,
       use_case,

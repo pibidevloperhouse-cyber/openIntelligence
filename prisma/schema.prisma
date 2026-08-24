@@ -8,8 +8,6 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 // ─────────────────────────────────────────
@@ -74,6 +72,8 @@ model Resource {
   contributor_id      String
   status              ResourceStatus  @default(PENDING)
   github_stars        Int             @default(0)
+  github_forks        Int             @default(0)
+  likes               Int             @default(0)
   views               Int             @default(0)
   github_language     String?
   github_last_updated DateTime?
@@ -119,6 +119,8 @@ model Meeting {
   title             String
   description       String
   date              DateTime
+  start_time        String?
+  end_time          String?
   venue             String
   registration_link String        @default("")
   status            MeetingStatus @default(UPCOMING)
