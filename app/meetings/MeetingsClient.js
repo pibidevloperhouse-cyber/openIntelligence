@@ -11,12 +11,33 @@ export default function MeetingsClient({ upcoming, past }) {
 
   const [activeTab, setActiveTab] = useState(tabQuery === 'past' ? 'past' : 'upcoming');
   const [showAllUpcoming, setShowAllUpcoming] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (tabQuery === 'past' || tabQuery === 'upcoming') {
       setActiveTab(tabQuery);
     }
   }, [tabQuery]);
+
+  const filteredPast = past.filter((m, idx) => {
+    if (!searchQuery) return true;
+    const lowerQuery = searchQuery.toLowerCase().trim();
+    const weekNum = past.length - idx;
+    
+    // Exact week match to avoid "2" matching "12", "20", etc.
+    const matchWeek = lowerQuery === String(weekNum) || lowerQuery === `week ${weekNum}`;
+
+    // If the user types a 1 or 2 digit number, they are almost certainly looking for a week number.
+    // Searching title/description for "1" or "2" will result in too many false positives (e.g. "10 AM", "2023").
+    if (!isNaN(lowerQuery) && lowerQuery.length < 3) {
+      return matchWeek;
+    }
+
+    const matchTitle = m.title && m.title.toLowerCase().includes(lowerQuery);
+    const matchDesc = m.description && m.description.toLowerCase().includes(lowerQuery);
+
+    return matchTitle || matchDesc || matchWeek;
+  });
 
   return (
     <>
@@ -172,9 +193,40 @@ export default function MeetingsClient({ upcoming, past }) {
 
         {activeTab === 'past' && (
           <section>
-            {past.length > 0 ? (
+            {past.length > 0 && (
+              <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
+                <input
+                  type="text"
+                  placeholder="Search past sessions by topic or description..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    padding: '0.75rem 1.25rem',
+                    borderRadius: '12px',
+                    border: '1px solid #E7E5E4',
+                    width: '100%',
+                    maxWidth: '400px',
+                    fontSize: '0.95rem',
+                    color: '#0f172a', // Added text color
+                    outline: 'none',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+                    transition: 'border-color 0.2s',
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#1f6fb2'}
+                  onBlur={(e) => e.target.style.borderColor = '#E7E5E4'}
+                />
+              </div>
+            )}
+            {filteredPast.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                {past.map((m, idx) => <HeroEventCard key={m.id} meeting={m} isPast={true} weekNumber={past.length - idx} />)}
+                {filteredPast.map((m) => (
+                  <HeroEventCard 
+                    key={m.id} 
+                    meeting={m} 
+                    isPast={true} 
+                    weekNumber={past.length - past.indexOf(m)} 
+                  />
+                ))}
               </div>
             ) : (
               <div style={{
@@ -184,7 +236,9 @@ export default function MeetingsClient({ upcoming, past }) {
                 borderRadius: '16px',
                 border: '1px solid #E7E5E4'
               }}>
-                <p style={{ color: '#57534E', fontSize: '0.95rem' }}>No past sessions found.</p>
+                <p style={{ color: '#57534E', fontSize: '0.95rem' }}>
+                  {searchQuery ? 'No past sessions match your search.' : 'No past sessions found.'}
+                </p>
               </div>
             )}
           </section>

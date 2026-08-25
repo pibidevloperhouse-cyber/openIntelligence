@@ -260,15 +260,15 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
               Outcome
             </button>
             {showNoOutcomeAlert && (
-              <span style={{ 
-                color: '#ef4444', 
-                fontSize: '0.85rem', 
-                fontWeight: 600, 
-                background: '#fef2f2', 
-                padding: '0.4rem 0.8rem', 
-                borderRadius: '8px', 
+              <span style={{
+                color: '#ef4444',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                background: '#fef2f2',
+                padding: '0.4rem 0.8rem',
+                borderRadius: '8px',
                 border: '1px solid #fecaca',
-                animation: 'fadeIn 0.2s ease-in-out' 
+                animation: 'fadeIn 0.2s ease-in-out'
               }}>
                 Outcome is yet to be posted!
               </span>

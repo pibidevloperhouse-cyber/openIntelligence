@@ -385,10 +385,20 @@ export default function WaveHero() {
                     )}
 
                     {speaking && (
-                        <div style={{
-                            display: 'flex', alignItems: 'center', gap: '7px',
-                            animation: 'oiFadeUp 0.4s ease both',
-                        }}>
+                        <button
+                            onClick={() => {
+                                setAudioStarted(false);
+                                setSpeaking(false);
+                                setAudioDone(true);
+                            }}
+                            title="Stop Audio"
+                            style={{
+                                display: 'flex', alignItems: 'center', gap: '7px',
+                                animation: 'oiFadeUp 0.4s ease both',
+                                background: 'transparent', border: 'none',
+                                cursor: 'pointer', outline: 'none', padding: '8px'
+                            }}
+                        >
                             {[0, 1, 2, 3].map(i => (
                                 <div key={i} style={{
                                     width: '3px', borderRadius: '2px',
@@ -396,15 +406,20 @@ export default function WaveHero() {
                                     animation: `oiBar${i} ${0.6 + i * 0.15}s ease-in-out infinite alternate`,
                                 }} />
                             ))}
-                            <p style={{
-                                fontSize: '10px',
-                                color: '#64748b',
-                                letterSpacing: '3px',
-                                textTransform: 'uppercase',
-                                margin: '0 6px',
-                            }}>
-                                {PHASE_LABELS[phase]}
-                            </p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '0 6px' }}>
+                                <p style={{
+                                    fontSize: '10px',
+                                    color: '#64748b',
+                                    letterSpacing: '3px',
+                                    textTransform: 'uppercase',
+                                    margin: 0,
+                                }}>
+                                    {PHASE_LABELS[phase]}
+                                </p>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="6" y="6" width="12" height="12" rx="1" ry="1"></rect>
+                                </svg>
+                            </div>
                             {[3, 2, 1, 0].map(i => (
                                 <div key={`r${i}`} style={{
                                     width: '3px', borderRadius: '2px',
@@ -412,7 +427,7 @@ export default function WaveHero() {
                                     animation: `oiBar${i} ${0.6 + (3 - i) * 0.15}s ease-in-out infinite alternate`,
                                 }} />
                             ))}
-                        </div>
+                        </button>
                     )}
 
 

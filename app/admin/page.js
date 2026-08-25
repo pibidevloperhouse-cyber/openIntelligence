@@ -510,7 +510,7 @@ export default function AdminPage() {
       try {
         data = await res.json();
       } catch (err) {
-        setEventError(`Server returned an invalid response (${res.status}). Ensure Prisma is synced.`);
+        setEventError(`Server returned an invalid response (${res.status}). Ensure the database is synced.`);
         setSavingEvent(false);
         return;
       }
