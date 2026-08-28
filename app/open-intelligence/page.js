@@ -2,258 +2,453 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { generateHomepageData } from '@/lib/open-intelligence-data';
 
-const TABS = [
-  'Data Science',
-  'Computer Vision',
-  'Hardware with Edge AI (IoT)',
-  'Production-Ready Systems',
-  'Hybrid Infrastructure Mastery'
-];
+export default function OpenIntelligenceHomePage() {
+  const data = generateHomepageData();
+  const [trendingTab, setTrendingTab] = useState('7 days');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const router = useRouter();
 
-export default function OpenIntelligencePage() {
-  const [activeTab, setActiveTab] = useState(TABS[0]);
+  // The user's brand gradient
+  const brandGradient = 'linear-gradient(135deg, #1f6fb2 0%, #2ec4b6 100%)';
+  const brandColorPrimary = '#1f6fb2';
+  const brandColorSecondary = '#2ec4b6';
 
-  const generateTabContentData = (tab) => {
-    const seed = tab.length; 
-    const authors = ["Steef-Jan Wiggers", "Daniel Curtis", "Ben Linders", "Matt Saunders", "Renato Losio", "Artenisa Chatziou", "Almir Vuk", "Eran Stiller", "Sara Bergman"];
-    const getRandAuthor = (offset) => authors[(seed + offset) % authors.length].toUpperCase();
-    const getRandDate = (offset) => {
-      const d = new Date(2026, 7, 28 - (offset * 1));
-      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
-    };
+  const SectionTitle = ({ title, icon }) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem', marginTop: '1rem' }}>
+      {icon && <span style={{ display: 'flex', alignItems: 'center', color: brandColorPrimary, filter: 'drop-shadow(0 2px 4px rgba(31,111,178,0.15))' }}>{icon}</span>}
+      <h2 style={{ fontSize: '1.5rem', fontWeight: 800, textTransform: 'capitalize', color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
+        {title}
+      </h2>
+    </div>
+  );
 
-    const topicsDict = {
-      'Data Science': ['Data Engineering', 'Large Language Models', 'Causal Inference', 'Vector Databases', 'Multi-Modal Embeddings', 'Data Pipelines', 'ETL Automation', 'Model Fine-tuning', 'Graph Neural Networks', 'Time Series Forecasting'],
-      'Computer Vision': ['Object Detection', 'Vision-Language Models', 'Industrial Inspection', 'Vision Transformers', 'Image Segmentation', 'Pose Estimation', 'Synthetic Data', 'Edge CV deployment', 'Zero-shot Classification', 'Video Action Recognition'],
-      'Hardware with Edge AI (IoT)': ['LLMs on Edge', 'Quantization', 'NPU Architectures', 'TinyML', 'Energy Harvesting', 'Edge Security', 'ARM Cortex Optimization', 'Jetson Nano Benchmarks', 'IoT Sensor Fusion', 'On-device Training'],
-      'Production-Ready Systems': ['Scalable RAG', 'MLOps CI/CD', 'Model Drift Detection', 'Serverless Inference', 'GenAI Security', 'LLM Load Balancing', 'Observability', 'A/B Testing ML', 'Cost Optimization', 'High Availability Architectures'],
-      'Hybrid Infrastructure Mastery': ['Hybrid Cloud AI', 'Kubernetes GPU Scheduling', 'Federated Learning', 'Data Gravity', 'Multi-Cloud ML', 'On-Premise vs Cloud', 'High-Bandwidth Interconnects', 'Disaster Recovery for AI', 'Resource Allocation', 'Security in Hybrid Cloud']
-    };
-    
-    const topics = topicsDict[tab] || topicsDict['Data Science'];
-    const getTopic = (idx) => topics[idx % topics.length];
+  return (
+    <div style={{ background: '#f8fafc', minHeight: '100vh', width: '100%', color: '#0f172a', fontFamily: '"Inter", system-ui, -apple-system, sans-serif' }}>
+      
+      <style>{`
+        .desktop-nav { display: flex; }
+        .mobile-nav { display: none; }
+        @media (max-width: 900px) {
+          .desktop-nav { display: none !important; }
+          .mobile-nav { display: block; }
+        }
 
-    const images = [
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1527430253228-e93688616381?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80"
-    ];
-
-    return {
-      feature: {
-        title: `The Evolution of ${getTopic(0)} in 2026: What You Need to Know`,
-        summary: `As enterprises scale their operations, ${getTopic(1)} and ${getTopic(2)} have emerged as foundational pillars for next-generation architectures. We explore how leading engineering teams are overcoming latency bottlenecks and pushing the boundaries of what is possible in production environments.`,
-        meta: `ARTICLE BY ${getRandAuthor(1)} ON ${getRandDate(1)}`,
-        image: images[seed % images.length]
-      },
-      news: Array(6).fill().map((_, i) => ({
-        title: `New Open-Source Framework Released for ${getTopic(i+3)}`,
-        meta: `NEWS BY ${getRandAuthor(i+2)} ON ${getRandDate(i+2)}`
-      })),
-      articles: Array(4).fill().map((_, i) => ({
-        title: `A Deep Dive into ${getTopic(i+2)} Architecture Patterns`,
-        summary: `Implementing ${getTopic(i+3)} can be challenging without understanding the underlying mechanics. This guide walks you through best practices and proven design patterns to ensure high availability.`,
-        meta: `ARTICLE BY ${getRandAuthor(i+5)} ON ${getRandDate(i+5)}`
-      })),
-      media: Array(3).fill().map((_, i) => ({
-        type: i % 2 === 0 ? "PRESENTATION" : "PODCAST",
-        title: i % 2 === 0 ? `Keynote: The Future of ${getTopic(i+4)}` : `Ep ${100+i}: Scaling ${getTopic(i+5)} with Expert Engineers`,
-        time: i % 2 === 0 ? "45 MIN" : "30 MIN"
-      })),
-      trending: Array(5).fill().map((_, i) => `Top 10 Tools for ${getTopic(i+1)} in Enterprise Tech`),
-      tags: topics.slice(0, 8)
-    };
-  };
-
-  const getTabContent = (tab) => {
-    const data = generateTabContentData(tab);
-
-    return (
-      <div className="tab-content" style={{ display: 'grid', gridTemplateColumns: '2.5fr 1fr', gap: '3rem' }}>
+        .premium-card {
+          background: #ffffff;
+          border-radius: 16px;
+          border: 1px solid rgba(226, 232, 240, 0.8);
+          box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          overflow: hidden;
+        }
+        .premium-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 30px -4px rgba(0,0,0,0.08);
+          border-color: #cbd5e1;
+        }
         
-        {/* LEFT COLUMN: Main Content */}
-        <div>
-          {/* Featured Article */}
-          <article style={{ marginBottom: '3rem', paddingBottom: '3rem', borderBottom: '2px solid #e5e7eb' }}>
-            <div style={{ width: '100%', height: '350px', background: `url(${data.feature.image}) center/cover`, borderRadius: '8px', marginBottom: '1.5rem' }}></div>
-            <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '1rem', color: '#111827', lineHeight: 1.2 }}>
-              <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>{data.feature.title}</a>
-            </h2>
-            <div style={{ color: '#0ea5e9', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700, marginBottom: '1rem' }}>
-              {data.feature.meta}
-            </div>
-            <p style={{ color: '#4b5563', fontSize: '1.1rem', lineHeight: 1.6, margin: 0 }}>
-              {data.feature.summary}
-            </p>
-          </article>
+        .news-link {
+          color: #0f172a;
+          text-decoration: none;
+          transition: color 0.2s;
+        }
+        .news-link:hover {
+          color: ${brandColorPrimary} !important;
+        }
 
-          {/* Latest News */}
-          <section style={{ marginBottom: '3rem', paddingBottom: '3rem', borderBottom: '2px solid #e5e7eb' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, textTransform: 'uppercase', color: '#111827', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ width: '4px', height: '1.25rem', backgroundColor: '#0ea5e9', display: 'inline-block' }}></span>
-              Latest News
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {data.news.map((item, idx) => (
-                <article key={idx}>
-                  <h4 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.25rem', color: '#111827', lineHeight: 1.4 }}>
-                    <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>{item.title}</a>
-                  </h4>
-                  <div style={{ color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 600 }}>{item.meta}</div>
-                </article>
-              ))}
-            </div>
-            <a href="#" style={{ display: 'inline-block', marginTop: '1.5rem', color: '#0ea5e9', fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem' }}>VIEW ALL NEWS &rarr;</a>
-          </section>
+        .gradient-text {
+          background: ${brandGradient};
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        
+        .gradient-border {
+          position: relative;
+        }
+        .gradient-border::after {
+          content: '';
+          position: absolute;
+          bottom: 0; left: 0; right: 0;
+          height: 3px;
+          background: ${brandGradient};
+          border-radius: 4px;
+        }
 
-          {/* Articles */}
-          <section style={{ marginBottom: '3rem' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, textTransform: 'uppercase', color: '#111827', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ width: '4px', height: '1.25rem', backgroundColor: '#0ea5e9', display: 'inline-block' }}></span>
-              Articles
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-              {data.articles.map((item, idx) => (
-                <article key={idx}>
-                  <h4 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem', color: '#111827', lineHeight: 1.4 }}>
-                    <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>{item.title}</a>
-                  </h4>
-                  <div style={{ color: '#6b7280', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 600, marginBottom: '0.75rem' }}>{item.meta}</div>
-                  <p style={{ color: '#4b5563', fontSize: '0.95rem', lineHeight: 1.5, margin: 0 }}>
-                    {item.summary}
-                  </p>
-                </article>
-              ))}
-            </div>
-            <a href="#" style={{ display: 'inline-block', marginTop: '2rem', color: '#0ea5e9', fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem' }}>VIEW ALL ARTICLES &rarr;</a>
-          </section>
+        .glass-nav {
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+          position: sticky;
+          top: 0;
+          z-index: 50;
+        }
           
-          {/* Presentations & Podcasts */}
-          <section>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, textTransform: 'uppercase', color: '#111827', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ width: '4px', height: '1.25rem', backgroundColor: '#0ea5e9', display: 'inline-block' }}></span>
-              Presentations & Podcasts
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
-              {data.media.map((item, idx) => (
-                <article key={idx} style={{ background: '#f3f4f6', borderRadius: '6px', overflow: 'hidden' }}>
-                  <div style={{ height: '120px', background: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af' }}>
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                  </div>
-                  <div style={{ padding: '1rem' }}>
-                    <div style={{ color: '#0ea5e9', fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 800, marginBottom: '0.25rem' }}>{item.type} · {item.time}</div>
-                    <h4 style={{ fontSize: '0.95rem', fontWeight: 700, margin: 0, color: '#111827', lineHeight: 1.3 }}>
-                      <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>{item.title}</a>
-                    </h4>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
+        .custom-topic-link {
+          color: #475569;
+          text-decoration: none;
+          font-weight: 600;
+          font-size: 0.95rem;
+          padding: 0.5rem 0.75rem;
+          border-radius: 8px;
+          transition: all 0.2s;
+          white-space: nowrap;
+        }
+        .custom-topic-link:hover {
+          background: ${brandGradient};
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: transparent !important;
+        }
+        
+        .primary-btn {
+          background: ${brandGradient};
+          color: #fff;
+          border: none;
+          padding: 0.75rem 1.5rem;
+          font-weight: 600;
+          font-size: 0.9rem;
+          border-radius: 99px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: all 0.3s;
+          box-shadow: 0 4px 14px 0 rgba(31, 111, 178, 0.39);
+        }
+        .primary-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(31, 111, 178, 0.23);
+        }
+        
+        .media-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.2) 50%, rgba(15, 23, 42, 0) 100%);
+        }
+        
+        .badge {
+          background: rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(4px);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          color: #fff;
+          font-size: 0.65rem;
+          font-weight: 700;
+          padding: 0.3rem 0.6rem;
+          border-radius: 99px;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        .mobile-dropdown-item {
+          display: block;
+          padding: 1rem 1.25rem;
+          color: #475569;
+          text-decoration: none;
+          font-weight: 600;
+          font-size: 0.95rem;
+          border-bottom: 1px solid #f1f5f9;
+          transition: all 0.2s;
+        }
+        .mobile-dropdown-item:last-child {
+          border-bottom: none;
+        }
+        .mobile-dropdown-item:hover, .mobile-dropdown-item:active {
+          background: ${brandGradient};
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: transparent !important;
+          padding-left: 1.5rem;
+        }
+      `}</style>
+
+      {/* TOP NAVIGATION BAR (Glassmorphism) */}
+      <div className="glass-nav" style={{ padding: '0.75rem 0', marginBottom: '3rem' }}>
+        
+        {/* Mobile Custom Dropdown */}
+        <div className="mobile-nav" style={{ padding: '0 1rem', position: 'relative' }}>
+          <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative' }}>
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              style={{ width: '100%', padding: '0.85rem 1.25rem', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '1rem', fontWeight: 600, color: '#0f172a', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', cursor: 'pointer' }}
+            >
+              Explore Topics...
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isMobileMenuOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}>
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            
+            {isMobileMenuOpen && (
+              <div style={{ position: 'absolute', top: 'calc(100% + 0.5rem)', left: 0, right: 0, background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', overflow: 'hidden', zIndex: 100 }}>
+                <Link href="/open-intelligence/data-science" className="mobile-dropdown-item" onClick={() => setIsMobileMenuOpen(false)}>Data Science</Link>
+                <Link href="/open-intelligence/computer-vision" className="mobile-dropdown-item" onClick={() => setIsMobileMenuOpen(false)}>Computer Vision</Link>
+                <Link href="/open-intelligence/hardware-with-edge-ai" className="mobile-dropdown-item" onClick={() => setIsMobileMenuOpen(false)}>Hardware with Edge AI</Link>
+                <Link href="/open-intelligence/production-ready-systems" className="mobile-dropdown-item" onClick={() => setIsMobileMenuOpen(false)}>Production-Ready Systems</Link>
+                <Link href="/open-intelligence/hybrid-infrastructure-mastery" className="mobile-dropdown-item" onClick={() => setIsMobileMenuOpen(false)}>Hybrid Infrastructure Mastery</Link>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* RIGHT COLUMN: Sidebar */}
-        <div className="trending-sidebar" style={{ borderLeft: '1px solid #e5e7eb', paddingLeft: '2rem' }}>
-          <div style={{ position: 'sticky', top: '2rem' }}>
-            
-            {/* Recommended Topics */}
-            <div style={{ marginBottom: '3rem' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 800, textTransform: 'uppercase', color: '#111827', marginBottom: '1rem' }}>Recommended Topics</h3>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                {data.tags.map((tag, idx) => (
-                  <span key={idx} style={{ background: '#f3f4f6', color: '#374151', padding: '0.35rem 0.75rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
+        {/* Desktop Links */}
+        <div className="desktop-nav" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <Link href="/open-intelligence/data-science" className="custom-topic-link">Data Science</Link>
+          <Link href="/open-intelligence/computer-vision" className="custom-topic-link">Computer Vision</Link>
+          <Link href="/open-intelligence/hardware-with-edge-ai" className="custom-topic-link">Hardware with Edge AI</Link>
+          <Link href="/open-intelligence/production-ready-systems" className="custom-topic-link">Production-Ready Systems</Link>
+          <Link href="/open-intelligence/hybrid-infrastructure-mastery" className="custom-topic-link">Hybrid Infrastructure Mastery</Link>
+        </div>
+      </div>
 
-            {/* Trending */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-                <span style={{ color: '#ef4444', fontSize: '1.2rem' }}>🔥</span>
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: 0, textTransform: 'uppercase', color: '#111827' }}>Trending</h3>
-              </div>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem' }}>
+        
+        {/* 1. NEWS & TRENDING */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '3rem', marginBottom: '5rem' }}>
+          
+          {/* News Left Column */}
+          <div style={{ flex: '2 1 600px' }}>
+            <SectionTitle title="Latest News" icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>} />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
+              {data.news.map((item, idx) => (
+                <div key={idx} className="premium-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ color: brandColorPrimary, fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+                    {item.date}
+                  </div>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 1rem', lineHeight: 1.4 }}>
+                    <a href="#" className="news-link">{item.title}</a>
+                  </h3>
+                  <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', fontWeight: 700, color: brandColorPrimary }}>
+                      {item.author.charAt(0)}
+                    </div>
+                    <span style={{ color: '#475569', fontSize: '0.8rem', fontWeight: 500 }}>{item.author}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem' }}>
+              <button className="primary-btn">
+                Browse All News
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Trending Right Sidebar */}
+          <div style={{ flex: '1 1 300px' }}>
+            <div className="premium-card" style={{ padding: '1.5rem', background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)' }}>
+              <SectionTitle title="Trending" icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>} />
               
-              {/* Trending Tabs */}
-              <div style={{ display: 'flex', borderBottom: '2px solid #e5e7eb', marginBottom: '1rem' }}>
-                <div style={{ padding: '0.5rem 0.75rem', fontWeight: 700, fontSize: '0.8rem', color: '#0ea5e9', borderBottom: '2px solid #0ea5e9', marginBottom: '-2px', cursor: 'pointer' }}>7 days</div>
-                <div style={{ padding: '0.5rem 0.75rem', fontWeight: 700, fontSize: '0.8rem', color: '#6b7280', cursor: 'pointer' }}>1 month</div>
-                <div style={{ padding: '0.5rem 0.75rem', fontWeight: 700, fontSize: '0.8rem', color: '#6b7280', cursor: 'pointer' }}>3 months</div>
+              <div style={{ display: 'flex', gap: '0.5rem', background: '#f1f5f9', padding: '0.35rem', borderRadius: '12px', marginBottom: '1.5rem' }}>
+                {['7 days', '1 month', '3 months'].map(tab => (
+                  <div 
+                    key={tab}
+                    onClick={() => setTrendingTab(tab)}
+                    style={{ 
+                      flex: 1, textAlign: 'center', padding: '0.5rem', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', borderRadius: '8px',
+                      background: trendingTab === tab ? '#fff' : 'transparent',
+                      color: trendingTab === tab ? '#0f172a' : '#64748b',
+                      boxShadow: trendingTab === tab ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                      transition: 'all 0.2s'
+                    }}>
+                    {tab}
+                  </div>
+                ))}
               </div>
 
               <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {data.trending.map((title, i) => (
-                  <li key={i} style={{ display: 'flex', gap: '0.75rem', padding: '0.75rem 0', borderBottom: '1px solid #f3f4f6', alignItems: 'flex-start' }}>
-                    <span style={{ color: '#93c5fd', fontSize: '1.2rem', fontWeight: 800, lineHeight: 1 }}>{i + 1}</span>
-                    <a href="#" style={{ color: '#111827', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem', lineHeight: 1.4, transition: 'color 0.2s' }}>{title}</a>
+                {data.trending[trendingTab].map((title, i) => (
+                  <li key={i} style={{ display: 'flex', gap: '1rem', padding: '1rem 0', borderBottom: i !== 5 ? '1px solid #e2e8f0' : 'none', alignItems: 'flex-start', group: 'true' }}>
+                    <span className="gradient-text" style={{ fontSize: '1.25rem', fontWeight: 800, lineHeight: 1 }}>0{i + 1}</span>
+                    <a href="#" className="news-link" style={{ fontWeight: 600, fontSize: '0.95rem', lineHeight: 1.4 }}>{title}</a>
                   </li>
                 ))}
               </ul>
             </div>
-
-            {/* Newsletter CTA */}
-            <div style={{ marginTop: '3rem', background: '#f8fafc', padding: '1.5rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-              <h4 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '0.5rem', color: '#0f172a' }}>Stay Updated</h4>
-              <p style={{ fontSize: '0.85rem', color: '#475569', marginBottom: '1rem', lineHeight: 1.5 }}>Get the latest updates on {tab} delivered directly to your inbox.</p>
-              <input type="email" placeholder="Email Address" style={{ width: '100%', padding: '0.75rem', border: '1px solid #cbd5e1', borderRadius: '4px', marginBottom: '0.75rem', boxSizing: 'border-box' }} />
-              <button style={{ width: '100%', padding: '0.75rem', background: '#0ea5e9', color: 'white', fontWeight: 700, border: 'none', borderRadius: '4px', cursor: 'pointer' }}>SUBSCRIBE</button>
+          </div>
+        </div>
+        
+        {/* 2. ARTICLES & SPONSORS */}
+        <div style={{ display: 'flex', gap: '3rem', marginBottom: '5rem', flexWrap: 'wrap' }}>
+          <div style={{ flex: '2 1 600px' }}>
+            <SectionTitle title="Deep Dives & Articles" icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>} />
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+              {data.articles.map((item, idx) => (
+                <div key={idx} className="premium-card" style={{ display: 'flex', gap: '1rem', padding: '1.25rem', alignItems: 'center' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: brandColorSecondary, fontSize: '0.65rem', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+                      {item.date}
+                    </div>
+                    <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: '0 0 0.5rem', lineHeight: 1.3 }}>
+                      <a href="#" className="news-link">{item.title}</a>
+                    </h3>
+                    <div style={{ color: '#64748b', fontSize: '0.75rem', fontWeight: 500 }}>By {item.author}</div>
+                  </div>
+                  <img src={item.image} alt={item.title} style={{ width: '90px', height: '90px', objectFit: 'cover', borderRadius: '10px' }} />
+                </div>
+              ))}
             </div>
+          </div>
 
+          <div style={{ flex: '1 1 300px' }}>
+            <SectionTitle title="Sponsored Guides" icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>} />
+            <div className="premium-card" style={{ padding: '1.5rem' }}>
+              {data.guides.map((guide, idx) => (
+                <div key={idx} style={{ display: 'flex', gap: '1rem', padding: '1rem 0', borderBottom: idx === 0 ? '1px solid #e2e8f0' : 'none' }}>
+                  <img src={guide.image} alt="Sponsor" style={{ width: '70px', height: '90px', objectFit: 'cover', borderRadius: '6px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} />
+                  <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <div style={{ color: brandColorPrimary, fontSize: '0.65rem', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '0.25rem' }}>FEATURED</div>
+                    <h4 style={{ fontSize: '0.95rem', fontWeight: 700, margin: '0 0 0.5rem', color: '#0f172a', lineHeight: 1.3 }}>
+                      <a href="#" className="news-link">Understanding Postgres Performance Limits</a>
+                    </h4>
+                    <div style={{ color: '#64748b', fontSize: '0.8rem', fontWeight: 500 }}>Tiger Data</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    );
-  };
 
-  return (
-    <div className="light-theme" style={{ minHeight: '100vh', background: '#f9fafb' }}>
-      <div className="container" style={{ paddingTop: '1rem', paddingBottom: '4rem' }}>
+      {/* 3. IN CASE YOU MISSED IT (Full Width Highlight Section) */}
+      <div style={{ background: '#0f172a', padding: '5rem 0', margin: '0 0 5rem', position: 'relative', overflow: 'hidden' }}>
+        {/* Abstract background decorative elements - Now using brand colors */}
+        <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(31,111,178,0.15) 0%, rgba(15,23,42,0) 70%)', borderRadius: '50%' }}></div>
+        <div style={{ position: 'absolute', bottom: '-20%', left: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(46,196,182,0.15) 0%, rgba(15,23,42,0) 70%)', borderRadius: '50%' }}></div>
         
-        {/* Breadcrumb */}
-        <div style={{ marginBottom: '2rem', fontSize: '1rem', color: '#4b5563' }}>
-          Open Intelligence Homepage <span style={{ margin: '0 0.5rem', color: '#9ca3af' }}>&gt;</span> {activeTab} Content On Open Intelligence
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem', position: 'relative', zIndex: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+            <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.02em' }}>In Case You Missed It</h2>
+            <a href="#" style={{ color: brandColorSecondary, fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              View All <span style={{ fontSize: '1.2rem' }}>&rsaquo;</span>
+            </a>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' }}>
+            {data.missedIt.map((item, idx) => (
+              <div key={idx} className="premium-card" style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer' }}>
+                <div style={{ position: 'relative', width: '100%', paddingTop: '60%' }}>
+                  <img src={item.image} alt={item.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div className="media-overlay"></div>
+                </div>
+                <div style={{ padding: '1.25rem' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 600, margin: '0 0 0.75rem', color: '#f8fafc', lineHeight: 1.4 }}>{item.title}</h3>
+                  <div style={{ color: '#94a3b8', fontSize: '0.75rem', fontWeight: 500 }}>{item.author}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+      </div>
 
-        {/* Navigation Tabs (InfoQ Style) */}
-        <div style={{ 
-          display: 'flex', 
-          gap: '2.5rem',
-          borderBottom: '1px solid #e5e7eb', 
-          borderTop: '1px solid #e5e7eb',
-          padding: '1.25rem 0',
-          marginBottom: '2.5rem',
-          overflowX: 'auto',
-          scrollbarWidth: 'none',
-          alignItems: 'center'
-        }}>
-          {TABS.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: activeTab === tab ? '#000000' : '#4b5563',
-                fontWeight: 700,
-                fontSize: '1.05rem',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                transition: 'color 0.2s',
-                padding: 0
-              }}
-            >
-              {tab}
-            </button>
-          ))}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem', paddingBottom: '4rem' }}>
+        
+        {/* 4. PRESENTATIONS, PODCASTS, GUIDES */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '3rem', marginBottom: '5rem' }}>
+          
+          {/* Presentations */}
+          <div>
+            <SectionTitle title="Presentations" icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              {data.presentations.map((item, idx) => (
+                <div key={idx} className="premium-card">
+                  <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
+                    <img src={item.image} alt={item.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div className="media-overlay"></div>
+                    <div className="badge" style={{ position: 'absolute', top: '10px', right: '10px' }}>Transcript</div>
+                    <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: '48px', height: '48px', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'transform 0.2s' }}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="white" style={{ marginLeft: '4px' }}><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                    <div style={{ position: 'absolute', bottom: '10px', right: '10px', background: 'rgba(0,0,0,0.7)', color: '#fff', fontSize: '0.7rem', fontWeight: 600, padding: '4px 8px', borderRadius: '6px' }}>
+                      {item.duration}
+                    </div>
+                  </div>
+                  <div style={{ padding: '1.25rem' }}>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0 0 0.5rem', color: '#0f172a', lineHeight: 1.3 }}><a href="#" className="news-link">{item.title}</a></h3>
+                    <div style={{ color: '#64748b', fontSize: '0.8rem', fontWeight: 500 }}>{item.author}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Podcasts */}
+          <div>
+            <SectionTitle title="Podcasts" icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              {data.podcasts.map((item, idx) => (
+                <div key={idx} className="premium-card">
+                  <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
+                    <img src={item.image} alt={item.title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div className="media-overlay"></div>
+                    <div style={{ position: 'absolute', left: '12px', bottom: '12px', width: '36px', height: '36px', background: brandGradient, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(31,111,178,0.4)' }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                    </div>
+                    <div style={{ position: 'absolute', bottom: '12px', right: '12px', background: 'rgba(0,0,0,0.7)', color: '#fff', fontSize: '0.7rem', fontWeight: 600, padding: '4px 8px', borderRadius: '6px' }}>
+                      {item.duration}
+                    </div>
+                  </div>
+                  <div style={{ padding: '1.25rem' }}>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0 0 0.5rem', color: '#0f172a', lineHeight: 1.3 }}><a href="#" className="news-link">{item.title}</a></h3>
+                    <div style={{ color: '#64748b', fontSize: '0.8rem', fontWeight: 500 }}>{item.author}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Guides */}
+          <div>
+            <SectionTitle title="Knowledge Guides" icon={<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 12 12 17 22 12"></polyline><polyline points="2 17 12 22 22 17"></polyline></svg>} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              {data.guides.map((item, idx) => (
+                <div key={idx} className="premium-card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                  <img src={item.image} alt={item.title} style={{ width: '80px', height: '110px', objectFit: 'cover', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)' }} />
+                  <div>
+                    <div style={{ color: brandColorSecondary, fontSize: '0.7rem', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '0.5rem' }}>E-BOOK</div>
+                    <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: '0 0 0.5rem', color: '#0f172a', lineHeight: 1.3 }}><a href="#" className="news-link">{item.title}</a></h3>
+                    <div style={{ color: '#64748b', fontSize: '0.75rem', fontWeight: 500 }}>Published by {item.author}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-
-        {/* Tab Content Area */}
-        <div style={{ padding: '0 1rem' }}>
-          {getTabContent(activeTab)}
+        
+        {/* 5. TOPICS DIRECTORY FOOTER */}
+        {/* Ensure marginBottom is 0 here to prevent margin collapse at the bottom of the page */}
+        <div style={{ background: '#ffffff', borderRadius: '24px', padding: '3rem', border: '1px solid #e2e8f0', boxShadow: '0 10px 40px -10px rgba(0,0,0,0.03)', marginBottom: '0' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', margin: '0 0 1rem' }}>Explore Core Topics</h2>
+            <p style={{ color: '#64748b', fontSize: '1.05rem', margin: 0 }}>Dive deep into our curated collections across 5 foundational domains.</p>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2.5rem' }}>
+            {data.topicColumns.map((col, idx) => (
+              <div key={idx}>
+                <Link href={`/open-intelligence/${col.link}`} style={{ textDecoration: 'none' }}>
+                  <div className="gradient-border" style={{ paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', margin: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      {col.title} <span style={{ color: brandColorPrimary }}>&rarr;</span>
+                    </h3>
+                  </div>
+                </Link>
+                
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {col.items.map((item, i) => (
+                    <li key={i}>
+                      <a href="#" className="news-link" style={{ fontSize: '0.9rem', fontWeight: 500 }}>
+                        {item}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>

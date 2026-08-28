@@ -920,7 +920,7 @@ export default function AdminPage() {
                       <div key={r.id} className="glass-card" style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '1.5rem', alignItems: 'flex-start', flexWrap: 'wrap', borderRadius: '12px', background: '#ffffff', border: '1px solid var(--border)' }}>
                         <div style={{ flex: 1, minWidth: '220px' }}>
                           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '0.25rem' }}>
-                            <Link href={`/resources/${r.slug}`} target="_blank" style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <Link href={`/contribute/${r.slug}`} target="_blank" style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
                               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#1f6fb2' }}><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
                               {r.title} ↗
                             </Link>
@@ -1471,7 +1471,7 @@ export default function AdminPage() {
                       {allResources.filter(r => r.contributor_id === viewingUser.id).map(r => (
                         <div key={r.id} style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '1rem', alignItems: 'center', justifyContent: 'space-between' }}>
                           <div>
-                            <Link href={`/resources/${r.slug}`} target="_blank" style={{ color: 'var(--text-primary)', fontWeight: 600, textDecoration: 'none', fontSize: '0.9rem' }}>{r.title} ↗</Link>
+                            <Link href={`/contribute/${r.slug}`} target="_blank" style={{ color: 'var(--text-primary)', fontWeight: 600, textDecoration: 'none', fontSize: '0.9rem' }}>{r.title} ↗</Link>
                             <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '4px' }}>{r.category?.name}</div>
                           </div>
                           <StatusBadge status={r.status} />

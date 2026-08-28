@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const ICONS = {
   all: <svg width="18" height="18" viewBox="0 0 24 24" fill="#D97706" stroke="none"><path d="M12 2l2.4 7.6 7.6 2.4-7.6 2.4-2.4 7.6-2.4-7.6-7.6-2.4 7.6-2.4z"/></svg>,
@@ -14,6 +15,7 @@ const ICONS = {
 };
 
 export default function ResourceListItem({ resource }) {
+  const router = useRouter();
   const {
     title,
     slug,
@@ -49,61 +51,71 @@ export default function ResourceListItem({ resource }) {
   };
 
   return (
-    <Link href={`/resources/${slug}`} style={{ textDecoration: 'none', display: 'block' }}>
-      <article
-        style={{
-          padding: '1.2rem 1rem',
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          background: '#FFFFFF',
-          borderBottom: '1px solid #F5F5F4',
-          transition: 'background-color 0.15s',
+    <article
+      onClick={() => router.push(`/contribute/${slug}`)}
+      style={{
+        cursor: 'pointer',
+        padding: '1.25rem',
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '1rem',
+        background: '#FFFFFF',
+        borderBottom: '1px solid #e2e8f0',
+        borderLeft: '4px solid transparent',
+        transition: 'all 0.2s ease',
+      }}
+        onMouseEnter={(e) => { 
+          e.currentTarget.style.backgroundColor = '#f8fafc'; 
+          e.currentTarget.style.borderLeftColor = '#1f6fb2';
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#FCFBF9'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#FFFFFF'; }}
+        onMouseLeave={(e) => { 
+          e.currentTarget.style.backgroundColor = '#FFFFFF'; 
+          e.currentTarget.style.borderLeftColor = 'transparent';
+        }}
       >
         {/* Left: Category Icon */}
         <div style={{ flexShrink: 0 }}>
           <div style={{
             width: '40px',
             height: '40px',
-            borderRadius: '8px',
-            background: '#F5F5F4',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, rgba(31,111,178,0.1) 0%, rgba(46,196,182,0.1) 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#A8A29E'
+            color: '#1f6fb2',
+            border: '1px solid rgba(31,111,178,0.15)'
           }}>
             {icon}
           </div>
         </div>
 
         {/* Middle: Content */}
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {/* Title / Contributor */}
           <h3 style={{
-            color: '#1C1917',
-            fontSize: '0.9rem',
-            fontWeight: 600,
+            color: '#0f172a',
+            fontSize: '0.95rem',
+            fontWeight: 700,
             margin: 0,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
-            textOverflow: 'ellipsis'
+            textOverflow: 'ellipsis',
+            lineHeight: 1.2
           }}>
             {contributor?.username ? (
-              <span style={{ color: '#78716C', fontWeight: 500 }}>{contributor.username}/</span>
+              <span style={{ color: '#64748b', fontWeight: 500, marginRight: '0.2rem' }}>{contributor.username}/</span>
             ) : null}
             {title}
           </h3>
           
           {/* Description */}
           <p style={{
-            color: '#57534E',
-            fontSize: '0.8rem',
+            color: '#475569',
+            fontSize: '0.85rem',
             fontWeight: 400,
             margin: 0,
-            lineHeight: 1.4,
+            lineHeight: 1.5,
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
@@ -113,17 +125,51 @@ export default function ResourceListItem({ resource }) {
           </p>
 
           {/* Tags */}
-          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.15rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
             {category?.name && (
-              <span style={tagStyle}>
+              <span style={{...tagStyle, background: 'rgba(31,111,178,0.1)', color: '#1f6fb2', border: 'none', fontWeight: 600}}>
                 {category.name}
               </span>
             )}
             {tags.slice(0, 4).map(({ tag }) => (
-              <span key={tag.id} style={tagStyle}>
+              <span key={tag.id} style={{...tagStyle, background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0'}}>
                 {tag.name}
               </span>
             ))}
+            
+            {/* Open GitHub Project Button */}
+            <a 
+              href={resource.github_url || '#'} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0.2rem 0.6rem',
+                border: '1px solid #e2e8f0',
+                borderRadius: '4px',
+                fontSize: '0.7rem',
+                fontWeight: 600,
+                color: '#475569',
+                textDecoration: 'none',
+                background: '#ffffff',
+                transition: 'all 0.2s',
+                marginLeft: '0.5rem'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'linear-gradient(135deg, #1f6fb2, #2ec4b6)';
+                e.currentTarget.style.color = '#ffffff';
+                e.currentTarget.style.borderColor = 'transparent';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#ffffff';
+                e.currentTarget.style.color = '#475569';
+                e.currentTarget.style.borderColor = '#e2e8f0';
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              Open GitHub Project
+            </a>
           </div>
         </div>
 
@@ -133,48 +179,51 @@ export default function ResourceListItem({ resource }) {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'flex-end',
-          gap: '0.3rem',
-          color: '#A8A29E',
-          fontSize: '0.7rem',
-          minWidth: '80px',
-          paddingTop: '0.1rem'
+          justifyContent: 'space-between',
+          gap: '0.5rem',
+          minWidth: '90px'
         }}>
-          {github_stars !== null && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#D97706', fontWeight: 500 }}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
-              {github_stars}
-            </div>
-          )}
-          {github_forks > 0 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#6366f1', fontWeight: 500 }}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M21 7V5.5C21 4.1 19.9 3 18.5 3H5.5C4.1 3 3 4.1 3 5.5V7C3 8.4 4.1 9.5 5.5 9.5H7.1l3.4 5.7v3.8c0 1.1.9 2 2 2h.2c1.1 0 2-.9 2-2v-3.8l3.4-5.7h1.4C19.9 9.5 21 8.4 21 7zM5.5 7.5C4.4 7.5 3.5 6.6 3.5 5.5S4.4 3.5 5.5 3.5h13c1.1 0 2 .9 2 2s-.9 2-2 2H5.5z"/>
-              </svg>
-              {github_forks}
-            </div>
-          )}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#ef4444', fontWeight: 500 }}>
-            <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-            </svg>
-            {likes}
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            {github_stars !== null && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#eab308', fontWeight: 600, fontSize: '0.8rem' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                {github_stars}
+              </div>
+            )}
+            {github_forks > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#8b5cf6', fontWeight: 600, fontSize: '0.8rem' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M21 7V5.5C21 4.1 19.9 3 18.5 3H5.5C4.1 3 3 4.1 3 5.5V7C3 8.4 4.1 9.5 5.5 9.5H7.1l3.4 5.7v3.8c0 1.1.9 2 2 2h.2c1.1 0 2-.9 2-2v-3.8l3.4-5.7h1.4C19.9 9.5 21 8.4 21 7zM5.5 7.5C4.4 7.5 3.5 6.6 3.5 5.5S4.4 3.5 5.5 3.5h13c1.1 0 2 .9 2 2s-.9 2-2 2H5.5z"/>
+                </svg>
+                {github_forks}
+              </div>
+            )}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#A8A29E', fontWeight: 500 }}>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-            {views}
+          
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#ef4444', fontWeight: 600, fontSize: '0.8rem' }}>
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+              {likes}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#94a3b8', fontWeight: 600, fontSize: '0.8rem' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              {views}
+            </div>
           </div>
+
           {github_last_updated && (
-            <div style={{ marginTop: '0.2rem' }}>
+            <div style={{ marginTop: 'auto', fontSize: '0.75rem', color: '#94a3b8', fontWeight: 500 }}>
               Updated {formatDate(github_last_updated)}
             </div>
           )}
         </div>
       </article>
-    </Link>
   );
 }

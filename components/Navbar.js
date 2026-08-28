@@ -7,9 +7,9 @@ import { createClient } from '@/lib/supabase/client';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
-  { href: '/resources', label: 'Contribute' },
+  { href: '/contribute', label: 'Contribute' },
   { href: '/meetings', label: 'Events' },
-  { href: '/open-intelligence', label: 'Open Intelligence' },
+  { href: '/open-intelligence', label: 'Resources' },
 ];
 
 export default function Navbar() {

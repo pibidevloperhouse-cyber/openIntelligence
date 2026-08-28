@@ -4,15 +4,15 @@ import Link from 'next/link';
 
 const footerLinks = {
   Explore: [
-    { href: '/resources', label: 'Browse Resources' },
+    { href: '/contribute', label: 'Browse Resources' },
     { href: '/meetings', label: 'Community Meetings' },
     { href: '/submit', label: 'Submit a Resource' },
   ],
   Categories: [
-    { href: '/resources?category=mcp-server', label: 'MCP Servers' },
-    { href: '/resources?category=dataset', label: 'Datasets' },
-    { href: '/resources?category=rag-template', label: 'RAG Templates' },
-    { href: '/resources?category=prompt-library', label: 'Prompt Libraries' },
+    { href: '/contribute?category=mcp-server', label: 'MCP Servers' },
+    { href: '/contribute?category=dataset', label: 'Datasets' },
+    { href: '/contribute?category=rag-template', label: 'RAG Templates' },
+    { href: '/contribute?category=prompt-library', label: 'Prompt Libraries' },
   ],
   Community: [
     { href: 'https://github.com', label: 'GitHub', external: true },
@@ -26,7 +26,6 @@ export default function Footer() {
     <footer style={{
       borderTop: '1px solid var(--border)',
       background: '#f4f5f7',
-      marginTop: 'auto',
     }}>
       <div className="container" style={{ padding: '3rem 1.5rem 2rem' }}>
 

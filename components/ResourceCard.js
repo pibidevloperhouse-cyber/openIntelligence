@@ -43,7 +43,7 @@ export default function ResourceCard({ resource, variant = 'light' }) {
 
   if (variant === 'minimal') {
     return (
-      <Link href={`/resources/${slug}`} style={{ textDecoration: 'none', display: 'block' }}>
+      <Link href={`/contribute/${slug}`} style={{ textDecoration: 'none', display: 'block' }}>
         <article
           style={{
             padding: '1.25rem',
@@ -97,7 +97,7 @@ export default function ResourceCard({ resource, variant = 'light' }) {
   }
 
   return (
-    <Link href={`/resources/${slug}`} style={{ textDecoration: 'none', display: 'block' }}>
+    <Link href={`/contribute/${slug}`} style={{ textDecoration: 'none', display: 'block' }}>
       <article
         className="glass-card"
         style={{

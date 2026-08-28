@@ -1,133 +1,515 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import ResourceListItem from '@/components/ResourceListItem';
 
-export default function ContributePage() {
-  const router = useRouter();
-  const supabase = createClient();
+const ICONS = {
+  all: <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 7.6 7.6 2.4-7.6 2.4-2.4 7.6-2.4-7.6-7.6-2.4 7.6-2.4z" /></svg>,
+  dataset: <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /></svg>,
+  'open-repository': <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.418 22 12c0-5.523-4.477-10-10-10z" /></svg>,
+  'prompt-library': <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></svg>,
+  'mcp-server': <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16v16H4z" /><path d="M12 8v8" /><path d="M8 12h8" /></svg>,
+  'rag-template': <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v20" /><path d="M4.93 4.93l14.14 14.14" /><path d="M2 12h20" /><path d="M4.93 19.07L19.07 4.93" /></svg>,
+  'ai-workflow': <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>,
+  documentation: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>
+};
+
+const CATEGORIES = [
+  { slug: 'all', name: 'All resources' },
+  { slug: 'dataset', name: 'Datasets' },
+  { slug: 'open-repository', name: 'GitHub Projects' },
+  { slug: 'prompt-library', name: 'Prompt Libraries' },
+  { slug: 'mcp-server', name: 'MCP Servers' },
+  { slug: 'rag-template', name: 'RAG Templates' },
+  { slug: 'ai-workflow', name: 'AI Workflows' },
+  { slug: 'documentation', name: 'Documentation' },
+];
+
+export default function ResourcesPage() {
+  const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data?.user) {
-        // If already logged in, go directly to the submit page
-        router.push('/submit');
-      } else {
-        setLoading(false);
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('all');
+  const [selectedTag, setSelectedTag] = useState(null);
+  const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
+
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const PER_PAGE = 12;
+
+  const [categoryCounts, setCategoryCounts] = useState({});
+  const [tagCounts, setTagCounts] = useState({});
+  const [globalTotal, setGlobalTotal] = useState(0);
+
+  const fetchResources = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        search,
+        category,
+        sort: 'newest',
+        page: String(page),
+        limit: String(PER_PAGE),
+      });
+      if (selectedTag) {
+        params.set('search', selectedTag);
       }
-    });
-  }, [router, supabase]);
 
-  const handleLogin = () => {
-    supabase.auth.signInWithOAuth({
-      provider: 'github',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-  };
+      const res = await fetch(`/api/resources?${params}`);
+      const data = await res.json();
+      setResources(data.resources || []);
+      setTotal(data.total || 0);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [search, category, page, selectedTag]);
 
-  if (loading) {
-    return <div style={{ minHeight: 'calc(100vh - 68px)', background: '#ffffff' }}></div>;
-  }
+  const fetchAggregations = useCallback(async () => {
+    try {
+      const res = await fetch('/api/resources/aggregations');
+      const data = await res.json();
+      setCategoryCounts(data.categoryCounts || {});
+      setTagCounts(data.tagCounts || {});
+      setGlobalTotal(data.totalCount || 0);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
+  useEffect(() => { fetchResources(); }, [fetchResources]);
+  useEffect(() => { fetchAggregations(); }, [fetchAggregations]);
+
+  useEffect(() => { setPage(1); }, [search, category, selectedTag]);
+
+  const totalPages = Math.ceil(total / PER_PAGE);
+  const popularTags = Object.entries(tagCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 15);
 
   return (
-    <div className="animate-fade-up" style={{
-      minHeight: 'calc(100vh - 68px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: '#ffffff',
-      padding: '2rem'
-    }}>
-      <div style={{
-        background: '#ffffff',
-        borderRadius: '24px',
-        border: '1px solid #E7E5E4',
-        padding: '3.5rem 2.5rem',
-        maxWidth: '500px',
-        width: '100%',
-        textAlign: 'center',
-        boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.05)'
-      }}>
-        {/* Plus Icon Container */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
-          <div style={{ background: 'rgba(31, 111, 178, 0.1)', padding: '1rem', borderRadius: '50%', border: '1px solid rgba(31, 111, 178, 0.2)' }}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1f6fb2" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
+    <div className="animate-fade-up" style={{ minHeight: '100vh', paddingTop: '3rem', paddingBottom: '5rem', backgroundColor: '#ffffff' }}>
+      <style>{`
+        .resources-layout {
+          display: grid;
+          grid-template-columns: 220px 1fr;
+          gap: 2.5rem;
+        }
+        .header-layout {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 3rem;
+          gap: 1.5rem;
+        }
+        .search-bar {
+          display: flex;
+          align-items: center;
+          background: #ffffff;
+          border: 1px solid #E7E5E4;
+          border-radius: 12px;
+          padding: 0.8rem 1.25rem;
+          margin-bottom: 1.5rem;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+          gap: 0.75rem;
+          flex-wrap: wrap;
+          transition: all 0.2s;
+        }
+        .search-bar:focus-within {
+          box-shadow: 0 10px 25px -5px rgba(31, 111, 178, 0.15);
+          border-color: rgba(31, 111, 178, 0.4);
+        }
+        @media (max-width: 1024px) {
+          .resources-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+          }
+          .sidebar-categories {
+            display: none;
+          }
+          .mobile-category-dropdown {
+            display: block;
+            width: 100%;
+          }
+          .mobile-hide {
+            display: none;
+          }
+        }
+        @media (min-width: 1025px) {
+          .mobile-category-dropdown {
+            display: none;
+          }
+        }
+        @media (max-width: 768px) {
+          .header-layout {
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+          }
+        }
+        @media (max-width: 480px) {
+          .container {
+            padding: 0 1rem !important;
+          }
+        }
+        
+        button:hover:not([data-active="true"]) .hover-gradient-target {
+          background: linear-gradient(135deg, #1f6fb2, #2ec4b6) !important;
+          -webkit-background-clip: text !important;
+          -webkit-text-fill-color: transparent !important;
+          background-clip: text !important;
+          color: transparent !important;
+        }
+        button:hover:not([data-active="true"]) .hover-icon-target {
+          color: #1f6fb2 !important;
+        }
+      `}</style>
+      <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
+
+        {/* Top Header */}
+        <div className="header-layout">
+          <div>
+            <h1 style={{
+              fontSize: '2.5rem',
+              fontWeight: 900,
+              fontFamily: 'var(--font-display)',
+              marginBottom: '0.5rem',
+              letterSpacing: '-0.03em',
+              background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}>
+              Contribute
+            </h1>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: 400, margin: 0 }}>
+              {globalTotal} open-source AI resources from the Madurai AI community
+            </p>
           </div>
+          <Link href="/contribute" style={{ textDecoration: 'none' }}>
+            <button style={{
+              background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
+              border: 'none',
+              color: '#ffffff',
+              padding: '0.65rem 1.35rem',
+              borderRadius: '8px',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(31, 111, 178, 0.25)',
+              transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              <span style={{ color: '#ffffff', fontWeight: 800 }}>+</span> Submit a resource
+            </button>
+          </Link>
         </div>
 
-        {/* Heading */}
-        <h1 style={{
-          fontSize: '2rem',
-          fontWeight: 800,
-          color: '#1C1917',
-          marginBottom: '1rem',
-          fontFamily: 'var(--font-display)',
-          letterSpacing: '-0.02em'
-        }}>
-          Sign in to contribute
-        </h1>
+        {/* 2-Column Layout */}
+        <div className="resources-layout">
 
-        {/* Subtext */}
-        <p style={{
-          color: '#57534E',
-          fontSize: '1rem',
-          lineHeight: '1.6',
-          marginBottom: '2.5rem',
-          maxWidth: '400px',
-          margin: '0 auto 2.5rem auto'
-        }}>
-          Contributions are attributed to your GitHub profile so the community can find and follow you.
-        </p>
+          {/* Sidebar */}
+          <aside>
+            {/* Categories */}
+            <div style={{ marginBottom: '2.5rem' }}>
+              <h4 className="mobile-hide" style={{ fontSize: '0.65rem', fontWeight: 600, color: '#A8A29E', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
+                CATEGORIES
+              </h4>
 
-        {/* Continue with GitHub Button */}
-        <button
-          onClick={handleLogin}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.6rem',
-            padding: '0.85rem 2.5rem',
-            background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
-            color: '#ffffff',
-            borderRadius: '12px',
-            border: 'none',
-            fontSize: '1rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            marginBottom: '1.5rem',
-            transition: 'all 0.2s ease',
-            boxShadow: '0 4px 14px rgba(31, 111, 178, 0.25)',
-            width: '100%',
-            maxWidth: '300px'
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.boxShadow = '0 8px 20px rgba(31, 111, 178, 0.35)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 4px 14px rgba(31, 111, 178, 0.25)';
-          }}
-        >
-          <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
-          </svg>
-          Continue with GitHub
-        </button>
+              {/* Mobile Custom Dropdown */}
+              <div className="mobile-category-dropdown" style={{ position: 'relative', zIndex: 40 }}>
+                <button
+                  onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
+                  style={{
+                    width: '100%',
+                    padding: '0.85rem 1.25rem',
+                    borderRadius: '12px',
+                    border: '1px solid var(--border)',
+                    backgroundColor: '#ffffff',
+                    fontSize: '0.95rem',
+                    color: 'var(--text-primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', color: '#1f6fb2' }}>
+                      {ICONS[category] || ICONS['documentation']}
+                    </span>
+                    <span style={{ fontWeight: 600 }}>
+                      {CATEGORIES.find(c => c.slug === category)?.name || 'Select Category'}
+                    </span>
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isMobileDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
 
-        <div style={{ margin: 0 }}>
-          <span style={{ color: '#78716C', fontSize: '0.95rem' }}>
-            Or <Link href="/resources" style={{ color: '#1f6fb2', textDecoration: 'underline', fontWeight: 500 }}>browse resources</Link> first.
-          </span>
+                {isMobileDropdownOpen && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    right: 0,
+                    marginTop: '0.5rem',
+                    background: '#ffffff',
+                    border: '1px solid var(--border)',
+                    borderRadius: '12px',
+                    boxShadow: '0 15px 35px -5px rgba(0,0,0,0.1)',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}>
+                    {CATEGORIES.map(({ slug, name }) => {
+                      const isActive = category === slug;
+                      const count = slug === 'all' ? globalTotal : (categoryCounts[slug] || 0);
+                      const icon = ICONS[slug] || ICONS['documentation'];
+
+                      return (
+                        <button
+                          key={slug}
+                          onClick={() => {
+                            setCategory(slug);
+                            setSelectedTag(null);
+                            setIsMobileDropdownOpen(false);
+                          }}
+                          style={{
+                            width: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '0.85rem 1.25rem',
+                            border: 'none',
+                            background: isActive ? 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' : '#ffffff',
+                            color: isActive ? '#ffffff' : 'var(--text-secondary)',
+                            fontWeight: isActive ? 600 : 500,
+                            fontSize: '0.9rem',
+                            cursor: 'pointer',
+                            textAlign: 'left',
+                            borderBottom: '1px solid var(--border)'
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                            <span style={{
+                              color: isActive ? '#ffffff' : 'var(--text-muted)',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}>
+                              {icon}
+                            </span>
+                            {name}
+                          </div>
+                          <span style={{ fontSize: '0.75rem', color: isActive ? '#ffffff' : 'var(--text-muted)', fontWeight: 600 }}>
+                            {count}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Desktop Sidebar */}
+              <div className="sidebar-categories" style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                {CATEGORIES.map(({ slug, name }) => {
+                  const isActive = category === slug;
+                  const count = slug === 'all' ? globalTotal : (categoryCounts[slug] || 0);
+                  const icon = ICONS[slug] || ICONS['documentation'];
+
+                  return (
+                    <button
+                      key={slug}
+                      data-active={isActive ? "true" : "false"}
+                      onClick={() => { setCategory(slug); setSelectedTag(null); }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        padding: '0.65rem 0.85rem',
+                        borderRadius: '8px',
+                        border: 'none',
+                        background: isActive ? 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' : 'transparent',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'all 0.2s ease',
+                        boxShadow: isActive ? '0 4px 12px rgba(31, 111, 178, 0.25)' : 'none'
+                      }}
+                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'; }}
+                      onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        <span className="hover-icon-target" style={{
+                          color: isActive ? '#ffffff' : 'var(--text-muted)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'color 0.2s ease'
+                        }}>
+                          {icon}
+                        </span>
+                        <span className="hover-gradient-target" style={{
+                          color: isActive ? '#ffffff' : 'var(--text-secondary)',
+                          fontWeight: isActive ? 600 : 500,
+                          fontSize: '0.9rem'
+                        }}>
+                          {name}
+                        </span>
+                      </div>
+                      <span className="hover-gradient-target" style={{
+                        fontSize: '0.75rem',
+                        color: isActive ? '#ffffff' : 'var(--text-muted)',
+                        fontWeight: isActive ? 700 : 500
+                      }}>
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Popular Tags */}
+            {popularTags.length > 0 && (
+              <div className="mobile-hide" style={{ marginTop: '3rem' }}>
+                <h4 style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '1rem' }}>
+                  POPULAR TAGS
+                </h4>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  {popularTags.map(([tag, count]) => {
+                    const isActive = selectedTag === tag;
+                    return (
+                      <button
+                        key={tag}
+                        data-active={isActive ? "true" : "false"}
+                        onClick={() => {
+                          setSelectedTag(isActive ? null : tag);
+                          if (!isActive) setCategory('all');
+                        }}
+                        style={{
+                          background: isActive ? 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' : '#ffffff',
+                          border: isActive ? 'none' : '1px solid var(--border)',
+                          padding: '0.35rem 0.75rem',
+                          borderRadius: '20px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.4rem',
+                          transition: 'all 0.15s',
+                          boxShadow: isActive ? '0 4px 12px rgba(31, 111, 178, 0.25)' : '0 1px 2px rgba(0,0,0,0.02)'
+                        }}
+                      >
+                        <span className="hover-gradient-target" style={{ color: isActive ? '#ffffff' : 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600 }}>{tag}</span> <span className="hover-gradient-target" style={{ color: isActive ? 'rgba(255,255,255,0.85)' : 'var(--text-muted)', fontSize: '0.75rem' }}>{count}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </aside>
+
+          {/* Main Content Area */}
+          <main>
+            {/* Search Bar Container */}
+            <div className="search-bar">
+              <svg width="15" height="15" fill="none" stroke="#A8A29E" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Filter by name, tag, use case..."
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setSelectedTag(null); }}
+                style={{
+                  border: 'none',
+                  outline: 'none',
+                  background: 'transparent',
+                  flex: '1 1 150px',
+                  minWidth: '150px',
+                  padding: '0 0.5rem',
+                  fontSize: '0.85rem',
+                  color: '#1C1917',
+                }}
+              />
+              <span style={{ fontSize: '0.75rem', color: '#A8A29E', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                {total} of {globalTotal}
+              </span>
+            </div>
+
+            {/* List */}
+            <div className="glass-card" style={{
+              overflow: 'hidden',
+              boxShadow: '0 10px 30px -5px rgba(0,0,0,0.04)',
+              background: '#ffffff',
+              border: '1px solid var(--border)',
+              borderRadius: '12px'
+            }}>
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} style={{ padding: '1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', gap: '1rem' }}>
+                    <div style={{ width: 40, height: 40, background: 'var(--bg-secondary)', borderRadius: 8, animation: 'pulse 1.5s infinite' }} />
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <div style={{ width: '40%', height: 16, background: 'var(--bg-secondary)', borderRadius: 4, animation: 'pulse 1.5s infinite' }} />
+                      <div style={{ width: '80%', height: 14, background: 'var(--bg-secondary)', borderRadius: 4, animation: 'pulse 1.5s infinite' }} />
+                    </div>
+                  </div>
+                ))
+              ) : resources.length > 0 ? (
+                <div>
+                  {resources.map((resource) => (
+                    <ResourceListItem key={resource.id} resource={resource} />
+                  ))}
+                </div>
+              ) : (
+                <div style={{ padding: '5rem 2rem', textAlign: 'center' }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '1rem', color: 'var(--text-muted)' }}>🔍</div>
+                  <h3 style={{ color: 'var(--text-primary)', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-display)', fontSize: '1.5rem' }}>No resources found</h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>Try adjusting your filters or search query.</p>
+                </div>
+              )}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '2rem' }}>
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  style={{
+                    padding: '0.4rem 0.8rem', fontSize: '0.8rem', fontWeight: 500,
+                    border: '1px solid #E7E5E4', background: '#FFFFFF', borderRadius: 6,
+                    opacity: page === 1 ? 0.4 : 1, cursor: page === 1 ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  ← Prev
+                </button>
+                <span style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', fontWeight: 500, color: '#57534E' }}>
+                  Page {page} of {totalPages}
+                </span>
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  style={{
+                    padding: '0.4rem 0.8rem', fontSize: '0.8rem', fontWeight: 500,
+                    border: '1px solid #E7E5E4', background: '#FFFFFF', borderRadius: 6,
+                    opacity: page === totalPages ? 0.4 : 1, cursor: page === totalPages ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  Next →
+                </button>
+              </div>
+            )}
+          </main>
         </div>
       </div>
     </div>

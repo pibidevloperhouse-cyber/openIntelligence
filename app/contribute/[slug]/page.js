@@ -145,7 +145,7 @@ export default async function ResourceDetailPage({ params }) {
             {tags.map(({ tag }) => (
               <Link
                 key={tag.id}
-                href={`/resources?search=${tag.name}`}
+                href={`/contribute?search=${tag.name}`}
                 style={{
                   padding: '0.3rem 0.75rem',
                   borderRadius: '6px',
@@ -259,7 +259,7 @@ export default async function ResourceDetailPage({ params }) {
         {/* Back Button */}
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
           <Link 
-            href="/resources" 
+            href="/contribute" 
             className="glass-card" 
             style={{ 
               padding: '0.5rem 1rem', 

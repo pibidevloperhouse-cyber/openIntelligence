@@ -114,7 +114,7 @@ export default function ExploreSection() {
         <div className="explore-grid">
           {CATEGORIES.map((cat) => (
             <div key={cat.slug} className="explore-card">
-              <Link href={`/resources?category=${cat.slug}`} className="explore-card-link">
+              <Link href={`/contribute?category=${cat.slug}`} className="explore-card-link">
                 <div 
                   className="explore-card-icon"
                   style={{

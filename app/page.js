@@ -226,6 +226,22 @@ export default async function HomePage() {
             font-size: 0.8rem !important;
           }
         }
+
+        /* 📱 RESPONSIVE ABOUT TEXT */
+        .about-paragraph {
+          flex: 1 1 400px;
+          color: #475569;
+          font-size: 1.05rem;
+          line-height: 1.7;
+          margin: 0;
+          text-align: justify;
+        }
+        
+        @media (max-width: 768px) {
+          .about-paragraph {
+            text-align: left;
+          }
+        }
       `}</style>
 
       <Suspense fallback={null}>
@@ -269,14 +285,14 @@ export default async function HomePage() {
               <div style={{ width: '130px', height: '130px', flexShrink: 0, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <img src="/final-logo.webp" alt="Pi Bi Technologies" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
               </div>
-              <p style={{ flex: '1 1 400px', color: '#475569', fontSize: '1.05rem', lineHeight: 1.7, margin: 0, textAlign: 'justify' }}>
+              <p className="about-paragraph">
                 <strong>Pi Bi Foundation For Open Intelligence</strong> is a community driven ecosystem built around learning, experimentation, and contribution. Powered by the <strong>Madurai AI Community</strong> and supported by <strong>Pi Bi Technologies</strong>, we bring together students, developers, researchers, and technology enthusiasts to explore and build with AI, machine learning, computer vision, IoT, infrastructure, and product engineering.
               </p>
             </div>
 
             {/* Block 2 */}
             <div style={{ display: 'flex', gap: '2.5rem', alignItems: 'center', flexWrap: 'wrap-reverse' }}>
-              <p style={{ flex: '1 1 400px', color: '#475569', fontSize: '1.05rem', lineHeight: 1.7, margin: 0, textAlign: 'justify' }}>
+              <p className="about-paragraph">
                 We believe meaningful innovation grows when knowledge is shared and people build together. Through practical learning, open-source projects, technical sessions, research, and community contributions, we create a space where people can move beyond learning technology to experiment, build, share, and contribute solutions that others can learn from and build upon.
               </p>
               <div style={{ width: '130px', height: '130px', flexShrink: 0, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -421,7 +437,7 @@ export default async function HomePage() {
                 Datasets, GitHub projects, prompt libraries, MCP servers, RAG templates and workflows &mdash; all crowdsourced, reviewed and organised by the Madurai AI community.
               </p>
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <Link href="/resources" className="btn-primary" style={{ padding: '0.85rem 1.5rem', fontSize: '0.95rem', color: '#fff' }}>
+                <Link href="/contribute" className="btn-primary" style={{ padding: '0.85rem 1.5rem', fontSize: '0.95rem', color: '#fff' }}>
                   Browse resources &rarr;
                 </Link>
                 <Link href="/submit" className="btn-outline" style={{ padding: '0.85rem 1.5rem', fontSize: '0.95rem', background: '#ffffff', borderColor: '#cbd5e1', color: '#1e40af' }}>
@@ -434,7 +450,7 @@ export default async function HomePage() {
               <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: 0, fontFamily: 'var(--font-display)' }}>
                 Featured resources
               </h3>
-              <Link href="/resources" style={{ fontSize: '0.9rem', fontWeight: 700, color: '#2563eb', textDecoration: 'none' }}>
+              <Link href="/contribute" style={{ fontSize: '0.9rem', fontWeight: 700, color: '#2563eb', textDecoration: 'none' }}>
                 View all &rarr;
               </Link>
             </div>
@@ -479,7 +495,7 @@ export default async function HomePage() {
                     People powering the Open Intelligence Hub with AI resources
                   </p>
                 </div>
-                <Link href="/resources" style={{ fontSize: '0.9rem', fontWeight: 700, color: '#2563eb', textDecoration: 'none' }}>
+                <Link href="/contribute" style={{ fontSize: '0.9rem', fontWeight: 700, color: '#2563eb', textDecoration: 'none' }}>
                   View all &rarr;
                 </Link>
               </div>
@@ -607,7 +623,7 @@ export default async function HomePage() {
                 }}>
                   ✦ Submit a Resource
                 </Link>
-                <Link href="/resources" className="btn-outline" style={{
+                <Link href="/contribute" className="btn-outline" style={{
                   padding: '0.9rem 2.25rem',
                   fontSize: '1rem',
                   fontWeight: 600,
