@@ -183,7 +183,7 @@ export default function ProductionUI({ data }) {
               <span className="ent-badge">Phase 1: Discovery (News)</span>
               <div style={{ flex: '1 1 400px' }}>
               <SectionTitle title="Enterprise Deployments" subtitle="Case studies and architecture reviews" />
-              <div className="prod-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+              <div className="prod-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '1.5rem' }}>
                 {data.news.slice(0, 4).map((item, idx) => (
                   <div key={idx} style={{ borderLeft: `3px solid ${brandColorPrimary}`, paddingLeft: '1rem' }}>
                     <h4 style={{ fontSize: '1rem', fontWeight: 600, margin: '0 0 0.5rem', lineHeight: 1.3, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
@@ -232,18 +232,25 @@ export default function ProductionUI({ data }) {
               <span className="ent-badge">Phase 3: Review (Presentations)</span>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', margin: '0 0 1.5rem' }}>Case Studies & Video Briefings</h3>
               
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.5rem' }}>
                 {data.presentations.map((item, idx) => (
-                  <div key={idx} style={{ background: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0', padding: '1.5rem' }}>
-                    <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', borderRadius: '6px', overflow: 'hidden', marginBottom: '1rem' }}>
+                  <div key={idx} style={{ background: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+                    <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
                        <img src={item.image} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                       <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '50px', height: '50px', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.4)', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
+                         <svg width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="1"><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                       </div>
+                       <div style={{ position: 'absolute', bottom: '1rem', right: '1rem', background: 'rgba(15,23,42,0.8)', color: '#fff', padding: '0.3rem 0.8rem', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 700, backdropFilter: 'blur(4px)' }}>
+                         {item.duration}
+                       </div>
                     </div>
-                    <h4 style={{ fontSize: '1.05rem', fontWeight: 600, margin: '0 0 0.5rem', color: '#0f172a' }}>
-                      <a href="#" className="hover-link">{item.title}</a>
-                    </h4>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
-                      <span style={{ fontSize: '0.85rem', color: '#64748b' }}>{item.author}</span>
-                      <span style={{ fontSize: '0.75rem', background: '#f1f5f9', padding: '0.25rem 0.5rem', borderRadius: '4px' }}>{item.duration}</span>
+                    <div style={{ padding: '1.5rem' }}>
+                      <h4 style={{ fontSize: '1.05rem', fontWeight: 600, margin: '0 0 0.5rem', color: '#0f172a', lineHeight: 1.3 }}>
+                        <a href="#" className="hover-link">{item.title}</a>
+                      </h4>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
+                        <span style={{ fontSize: '0.85rem', color: '#64748b' }}>{item.author}</span>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -260,7 +267,7 @@ export default function ProductionUI({ data }) {
               <span className="ent-badge">Phase 4: Standardization (Guides)</span>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', margin: '0 0 1.5rem' }}>Essential Documentation</h3>
               
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1.5rem' }}>
                 {data.guides.map((item, idx) => (
                   <div key={idx} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1rem' }}>
                     <h4 style={{ fontSize: '1.05rem', fontWeight: 600, margin: '0 0 0.5rem', color: '#0f172a', lineHeight: 1.3 }}>
