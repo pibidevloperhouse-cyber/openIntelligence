@@ -13,15 +13,21 @@ export default function HybridUI({ data }) {
   );
 
   return (
-    <div id="hybrid-theme" style={{ display: 'flex', flexDirection: 'column', background: '#fafafa', minHeight: '100vh', width: '100%', color: '#0f172a', fontFamily: '"Inter", system-ui, sans-serif' }}>
+    <div id="hybrid-theme" style={{ display: 'block', background: '#fafafa', minHeight: '100vh', width: '100%', maxWidth: '100vw', overflowX: 'hidden', color: '#0f172a', fontFamily: 'var(--font-zoho), "Plus Jakarta Sans", "Inter", system-ui, sans-serif' }}>
       
       <style>{`
+
+        .guide-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+        #hy-theme .hover-link { white-space: normal !important; word-break: break-word !important; overflow-wrap: break-word !important; }
+        #hy-theme .premium-card, #hy-theme .masonry-item, #hy-theme .h-scroll-item, #hy-theme .gallery-scroll-item { max-width: 100%; box-sizing: border-box; overflow: hidden; }
+        #hy-theme { width: 100%; max-width: 100vw; overflow-x: hidden; }
+  
         #hybrid-theme * { box-sizing: border-box; }
         
         #hybrid-theme .topic-stats-container {
           display: flex;
           align-items: center;
-          flex-wrap: wrap;
+          flex-wrap: wrap; max-width: 100%; box-sizing: border-box;
           gap: 0.4rem;
           margin-top: 1rem;
           padding: 0.5rem;
@@ -124,6 +130,24 @@ export default function HybridUI({ data }) {
           letter-spacing: 0.1em;
           margin-bottom: 1rem;
         }
+        @media (max-width: 768px) {
+
+          .guide-img { aspect-ratio: 16/9 !important; }
+          .bento-large-title { white-space: normal !important; }
+          #hy-theme .cv-section-title, #hy-theme .ds-section-title, #hy-theme .hw-section-title { white-space: normal !important; word-break: break-word !important; }
+  
+
+          
+          
+          
+      
+          .hybrid-article-item { flex-direction: column-reverse !important; align-items: flex-start !important; }
+          .hybrid-article-item > img { width: 100% !important; height: auto !important; aspect-ratio: 16/9; }
+          .hybrid-podcast-item { flex-direction: column !important; align-items: flex-start !important; gap: 1rem !important; }
+          .hybrid-hero { padding: 4rem 1rem !important; }
+          .hybrid-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 1rem !important; }
+          .node-card { padding: 1rem !important; }
+        }
       `}</style>
 
       <div className="cyber-bg"></div>
@@ -135,12 +159,12 @@ export default function HybridUI({ data }) {
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '4rem 1rem', position: 'relative', zIndex: 10 }}>
         
         {/* HERO */}
-        <div style={{ padding: '6rem 1rem', textAlign: 'center', maxWidth: '900px', margin: '0 auto' }}>
+        <div className="hybrid-hero" style={{ padding: '6rem 1rem', textAlign: 'center', maxWidth: '900px', margin: '0 auto' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#fff', border: '1px solid #e2e8f0', padding: '0.5rem 1rem', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '2rem', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: brandColorPrimary }}></div>
             SYSTEM ARCHITECTURE ACTIVE
           </div>
-          <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', fontWeight: 900, color: '#0f172a', margin: '0 0 1.5rem', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+          <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', fontWeight: 900, color: '#0f172a', margin: '0 0 1.5rem', letterSpacing: '-0.02em', lineHeight: 1.1, wordWrap: 'break-word', overflowWrap: 'break-word', width: '100%' }}>
             {data.titleHTML}
           </h1>
           <p style={{ fontSize: '1.2rem', color: '#475569', margin: '0', lineHeight: 1.6 }}>
@@ -157,7 +181,7 @@ export default function HybridUI({ data }) {
           {data.news.map((item, idx) => (
             <div key={idx} className="node-card">
               <span className="neon-badge">{item.category}</span>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, margin: '0 0 1rem', lineHeight: 1.4 }}>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, margin: '0 0 1rem', lineHeight: 1.4, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                 <a href="#" className="neon-hover-link">{item.title}</a>
               </h3>
               <div style={{ display: 'flex', justifyContent: 'space-between', color: '#71717a', fontSize: '0.8rem' }}>
@@ -206,7 +230,7 @@ export default function HybridUI({ data }) {
         />
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.5rem', marginBottom: '5rem' }}>
           {data.guides.map((item, idx) => (
-            <div key={idx} className="node-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '2rem' }}>
+            <div key={idx} className="node-card" style={{ display: 'block', alignItems: 'center', textAlign: 'center', padding: '2rem' }}>
               <div style={{ width: '80px', height: '100px', background: 'rgba(255,255,255,0.05)', border: `1px solid ${neonCyan}`, borderRadius: '8px', marginBottom: '1.5rem', position: 'relative', overflow: 'hidden' }}>
                 <img src={item.image} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.4, mixBlendMode: 'luminosity' }} />
               </div>
@@ -223,9 +247,9 @@ export default function HybridUI({ data }) {
           title="Data Streams (In-Depth Articles)" 
           icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={neonCyan} strokeWidth="2"><polygon points="12 2 2 22 12 17 22 22 12 2"/></svg>} 
         />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '5rem' }}>
+        <div style={{ display: 'block', gap: '1.5rem', marginBottom: '5rem' }}>
           {data.articles.map((item, idx) => (
-            <div key={idx} className="node-card" style={{ display: 'flex', gap: '2rem', alignItems: 'center', padding: '1.5rem' }}>
+            <div key={idx} className="node-card hybrid-article-item" style={{ display: 'flex', gap: '2rem', alignItems: 'center', padding: '1.5rem' }}>
               {item.image && (
                 <img src={item.image} style={{ width: '200px', height: '120px', objectFit: 'cover', borderRadius: '8px', opacity: 0.8, filter: 'grayscale(50%) contrast(1.2)' }} />
               )}
@@ -245,9 +269,9 @@ export default function HybridUI({ data }) {
           title="Audio Transmissions (Podcasts)" 
           icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={neonCyan} strokeWidth="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>} 
         />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '5rem' }}>
+        <div className="hybrid-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '5rem' }}>
           {data.podcasts.map((item, idx) => (
-            <div key={idx} className="node-card" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', padding: '1rem' }}>
+            <div key={idx} className="node-card hybrid-podcast-item" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', padding: '1rem' }}>
                <div style={{ position: 'relative', width: '80px', height: '80px', borderRadius: '12px', overflow: 'hidden' }}>
                  <img src={item.image} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.5 }} />
                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${neonCyan}`, borderRadius: '12px' }}>
@@ -268,11 +292,11 @@ export default function HybridUI({ data }) {
         {/* 6. TOPICS DIRECTORY FOOTER */}
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '4rem', paddingBottom: '4rem' }}>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', marginBottom: '2rem' }}>Node Map (Directory)</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem' }}>
+          <div className="hybrid-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem' }}>
             {data.topicColumns.map((col, idx) => (
               <div key={idx}>
                 <h4 style={{ margin: '0 0 1rem', fontSize: '0.8rem', fontWeight: 700, color: neonCyan, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{col.title}</h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'block', gap: '1rem' }}>
                   {col.items.map((item, itemIdx) => (
                     <div key={itemIdx} style={{ fontSize: '0.85rem' }}>
                       <a href="#" className="neon-hover-link" style={{ color: '#a1a1aa' }}>{item}</a>

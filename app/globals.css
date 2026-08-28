@@ -22,7 +22,7 @@
   --glow-primary: rgba(46, 196, 182, 0.3);
   --glow-cyan: rgba(6, 182, 212, 0.2);
 
-  --font-sans: 'Inter', sans-serif;
+  --font-sans: var(--font-zoho), 'Plus Jakarta Sans', 'Inter', sans-serif;
   --font-display: 'Space Grotesk', sans-serif;
 }
 
@@ -494,3 +494,19 @@ body {
     width: 100%;
   }
 }
+
+/* ── Premium Card ──────────────────────────────────────────────── */
+.premium-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.premium-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px -4px rgba(0,0,0,0.08);
+}
+

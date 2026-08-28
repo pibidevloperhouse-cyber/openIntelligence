@@ -9,7 +9,7 @@ export default function ComputerVisionUI({ data }) {
     return num;
   };
 
-  const StatsDisplay = ({ views = Math.floor(Math.random() * 500) + 100, likes = Math.floor(Math.random() * 100) + 20, forks = Math.floor(Math.random() * 30), date = "2 days ago" }) => (
+  const StatsDisplay = ({ views = 428, likes = 85, forks = 12, date = "2 days ago" }) => (
     <div className="topic-stats-container">
       <div className="stat-item">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -29,15 +29,21 @@ export default function ComputerVisionUI({ data }) {
 
   const SectionTitle = ({ title, subtitle }) => (
     <div style={{ marginBottom: '2.5rem', textAlign: 'center' }}>
-      <h2 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#18181b', margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>{title}</h2>
-      {subtitle && <p style={{ fontSize: '1.2rem', color: '#71717a', margin: 0 }}>{subtitle}</p>}
+      <h2 className="cv-section-title" style={{ fontSize: '2rem', fontWeight: 800, color: '#18181b', margin: '0 0 0.5rem', letterSpacing: '-0.02em', wordWrap: 'break-word', overflowWrap: 'break-word' }}>{title}</h2>
+      {subtitle && <p style={{ fontSize: '1.1rem', color: '#71717a', margin: 0 }}>{subtitle}</p>}
     </div>
   );
 
   return (
-    <div id="cv-theme" style={{ display: 'flex', flexDirection: 'column', background: '#f4f4f5', minHeight: '100vh', width: '100%', color: '#18181b', fontFamily: '"Inter", system-ui, sans-serif' }}>
+    <div id="cv-theme" style={{ display: 'block', background: '#f4f4f5', minHeight: '100vh', width: '100%', maxWidth: '100vw', overflowX: 'hidden', color: '#18181b', fontFamily: 'var(--font-zoho), "Plus Jakarta Sans", "Inter", system-ui, sans-serif' }}>
       
       <style>{`
+
+        .guide-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+        #cv-theme .hover-link { white-space: normal !important; word-break: break-word !important; overflow-wrap: break-word !important; }
+        #cv-theme .premium-card, #cv-theme .masonry-item, #cv-theme .h-scroll-item, #cv-theme .gallery-scroll-item { max-width: 100%; box-sizing: border-box; overflow: hidden; }
+        #cv-theme { width: 100%; max-width: 100vw; overflow-x: hidden; }
+  
         #cv-theme * { box-sizing: border-box; }
         
         #cv-theme .gradient-text {
@@ -113,7 +119,7 @@ export default function ComputerVisionUI({ data }) {
         #cv-theme .topic-stats-container {
           display: flex;
           align-items: center;
-          flex-wrap: wrap;
+          flex-wrap: wrap; max-width: 100%; box-sizing: border-box;
           gap: 0.4rem;
           margin-top: 1rem;
           padding: 0.5rem;
@@ -156,9 +162,9 @@ export default function ComputerVisionUI({ data }) {
         /* Horizontal Scroll specific for Gallery style */
         .gallery-h-scroll {
           display: flex;
-          gap: 2rem;
+          gap: 1.5rem;
           overflow-x: auto;
-          padding: 1rem 0 3rem 1rem;
+          padding: 1rem 0;
           margin: 0 -1rem;
           scroll-snap-type: x mandatory;
           scrollbar-width: none;
@@ -166,9 +172,8 @@ export default function ComputerVisionUI({ data }) {
         .gallery-h-scroll::-webkit-scrollbar { display: none; }
         .gallery-scroll-item {
           scroll-snap-align: start;
-          min-width: 400px;
-          max-width: 500px;
-          flex-shrink: 0;
+          min-width: 320px;
+          flex: 0 0 320px;
           border-radius: 24px;
           overflow: hidden;
           position: relative;
@@ -179,7 +184,7 @@ export default function ComputerVisionUI({ data }) {
           position: relative;
           width: 100%;
           height: 70vh;
-          min-height: 500px;
+          min-height: 400px;
           display: flex;
           align-items: flex-end;
           padding: 4rem 1rem;
@@ -193,6 +198,26 @@ export default function ComputerVisionUI({ data }) {
           background-position: center;
           filter: blur(10px) brightness(0.6);
           transform: scale(1.1);
+        }
+        @media (max-width: 768px) {
+
+          .guide-img { aspect-ratio: 16/9 !important; }
+          .bento-large-title { white-space: normal !important; }
+          #cv-theme .cv-section-title, #cv-theme .ds-section-title, #cv-theme .hw-section-title { white-space: normal !important; word-break: break-word !important; }
+  
+
+          
+          
+          
+      
+          .gallery-scroll-item { min-width: 80vw !important; flex: 0 0 80vw !important; }
+          .cv-grid-articles { grid-template-columns: minmax(0, 1fr) !important; }
+          .gallery-hero { min-height: 300px !important; padding: 2rem 1rem !important; }
+          .cv-podcast-card { flex-direction: column !important; align-items: flex-start !important; }
+          .cv-podcast-card > div:first-child { width: 100% !important; height: 160px !important; }
+          .cv-section { margin-top: 2rem !important; margin-bottom: 2rem !important; }
+          .cv-card-padding { padding: 1rem !important; }
+          .cv-section-title { font-size: 1.5rem !important; }
         }
       `}</style>
 
@@ -210,7 +235,7 @@ export default function ComputerVisionUI({ data }) {
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#2ec4b6' }}></div>
                 VISUAL GALLERY
               </div>
-              <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', fontWeight: 800, color: '#ffffff', margin: '0 0 1rem', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+              <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 3rem)', fontWeight: 800, color: '#ffffff', margin: '0 0 1rem', letterSpacing: '-0.02em', lineHeight: 1.1, wordWrap: 'break-word', overflowWrap: 'break-word', width: '100%' }}>
                 {data.titleHTML}
               </h1>
               <p style={{ fontSize: '1.1rem', color: '#a1a1aa', margin: '0', lineHeight: 1.6 }}>
@@ -223,17 +248,17 @@ export default function ComputerVisionUI({ data }) {
 
       <div style={{ maxWidth: '1200px', margin: '4rem auto', padding: '0 1rem' }}>
         
-        {/* 1. FEATURED NEWS (MASONRY) */}
-        <div style={{ marginBottom: '6rem' }}>
-          <SectionTitle title="Featured News" subtitle="Latest visual intelligence breakthroughs." />
+        {/* 1. VISUAL NEWS (Masonry) */}
+        <div className="cv-section" style={{ marginTop: '5rem', marginBottom: '5rem' }}>
+          <SectionTitle title="Visual Intelligence News" subtitle="Breakthroughs in models and edge computing" />
           <div className="masonry-grid">
             {data.news.map((item, idx) => (
-              <div key={idx} className="masonry-item" style={{ padding: '2rem' }}>
+              <div key={idx} className="masonry-item cv-card-padding" style={{ padding: '2rem' }}>
                 <span className="cat-label">{item.category}</span>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '0.5rem 0 1.5rem', lineHeight: 1.4 }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '0.5rem 0 1.5rem', lineHeight: 1.4, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                   <a href="#" className="hover-link">{item.title}</a>
                 </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: 'auto' }}>
+                <div style={{ display: 'block', gap: '0.5rem', marginTop: 'auto' }}>
                   <span style={{ color: '#71717a', fontSize: '0.85rem', fontWeight: 600 }}>{item.author} • {item.date}</span>
                   <StatsDisplay date={item.date || "Updated recently"} />
                 </div>
@@ -242,12 +267,12 @@ export default function ComputerVisionUI({ data }) {
           </div>
         </div>
 
-        {/* 2. LATEST PRESENTATIONS (GALLERY SCROLL) */}
-        <div style={{ marginBottom: '6rem' }}>
-          <SectionTitle title="Latest Presentations" subtitle="Watch visual models in action." />
+        {/* 2. GALLERY PRESENTATIONS */}
+        <div className="cv-section" style={{ marginBottom: '5rem' }}>
+          <SectionTitle title="Gallery Presentations" subtitle="Watch visual breakdowns of architectures." />
           <div className="gallery-h-scroll">
             {data.presentations.map((item, idx) => (
-              <div key={idx} className="gallery-scroll-item" style={{ background: '#fff', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
+              <div key={idx} className="gallery-scroll-item cv-card-padding" style={{ background: '#fff', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', padding: '1.5rem' }}>
                 <div style={{ position: 'relative', width: '100%', paddingTop: '60%' }}>
                   <img src={item.image} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                   <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)' }}></div>
@@ -258,7 +283,7 @@ export default function ComputerVisionUI({ data }) {
                     {item.duration}
                   </div>
                 </div>
-                <div style={{ padding: '2rem' }}>
+                <div style={{ padding: '1.5rem 0 0' }}>
                   <span className="cat-label">{item.category}</span>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '0.5rem 0 1rem', lineHeight: 1.4 }}>
                     <a href="#" className="hover-link">{item.title}</a>
@@ -270,32 +295,10 @@ export default function ComputerVisionUI({ data }) {
           </div>
         </div>
 
-        {/* 3. ESSENTIAL GUIDES (MASONRY) */}
-        <div style={{ marginBottom: '6rem' }}>
-          <SectionTitle title="Essential Guides" subtitle="Visual documentation and technical reports." />
-          <div className="masonry-grid">
-            {data.guides.map((item, idx) => (
-              <div key={idx} className="masonry-item">
-                <div style={{ overflow: 'hidden' }}>
-                  <img src={item.image} className="masonry-img" style={{ aspectRatio: '3/4' }} />
-                </div>
-                <div style={{ padding: '1.5rem', position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(to top, rgba(24,24,27,0.95) 0%, rgba(24,24,27,0) 100%)', color: '#fff' }}>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: '0 0 1rem', lineHeight: 1.4 }}>
-                    <a href="#" className="hover-link" style={{ color: '#fff' }}>{item.title}</a>
-                  </h3>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <button style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: '#fff', padding: '0.5rem 1rem', borderRadius: '99px', backdropFilter: 'blur(5px)', cursor: 'pointer' }}>Read Guide</button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 4. IN-DEPTH ARTICLES */}
-        <div style={{ marginBottom: '6rem' }}>
-          <SectionTitle title="In-Depth Articles" subtitle="Deep dives into computer vision models." />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
+        {/* 3. IN-DEPTH ARTICLES (Visual Focus) */}
+        <div className="cv-section" style={{ marginBottom: '5rem' }}>
+          <SectionTitle title="Architecture Guides" subtitle="Detailed technical explorations." />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }} className="cv-grid-articles">
             {data.articles.map((item, idx) => (
               <div key={idx} className="masonry-item" style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ height: '250px', overflow: 'hidden' }}>
@@ -314,12 +317,12 @@ export default function ComputerVisionUI({ data }) {
           </div>
         </div>
 
-        {/* 5. FEATURED PODCASTS */}
-        <div style={{ marginBottom: '6rem' }}>
-          <SectionTitle title="Featured Podcasts" subtitle="Listen to vision researchers." />
-          <div className="gallery-h-scroll">
+        {/* 4. PODCASTS */}
+        <div className="cv-section" style={{ marginBottom: '5rem' }}>
+          <SectionTitle title="Vision Audio Sessions" subtitle="Listen to visual experts." />
+          <div style={{ display: 'block', gap: '1.5rem' }}>
             {data.podcasts.map((item, idx) => (
-              <div key={idx} className="gallery-scroll-item" style={{ background: '#fff', display: 'flex', padding: '1.5rem', gap: '1.5rem', alignItems: 'center' }}>
+              <div key={idx} className="masonry-item cv-podcast-card cv-card-padding" style={{ padding: '1.5rem', display: 'flex', gap: '2rem', alignItems: 'center' }}>
                 <div style={{ position: 'relative', width: '120px', height: '120px', flexShrink: 0, borderRadius: '16px', overflow: 'hidden' }}>
                   <img src={item.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   <div style={{ position: 'absolute', inset: 0, background: 'rgba(31,111,178,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(2px)' }}>
@@ -347,7 +350,7 @@ export default function ComputerVisionUI({ data }) {
                 <div style={{ padding: '1rem', borderBottom: '2px solid #e4e4e7' }}>
                   <h4 style={{ margin: 0, fontSize: '0.8rem', fontWeight: 800, color: '#18181b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{col.title}</h4>
                 </div>
-                <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                <div style={{ padding: '1rem', display: 'block', gap: '0.8rem' }}>
                   {col.items.map((item, itemIdx) => (
                     <div key={itemIdx} style={{ fontSize: '0.85rem', fontWeight: 600 }}>
                       <a href="#" className="hover-link">{item}</a>

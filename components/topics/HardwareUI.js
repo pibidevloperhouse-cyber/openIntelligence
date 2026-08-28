@@ -6,18 +6,24 @@ export default function HardwareUI({ data }) {
 
   const SectionTitle = ({ title, subtitle }) => (
     <div style={{ marginBottom: '2rem', borderBottom: '1px solid #cbd5e1', paddingBottom: '0.5rem' }}>
-      <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.25rem', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <div style={{ width: '12px', height: '12px', background: brandGradient }}></div>
+      <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.25rem', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.5rem', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
+        <div style={{ width: '12px', height: '12px', background: brandGradient, flexShrink: 0 }}></div>
         {title}
       </h2>
-      {subtitle && <p className="mono-text" style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>// {subtitle}</p>}
+      {subtitle && <p className="mono-text" style={{ fontSize: '0.85rem', color: '#64748b', margin: 0, wordWrap: 'break-word', overflowWrap: 'break-word' }}>// {subtitle}</p>}
     </div>
   );
 
   return (
-    <div id="hw-theme" style={{ display: 'flex', flexDirection: 'column', background: '#f8fafc', minHeight: '100vh', width: '100%', color: '#0f172a', fontFamily: '"Inter", system-ui, sans-serif' }}>
+    <div id="hw-theme" style={{ display: 'block', background: '#f8fafc', minHeight: '100vh', width: '100%', maxWidth: '100vw', overflowX: 'hidden', color: '#0f172a', fontFamily: 'var(--font-zoho), "Plus Jakarta Sans", "Inter", system-ui, sans-serif' }}>
       
       <style>{`
+
+        .guide-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+        #hw-theme .hover-link { white-space: normal !important; word-break: break-word !important; overflow-wrap: break-word !important; }
+        #hw-theme .premium-card, #hw-theme .masonry-item, #hw-theme .h-scroll-item, #hw-theme .gallery-scroll-item { max-width: 100%; box-sizing: border-box; overflow: hidden; }
+        #hw-theme { width: 100%; max-width: 100vw; overflow-x: hidden; }
+  
         #hw-theme * { box-sizing: border-box; }
         
         #hw-theme .gradient-text {
@@ -92,6 +98,26 @@ export default function HardwareUI({ data }) {
         .dash-scroll::-webkit-scrollbar { height: 6px; }
         .dash-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
         .dash-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+        @media (max-width: 768px) {
+
+          .guide-img { aspect-ratio: 16/9 !important; }
+          .bento-large-title { white-space: normal !important; }
+          #hw-theme .cv-section-title, #hw-theme .ds-section-title, #hw-theme .hw-section-title { white-space: normal !important; word-break: break-word !important; }
+  
+
+          
+          
+          
+      
+          .hw-hero-container { flex-direction: column !important; }
+          .hw-hero-left { width: 100% !important; flex: none !important; }
+          .hw-hero-right { width: 100% !important; flex: none !important; padding: 1.25rem !important; }
+          .hw-article-card { flex-direction: column-reverse !important; align-items: flex-start !important; gap: 1rem !important; }
+          .hw-article-card > div:first-child { width: auto !important; }
+          .dash-scroll > div { min-width: 80vw !important; max-width: 80vw !important; }
+          .hw-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 1.5rem !important; }
+          .dash-card { padding: 1rem !important; }
+        }
       `}</style>
 
       <TopicNavigation />
@@ -99,9 +125,9 @@ export default function HardwareUI({ data }) {
       <div style={{ maxWidth: '1200px', margin: '3rem auto', padding: '0 1rem' }}>
         
         {/* HERO SECTION */}
-        <div style={{ display: 'flex', gap: '2rem', marginBottom: '4rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <div style={{ flex: '1 1 500px' }}>
-            <h1 style={{ fontSize: 'clamp(2.5rem, 4vw, 4rem)', fontWeight: 800, margin: '0 0 1rem', lineHeight: 1.1 }}>
+        <div className="hw-hero-container" style={{ display: 'flex', gap: '2rem', marginBottom: '4rem', alignItems: 'center' }}>
+          <div className="hw-hero-left" style={{ flex: '1 1 500px' }}>
+            <h1 style={{ fontSize: 'clamp(2.5rem, 4vw, 4rem)', fontWeight: 800, margin: '0 0 1rem', lineHeight: 1.1, wordWrap: 'break-word', overflowWrap: 'break-word', width: '100%' }}>
               {data.titleHTML}
             </h1>
             <p className="mono-text" style={{ fontSize: '1rem', color: '#64748b', margin: '0 0 2rem', lineHeight: 1.6, maxWidth: '600px' }}>
@@ -113,7 +139,7 @@ export default function HardwareUI({ data }) {
           </div>
           
           {/* Dashboard Graphic Component */}
-          <div style={{ flex: '1 1 400px', background: '#ffffff', border: '2px solid #e2e8f0', borderRadius: '4px', padding: '2rem', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
+          <div className="hw-hero-right" style={{ flex: '1 1 400px', background: '#ffffff', border: '2px solid #e2e8f0', borderRadius: '4px', padding: '2rem', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
             <div className="mono-text" style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between' }}>
               <span>SYS.UTILIZATION</span>
               <span style={{ color: '#10b981' }}>[OPTIMAL]</span>
@@ -138,15 +164,15 @@ export default function HardwareUI({ data }) {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '3rem' }}>
+        <div className="hw-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '3rem' }}>
           {/* 1. FEATURED NEWS (Logs) */}
           <div>
             <SectionTitle title="System Logs (News)" subtitle="Recent hardware developments" />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'block', gap: '1rem' }}>
               {data.news.map((item, idx) => (
                 <div key={idx} className="dash-card">
                   <span className="sys-label mono-text">{item.category}</span>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0.5rem 0 1rem', lineHeight: 1.4 }}>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0.5rem 0 1rem', lineHeight: 1.4, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                     <a href="#" className="hover-link">{item.title}</a>
                   </h3>
                   <div className="mono-text" style={{ color: '#64748b', fontSize: '0.75rem', display: 'flex', justifyContent: 'space-between' }}>
@@ -161,7 +187,7 @@ export default function HardwareUI({ data }) {
           {/* 2. ESSENTIAL GUIDES (Manuals) */}
           <div>
             <SectionTitle title="Tech Manuals (Guides)" subtitle="Documentation and specs" />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'block', gap: '1rem' }}>
               {data.guides.map((item, idx) => (
                 <div key={idx} className="dash-card" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                   <div style={{ width: '60px', height: '80px', flexShrink: 0, border: '1px solid #cbd5e1' }}>
@@ -207,7 +233,7 @@ export default function HardwareUI({ data }) {
           <SectionTitle title="Data Streams (Articles)" subtitle="Deep technical architectures" />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
             {data.articles.map((item, idx) => (
-              <div key={idx} style={{ display: 'flex', background: '#fff', border: '1px solid #cbd5e1', borderLeft: `4px solid ${brandColorPrimary}`, padding: '1.5rem', alignItems: 'center', gap: '2rem' }}>
+              <div key={idx} className="hw-article-card" style={{ display: 'flex', background: '#fff', border: '1px solid #cbd5e1', borderLeft: `4px solid ${brandColorPrimary}`, padding: '1.5rem', alignItems: 'center', gap: '2rem' }}>
                 <div className="mono-text" style={{ fontSize: '0.8rem', color: '#94a3b8', width: '90px' }}>
                   0x{(4096 + idx * 255).toString(16).toUpperCase().padStart(4, '0')}
                 </div>
@@ -250,13 +276,13 @@ export default function HardwareUI({ data }) {
         {/* 6. TOPICS DIRECTORY (System Directory) */}
         <div style={{ marginTop: '5rem', paddingBottom: '5rem' }}>
           <SectionTitle title="System Directory" subtitle="Explore all node clusters" />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }} className="hw-grid">
             {data.topicColumns.map((col, idx) => (
               <div key={idx} style={{ background: '#fff', border: '1px solid #cbd5e1' }}>
                 <div style={{ background: '#f1f5f9', padding: '1rem', borderBottom: '1px solid #cbd5e1' }}>
                   <h4 className="mono-text" style={{ margin: 0, fontSize: '0.8rem', fontWeight: 700, color: '#0f172a' }}>[{col.title}]</h4>
                 </div>
-                <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ padding: '1rem', display: 'block', gap: '0.75rem' }}>
                   {col.items.map((item, itemIdx) => (
                     <div key={itemIdx} style={{ fontSize: '0.85rem', fontWeight: 600 }}>
                       <a href="#" className="hover-link">› {item}</a>

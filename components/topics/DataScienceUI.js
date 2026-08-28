@@ -1,16 +1,47 @@
 import Link from 'next/link';
+import { useEffect, useRef } from 'react';
 import TopicNavigation from './TopicNavigation';
 
 export default function DataScienceUI({ data }) {
   const brandGradient = 'linear-gradient(135deg, #1f6fb2 0%, #2ec4b6 100%)';
   const brandColorPrimary = '#1f6fb2';
 
+  const scrollRef1 = useRef(null);
+  const scrollRef2 = useRef(null);
+
+  useEffect(() => {
+    const setupAutoScroll = (ref) => {
+      let scrollInterval;
+      if (ref.current) {
+        scrollInterval = setInterval(() => {
+          if (ref.current) {
+            const { scrollLeft, scrollWidth, clientWidth } = ref.current;
+            if (scrollLeft + clientWidth >= scrollWidth - 1) {
+              ref.current.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+              ref.current.scrollBy({ left: 350, behavior: 'smooth' });
+            }
+          }
+        }, 3000);
+      }
+      return scrollInterval;
+    };
+
+    const interval1 = setupAutoScroll(scrollRef1);
+    const interval2 = setupAutoScroll(scrollRef2);
+
+    return () => {
+      clearInterval(interval1);
+      clearInterval(interval2);
+    };
+  }, []);
+
   const formatNumber = (num) => {
     if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
     return num;
   };
 
-  const StatsDisplay = ({ views = Math.floor(Math.random() * 500) + 100, likes = Math.floor(Math.random() * 100) + 20, forks = Math.floor(Math.random() * 30), date = "2 days ago" }) => (
+  const StatsDisplay = ({ views = 428, likes = 85, forks = 12, date = "2 days ago" }) => (
     <div className="topic-stats-container">
       <div className="stat-item">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -29,17 +60,27 @@ export default function DataScienceUI({ data }) {
   );
 
   const SectionTitle = ({ title, subtitle }) => (
-    <div style={{ marginBottom: '2.5rem' }}>
-      <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>{title}</h2>
+    <div className="ds-section-title-wrap" style={{ marginBottom: '2.5rem' }}>
+      <h2 className="ds-section-title" style={{ fontSize: '2rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.5rem', letterSpacing: '-0.02em', wordWrap: 'break-word', overflowWrap: 'break-word' }}>{title}</h2>
       {subtitle && <p style={{ fontSize: '1.1rem', color: '#64748b', margin: 0 }}>{subtitle}</p>}
     </div>
   );
 
   return (
-    <div id="ds-theme" style={{ display: 'flex', flexDirection: 'column', background: '#f8fafc', minHeight: '100vh', width: '100%', color: '#0f172a', fontFamily: '"Inter", system-ui, -apple-system, sans-serif' }}>
+    <div id="ds-theme" style={{ display: 'block', background: '#f8fafc', minHeight: '100vh', width: '100%', maxWidth: '100vw', overflowX: 'hidden', color: '#0f172a', fontFamily: 'var(--font-zoho), "Plus Jakarta Sans", "Inter", system-ui, sans-serif' }}>
       
       <style>{`
         /* Global & Reset */
+
+        .guide-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+        #ds-theme .hover-link { white-space: normal !important; word-break: break-word !important; overflow-wrap: break-word !important; }
+        #ds-theme .premium-card, #ds-theme .masonry-item, #ds-theme .h-scroll-item, #ds-theme .gallery-scroll-item { max-width: 100%; box-sizing: border-box; overflow: hidden; }
+        #ds-theme { width: 100%; max-width: 100vw; overflow-x: hidden; }
+  
+        
+        
+        
+      
         * { box-sizing: border-box; }
         
         /* Typography */
@@ -77,16 +118,7 @@ export default function DataScienceUI({ data }) {
         }
 
         /* Premium Cards */
-        #ds-theme .premium-card {
-          background: #ffffff;
-          border-radius: 16px;
-          overflow: hidden;
-          box-shadow: 0 10px 40px -10px rgba(0,0,0,0.04);
-          border: 1px solid #e2e8f0;
-          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
-          display: flex;
-          flex-direction: column;
-        }
+        
         #ds-theme .premium-card:hover {
           transform: translateY(-4px);
           box-shadow: 0 20px 40px -10px rgba(31,111,178,0.15);
@@ -97,7 +129,7 @@ export default function DataScienceUI({ data }) {
         #ds-theme .topic-stats-container {
           display: flex;
           align-items: center;
-          flex-wrap: wrap;
+          flex-wrap: wrap; max-width: 100%; box-sizing: border-box;
           gap: 0.4rem;
           margin-top: 1rem;
           padding: 0.5rem;
@@ -193,21 +225,49 @@ export default function DataScienceUI({ data }) {
           .bento-grid { grid-template-columns: 1fr; }
           .bento-large { grid-column: span 1; grid-row: span 1; }
         }
+        @media (max-width: 768px) {
+
+          .guide-img { aspect-ratio: 16/9 !important; }
+          .bento-large-title { white-space: normal !important; }
+          #ds-theme .cv-section-title, #ds-theme .ds-section-title, #ds-theme .hw-section-title { white-space: normal !important; word-break: break-word !important; }
+  
+
+          
+          
+          
+      
+          .ds-article-card { flex-direction: column-reverse !important; }
+          .ds-article-card .ds-article-img { width: 100% !important; height: 200px !important; }
+          .ds-article-card .ds-article-content { padding: 1.5rem !important; }
+          .ds-grid-articles { grid-template-columns: 1fr !important; }
+          .ds-grid-guides { grid-template-columns: 1fr !important; }
+          .ds-hero-pad { padding: 4rem 1rem 6rem !important; }
+          .bento-large-content { padding: 1.25rem !important; }
+          .bento-large-title { font-size: 1.5rem !important; }
+          .ds-h1 { font-size: clamp(2rem, 8vw, 3rem) !important; }
+          .ds-section { margin-top: 2rem !important; margin-bottom: 2rem !important; }
+          .ds-card-padding { padding: 1.25rem !important; }
+          .ds-section-title { font-size: 1.5rem !important; margin-bottom: 1.5rem !important; }
+          .ds-grid-articles, .ds-grid-guides, .bento-grid, .ds-footer-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 1rem !important; }
+          .h-scroll-item { min-width: 80vw !important; max-width: 80vw !important; }
+          .more-btn { margin: 1.5rem auto 3rem !important; padding: 0.6rem 1.5rem !important; }
+          .ds-h-scroll { padding-bottom: 1.5rem !important; margin: 0 -0.5rem !important; gap: 1rem !important; }
+        }
       `}</style>
 
       <TopicNavigation />
 
       {/* 1. HERO SECTION */}
-      <div style={{ position: 'relative', background: '#0f172a', padding: '6rem 1rem 8rem', overflow: 'hidden' }}>
+      <div className="ds-hero-pad" style={{ position: 'relative', background: '#0f172a', padding: '6rem 1rem 8rem', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '50%', height: '100%', background: brandGradient, filter: 'blur(150px)', opacity: 0.4, borderRadius: '50%' }}></div>
         <div style={{ position: 'absolute', bottom: '-20%', right: '-10%', width: '40%', height: '80%', background: '#2ec4b6', filter: 'blur(150px)', opacity: 0.3, borderRadius: '50%' }}></div>
         
-        <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-          <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', padding: '0.5rem 1rem', borderRadius: '99px', color: '#e2e8f0', fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.05em', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 10, display: 'block', alignItems: 'center', textAlign: 'center' }}>
+          <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', padding: '0.5rem 1rem', borderRadius: '99px', color: '#e2e8f0', fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.05em', marginBottom: '1.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="3"><circle cx="12" cy="12" r="10"></circle></svg>
             OPENINTELLIGENCE TOPIC
           </div>
-          <h1 style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', fontWeight: 900, color: '#ffffff', margin: '0 0 1.5rem', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+          <h1 className="ds-h1" style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', fontWeight: 900, color: '#ffffff', margin: '0 0 1.5rem', letterSpacing: '-0.03em', lineHeight: 1.1, wordWrap: 'break-word', overflowWrap: 'break-word', width: '100%' }}>
             {data.titleHTML}
           </h1>
           <p style={{ fontSize: '1.2rem', color: '#94a3b8', maxWidth: '600px', margin: '0 0 2.5rem', lineHeight: 1.6 }}>
@@ -226,24 +286,35 @@ export default function DataScienceUI({ data }) {
         {/* 2. BENTO GRID */}
         <div style={{ marginBottom: '5rem' }}>
           <div className="bento-grid">
-            <div className="premium-card bento-large">
+            <div className="premium-card bento-large" style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#fff' }}>
               <div style={{ position: 'relative', width: '100%', height: '350px' }}>
                 <img src={data.articles[0]?.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0) 100%)' }}></div>
-                <div style={{ position: 'absolute', bottom: 0, left: 0, padding: '2.5rem', width: '100%' }}>
+                <div className="bento-large-content" style={{ position: 'absolute', bottom: 0, left: 0, padding: '2.5rem', width: '100%' }}>
                   <span className="cat-label" style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', backdropFilter: 'blur(5px)' }}>FEATURED NEWS</span>
-                  <h3 style={{ fontSize: '2rem', fontWeight: 800, color: '#ffffff', margin: '0 0 1rem', lineHeight: 1.2 }}>
+                  <h3 className="bento-large-title" style={{ fontSize: '2rem', fontWeight: 800, color: '#ffffff', margin: '0 0 1rem', lineHeight: 1.2, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                     <a href="#" className="hover-link" style={{ color: '#fff' }}>{data.news[0]?.title}</a>
                   </h3>
                   <div style={{ color: '#cbd5e1', fontSize: '0.9rem', fontWeight: 600 }}>{data.news[0]?.author} • {data.news[0]?.date}</div>
                 </div>
               </div>
+              <div style={{ padding: '2rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <p style={{ fontSize: '1.05rem', color: '#475569', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                  Explore the latest advancements in data architectures, focusing on scalable reasoning, edge computing models, and next-generation inference pipelines. This comprehensive breakdown covers everything you need to know about building robust ML systems for enterprise scale and improving operational efficiency.
+                </p>
+                <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                  <StatsDisplay views={1250} likes={342} forks={89} date="Updated today" />
+                  <button style={{ background: brandGradient, color: '#fff', border: 'none', padding: '0.6rem 1.5rem', borderRadius: '6px', fontWeight: 700, cursor: 'pointer', transition: 'transform 0.2s' }} onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+                    Read Article
+                  </button>
+                </div>
+              </div>
             </div>
 
             {data.news.slice(1, 3).map((item, idx) => (
-              <div key={idx} className="premium-card" style={{ padding: '2rem' }}>
+              <div key={idx} className="premium-card ds-card-padding" style={{ padding: '2rem' }}>
                 <span className="cat-label">{item.category}</span>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '0 0 1rem', lineHeight: 1.4 }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '0 0 1rem', lineHeight: 1.4, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                   <a href="#" className="hover-link">{item.title}</a>
                 </h3>
                 <div style={{ color: '#64748b', fontSize: '0.8rem', fontWeight: 600, marginTop: 'auto', marginBottom: '1.5rem' }}>{item.author} • {item.date}</div>
@@ -254,10 +325,11 @@ export default function DataScienceUI({ data }) {
         </div>
 
         {/* 3. PRESENTATIONS */}
-        <SectionTitle title="Latest Presentations" subtitle="Watch industry leaders discuss AI architectures." />
-        <div className="h-scroll">
-          {data.presentations.map((item, idx) => (
-            <div key={idx} className="premium-card h-scroll-item">
+        <div className="ds-section">
+          <SectionTitle title="Latest Presentations" subtitle="Watch industry leaders discuss AI architectures." />
+          <div className="h-scroll ds-h-scroll" ref={scrollRef1}>
+            {data.presentations.map((item, idx) => (
+              <div key={idx} className="premium-card h-scroll-item">
               <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
                 <img src={item.image} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                 <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '50px', height: '50px', background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.4)', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
@@ -267,7 +339,7 @@ export default function DataScienceUI({ data }) {
                   {item.duration}
                 </div>
               </div>
-              <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+              <div style={{ padding: '1.5rem', display: 'block', flex: 1 }}>
                 <span className="cat-label">{item.category}</span>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 1rem', lineHeight: 1.4 }}>
                   <a href="#" className="hover-link">{item.title}</a>
@@ -277,15 +349,16 @@ export default function DataScienceUI({ data }) {
               </div>
             </div>
           ))}
+          </div>
         </div>
         
         {/* 4. GUIDES */}
-        <div style={{ marginTop: '2rem' }}>
+        <div className="ds-section" style={{ marginTop: '2rem' }}>
           <SectionTitle title="Essential Guides" subtitle="Deep dive into comprehensive technical reports." />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '2rem' }}>
+          <div className="ds-grid-guides" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '2rem' }}>
             {data.guides.map((item, idx) => (
-              <div key={idx} className="premium-card" style={{ padding: '1.5rem' }}>
-                <div style={{ width: '100%', aspectRatio: '3/4', borderRadius: '12px', overflow: 'hidden', marginBottom: '1.5rem', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
+              <div key={idx} className="premium-card ds-card-padding" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <div className="guide-img" style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', marginBottom: '1.5rem', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
                   <img src={item.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 1rem', lineHeight: 1.4 }}>
@@ -298,12 +371,12 @@ export default function DataScienceUI({ data }) {
         </div>
 
         {/* 5. ARTICLES */}
-        <div style={{ marginTop: '5rem' }}>
+        <div className="ds-section" style={{ marginTop: '5rem' }}>
           <SectionTitle title="In-Depth Articles" subtitle="Technical explorations and tutorials." />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
+          <div className="ds-grid-articles" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '2rem' }}>
             {data.articles.map((item, idx) => (
-              <div key={idx} className="premium-card" style={{ flexDirection: 'row', alignItems: 'stretch' }}>
-                <div style={{ padding: '2rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+              <div key={idx} className="premium-card ds-article-card" style={{ flexDirection: 'row', alignItems: 'stretch' }}>
+                <div className="ds-article-content" style={{ padding: '2rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                   <span className="cat-label">{item.category}</span>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '0 0 1rem', lineHeight: 1.3 }}>
                     <a href="#" className="hover-link">{item.title}</a>
@@ -311,7 +384,7 @@ export default function DataScienceUI({ data }) {
                   <div style={{ color: '#64748b', fontSize: '0.8rem', fontWeight: 600, marginTop: 'auto', marginBottom: '1.5rem' }}>{item.author} • {item.date}</div>
                   <StatsDisplay date={item.date || "Updated recently"} />
                 </div>
-                <div style={{ width: '35%', position: 'relative' }}>
+                <div className="ds-article-img" style={{ width: '35%', position: 'relative' }}>
                   <img src={item.image} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               </div>
@@ -320,9 +393,9 @@ export default function DataScienceUI({ data }) {
         </div>
         
         {/* 6. PODCASTS */}
-        <div style={{ marginTop: '5rem' }}>
+        <div className="ds-section" style={{ marginTop: '5rem' }}>
           <SectionTitle title="Featured Podcasts" subtitle="Listen to discussions with industry experts." />
-          <div className="h-scroll">
+          <div className="h-scroll ds-h-scroll" ref={scrollRef2}>
             {data.podcasts.map((item, idx) => (
               <div key={idx} className="premium-card h-scroll-item">
                 <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%' }}>
@@ -334,7 +407,7 @@ export default function DataScienceUI({ data }) {
                     {item.duration}
                   </div>
                 </div>
-                <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <div style={{ padding: '1.5rem', display: 'block', flex: 1 }}>
                   <span className="cat-label">{item.category}</span>
                   <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 1rem', lineHeight: 1.4 }}>
                     <a href="#" className="hover-link">{item.title}</a>
@@ -353,10 +426,10 @@ export default function DataScienceUI({ data }) {
         <div style={{ height: '5rem' }}></div>
 
         {/* 7. TOPICS DIRECTORY FOOTER */}
-        <div style={{ paddingBottom: '5rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+        <div className="ds-section" style={{ paddingBottom: '5rem' }}>
+          <div className="ds-footer-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
             {data.topicColumns.map((col, idx) => (
-              <div key={idx} style={{ display: 'flex', flexDirection: 'column', background: '#fff', borderRadius: '16px', overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 10px 40px -10px rgba(0,0,0,0.04)', transition: 'transform 0.3s' }}
+              <div key={idx} style={{ display: 'block', background: '#fff', borderRadius: '16px', overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 10px 40px -10px rgba(0,0,0,0.04)', transition: 'transform 0.3s' }}
                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
                 
@@ -365,7 +438,7 @@ export default function DataScienceUI({ data }) {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </div>
                 
-                <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ padding: '1.5rem', flex: 1, display: 'block', gap: '1rem' }}>
                   {col.items.map((item, itemIdx) => (
                     <div key={itemIdx} style={{ fontSize: '0.85rem', fontWeight: 700, lineHeight: 1.4, paddingBottom: '1rem', borderBottom: itemIdx !== col.items.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
                       <a href="#" className="hover-link">{item}</a>

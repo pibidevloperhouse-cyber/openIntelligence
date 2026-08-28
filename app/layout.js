@@ -1,10 +1,16 @@
-import { Inter, Space_Grotesk } from 'next/font/google';
+import { Inter, Space_Grotesk, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import ConditionalLayout from '@/components/ConditionalLayout';
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
+});
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-zoho',
   display: 'swap',
 });
 
@@ -31,7 +37,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" className={`${plusJakarta.variable} ${inter.variable} ${spaceGrotesk.variable}`}>
       <body>
         <ConditionalLayout>{children}</ConditionalLayout>
       </body>
