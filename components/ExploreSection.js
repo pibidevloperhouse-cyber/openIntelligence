@@ -55,6 +55,8 @@ export default function ExploreSection() {
             flex-direction: column;
             gap: 1.2rem;
             width: 100%;
+            align-items: center;
+            text-align: center;
           }
           .explore-card-icon {
             border-radius: 16px;
@@ -63,6 +65,7 @@ export default function ExploreSection() {
             justify-content: center;
             width: 56px;
             height: 56px;
+            margin: 0 auto;
           }
           .explore-card-title {
             font-size: 1.2rem;
@@ -83,6 +86,7 @@ export default function ExploreSection() {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
+            justify-content: center;
           }
           .explore-card-tag {
             font-size: 0.75rem;
