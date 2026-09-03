@@ -9,6 +9,8 @@ export const metadata = {
   description: 'Upcoming and past Madurai AI Community sessions by PiBi Foundation.',
 };
 
+export const revalidate = 60; // Refresh cache every 60 seconds on Vercel
+
 async function getMeetings() {
   try {
     const [upcomingRes, pastRes] = await Promise.all([

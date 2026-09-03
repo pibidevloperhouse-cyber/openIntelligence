@@ -11,6 +11,23 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
     }
 
+    // Hardcoded fallback as requested by user to ALWAYS allow admin@gmail.com / root123
+    if (email === 'admin@gmail.com' && password === 'root123') {
+      const cookieStore = await cookies();
+      cookieStore.set(
+        'admin_session',
+        JSON.stringify({ id: 'admin-hardcoded', email: 'admin@gmail.com', name: 'Admin', role: 'ADMIN' }),
+        {
+          httpOnly: true,
+          secure:   process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge:   60 * 60 * 8, // 8 hours
+          path:     '/',
+        }
+      );
+      return NextResponse.json({ success: true });
+    }
+
     // 1. Look up admin by email in the `admins` table (separate from GitHub users)
     const { data: admin } = await supabaseAdmin.from('admins').select('*').eq('email', email).single();
 
