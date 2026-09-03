@@ -2,7 +2,7 @@
 // Madurai AI Community / PiBi Foundation
 
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
   engineType = "library"
 }
 
@@ -34,7 +34,7 @@ enum ResourceStatus {
 
 model User {
   id         String     @id @default(uuid())
-  username   String     @unique       // GitHub username
+  username   String     @unique // GitHub username
   full_name  String
   avatar_url String
   bio        String?
@@ -46,10 +46,10 @@ model User {
 }
 
 model Category {
-  id          String     @id @default(uuid())
-  name        String     @unique
-  slug        String     @unique
-  icon        String                   // emoji
+  id          String             @id @default(uuid())
+  name        String             @unique
+  slug        String             @unique
+  icon        String // emoji
   description String
   resources   ResourceCategory[]
 
@@ -65,22 +65,23 @@ model Tag {
 }
 
 model Resource {
-  id                  String          @id @default(uuid())
+  id                  String         @id @default(uuid())
   title               String
-  slug                String          @unique
+  slug                String         @unique
   description         String
   github_url          String
   contributor_id      String
-  status              ResourceStatus  @default(PENDING)
-  github_stars        Int             @default(0)
-  github_forks        Int             @default(0)
-  views               Int             @default(0)
+  status              ResourceStatus @default(PENDING)
+  github_stars        Int            @default(0)
+  github_forks        Int            @default(0)
+  likes               Int            @default(0)
+  views               Int            @default(0)
   github_language     String?
   github_last_updated DateTime?
   use_case            String
-  created_at          DateTime        @default(now())
+  created_at          DateTime       @default(now())
 
-  contributor User          @relation(fields: [contributor_id], references: [id])
+  contributor User               @relation(fields: [contributor_id], references: [id])
   tags        ResourceTag[]
   categories  ResourceCategory[]
 
@@ -124,17 +125,17 @@ model Meeting {
   venue             String
   registration_link String        @default("")
   status            MeetingStatus @default(UPCOMING)
-  cover_image       String?       // Supabase Storage URL for the event banner
+  cover_image       String? // Supabase Storage URL for the event banner
 
   // Outcome fields — filled after the meeting ends
-  outcome_title     String?
-  outcome_summary   String?
-  attendees_count   Int?
-  photos            String[]      @default([])   // Supabase Storage URLs
-  tags              String[]      @default([])   // e.g. ["RAG","MCP","Agents"]
-  speakers          String[]      @default([])   // List of speaker names
+  outcome_title   String?
+  outcome_summary String?
+  attendees_count Int?
+  photos          String[] @default([]) // Supabase Storage URLs
+  tags            String[] @default([]) // e.g. ["RAG","MCP","Agents"]
+  speakers        String[] @default([]) // List of speaker names
 
-  created_at        DateTime @default(now())
+  created_at DateTime @default(now())
 
   @@map("meetings")
 }
@@ -146,7 +147,7 @@ model Meeting {
 model Admin {
   id            String   @id @default(uuid())
   email         String   @unique
-  password_hash String             // bcrypt hashed — never store plain text
+  password_hash String // bcrypt hashed — never store plain text
   name          String
   created_at    DateTime @default(now())
 

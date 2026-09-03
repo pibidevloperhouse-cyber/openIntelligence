@@ -1,39 +1,34 @@
-const { PrismaClient } = require('@prisma/client');
+const { createClient } = require('@supabase/supabase-js');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+require('dotenv').config();
 
-const prisma = new PrismaClient();
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
-async function main() {
-  // Check if admin already exists
-  const existingAdmin = await prisma.admin.findUnique({
-    where: { email: 'admin@gmail.com' },
-  });
+async function createAdmin() {
+  const email = 'admin@gmail.com';
+  const password = 'root123';
+  const name = 'Admin';
 
-  if (existingAdmin) {
-    console.log('Admin already exists.');
-    return;
+  const hash = await bcrypt.hash(password, 10);
+  const id = crypto.randomUUID();
+
+  // Upsert the admin
+  const { data, error } = await supabaseAdmin
+    .from('admins')
+    .upsert(
+      { id, email, password_hash: hash, name },
+      { onConflict: 'email' }
+    );
+
+  if (error) {
+    console.error('Error creating admin:', error.message);
+  } else {
+    console.log('Admin account created/updated successfully!');
   }
-
-  // Hash the password
-  const password_hash = await bcrypt.hash('root123', 10);
-
-  // Create the admin
-  const admin = await prisma.admin.create({
-    data: {
-      email: 'admin@gmail.com',
-      password_hash: password_hash,
-      name: 'Super Admin',
-    },
-  });
-
-  console.log('Admin created successfully!', admin.email);
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+createAdmin();

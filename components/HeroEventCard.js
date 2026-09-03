@@ -206,7 +206,7 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg> ATTENDEES
               </div>
-              <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 600 }}>{attendees_count || (title ? (title.length * 7 % 45 + 25) : 42)} joined</div>
+              <div style={{ fontSize: '0.95rem', color: '#0f172a', fontWeight: 600 }}>{attendees_count || 0} joined</div>
             </div>
             <div style={{ flex: '1 1 200px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px', textTransform: 'uppercase' }}>

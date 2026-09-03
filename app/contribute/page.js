@@ -188,7 +188,7 @@ export default function ResourcesPage() {
               {globalTotal} open-source AI resources from the Madurai AI community
             </p>
           </div>
-          <Link href="/contribute" style={{ textDecoration: 'none' }}>
+          <Link href="/submit" style={{ textDecoration: 'none' }}>
             <button style={{
               background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
               border: 'none',
