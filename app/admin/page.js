@@ -317,10 +317,12 @@ export default function AdminPage() {
   }, []);
 
   // Settings
+  const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [pwLoading, setPwLoading] = useState(false);
   const [pwMessage, setPwMessage] = useState({ type: '', text: '' });
+  const [showOldPw, setShowOldPw] = useState(false);
   const [showNewPw, setShowNewPw] = useState(false);
   const [actionLoading, setActionLoading] = useState('');
 
@@ -1800,6 +1802,16 @@ export default function AdminPage() {
                 )}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   <div style={{ position: 'relative' }}>
+                    <input type={showOldPw ? 'text' : 'password'} placeholder="Current password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} className="input-field" style={{ paddingRight: '3rem' }} />
+                    <button type="button" onClick={() => setShowOldPw(!showOldPw)} style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {showOldPw ? (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                      ) : (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                      )}
+                    </button>
+                  </div>
+                  <div style={{ position: 'relative' }}>
                     <input type={showNewPw ? 'text' : 'password'} placeholder="New password (min 8 chars)" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="input-field" style={{ paddingRight: '3rem' }} />
                     <button type="button" onClick={() => setShowNewPw(!showNewPw)} style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {showNewPw ? (
@@ -1811,15 +1823,29 @@ export default function AdminPage() {
                   </div>
                   <input type="password" placeholder="Confirm new password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="input-field" />
                   <Btn onClick={async () => {
+                    if (!oldPassword) { setPwMessage({ type: 'error', text: 'Current password is required' }); return; }
                     if (newPassword.length < 8) { setPwMessage({ type: 'error', text: 'Password must be at least 8 characters' }); return; }
                     if (newPassword !== confirmPassword) { setPwMessage({ type: 'error', text: 'Passwords do not match' }); return; }
                     setPwLoading(true); setPwMessage({ type: '', text: '' });
-                    // Note: Assuming supabase is imported globally or via hook in your actual code
+                    
+                    // Verify old password first
+                    const { error: signInError } = await supabase.auth.signInWithPassword({
+                      email: adminUser?.email,
+                      password: oldPassword,
+                    });
+
+                    if (signInError) {
+                      setPwMessage({ type: 'error', text: 'Incorrect current password.' });
+                      setPwLoading(false);
+                      return;
+                    }
+
+                    // If old password is correct, update to new password
                     const { error } = await supabase.auth.updateUser({ password: newPassword });
                     if (error) { setPwMessage({ type: 'error', text: error.message }); }
-                    else { setPwMessage({ type: 'success', text: 'Password updated successfully!' }); setNewPassword(''); setConfirmPassword(''); }
+                    else { setPwMessage({ type: 'success', text: 'Password updated successfully!' }); setOldPassword(''); setNewPassword(''); setConfirmPassword(''); }
                     setPwLoading(false);
-                  }} disabled={!newPassword || !confirmPassword || pwLoading}>
+                  }} disabled={!oldPassword || !newPassword || !confirmPassword || pwLoading}>
                     {pwLoading ? (
                       <>Updating...</>
                     ) : (
