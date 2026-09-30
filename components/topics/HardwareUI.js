@@ -4,6 +4,64 @@ export default function HardwareUI({ data }) {
   const brandGradient = 'linear-gradient(135deg, #1f6fb2 0%, #2ec4b6 100%)';
   const brandColorPrimary = '#1f6fb2';
 
+  const [deviceId, setDeviceId] = useState('');
+  useEffect(() => {
+    let id = localStorage.getItem('device_id');
+    if (!id) {
+      id = 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('device_id', id);
+    }
+    setDeviceId(id);
+  }, []);
+
+  const handleInteraction = async (itemId, type) => {
+    if (!deviceId || !itemId) return;
+    try {
+      await fetch('/api/interact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId, deviceId, type })
+      });
+    } catch (e) { console.error(e); }
+  };
+  
+
+  
+  const MultiImageCarousel = ({ item }) => {
+    const blocks = item.content_blocks && item.content_blocks.length > 0 ? item.content_blocks : [{ image_url: item.image, description: '' }];
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const next = () => setCurrentIndex((i) => (i + 1) % blocks.length);
+    const prev = () => setCurrentIndex((i) => (i - 1 + blocks.length) % blocks.length);
+
+    return (
+      <div className="carousel-container">
+        {blocks.map((b, idx) => (
+          <img key={idx} src={b.image_url} className={`carousel-slide ${idx === currentIndex ? 'active' : ''}`} />
+        ))}
+        {blocks[currentIndex]?.description && (
+          <div className="carousel-desc">{blocks[currentIndex].description}</div>
+        )}
+        
+        {blocks.length > 1 && (
+          <>
+            <button className="carousel-nav carousel-prev" onClick={prev}>‹</button>
+            <button className="carousel-nav carousel-next" onClick={next}>›</button>
+            <div className="carousel-dots">
+              {blocks.map((_, idx) => (
+                <div key={idx} className={`carousel-dot ${idx === currentIndex ? 'active' : ''}`} onClick={() => setCurrentIndex(idx)} />
+              ))}
+            </div>
+          </>
+        )}
+        
+        <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(15,23,42,0.8)', color: '#fff', padding: '0.3rem 0.8rem', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 700, zIndex: 30 }}>
+          {item.duration || `${currentIndex + 1} / ${blocks.length}`}
+        </div>
+      </div>
+    );
+  };
+
   const SectionTitle = ({ title, subtitle }) => (
     <div style={{ marginBottom: '2rem', borderBottom: '1px solid #cbd5e1', paddingBottom: '0.5rem' }}>
       <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.25rem', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.5rem', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
@@ -14,10 +72,26 @@ export default function HardwareUI({ data }) {
     </div>
   );
 
+  
+  
   return (
     <div id="hw-theme" style={{ display: 'block', background: '#f8fafc', minHeight: '100vh', width: '100%', maxWidth: '100vw', overflowX: 'hidden', color: '#0f172a', fontFamily: 'var(--font-zoho), "Plus Jakarta Sans", "Inter", system-ui, sans-serif' }}>
       
       <style>{`
+
+        .carousel-container { position: relative; width: 100%; padding-top: 56.25%; overflow: hidden; background: #0f172a; border-radius: 8px 8px 0 0; }
+        .carousel-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease-in-out; }
+        .carousel-slide.active { opacity: 1; z-index: 10; }
+        .carousel-desc { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15,23,42,0.8); color: #fff; padding: 1rem; font-size: 0.85rem; z-index: 20; transform: translateY(100%); transition: transform 0.3s ease; }
+        .carousel-container:hover .carousel-desc { transform: translateY(0); }
+        .carousel-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: #fff; border: none; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; z-index: 30; }
+        .carousel-nav:hover { background: rgba(0,0,0,0.8); }
+        .carousel-prev { left: 10px; }
+        .carousel-next { right: 10px; }
+        .carousel-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 5px; z-index: 30; }
+        .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; }
+        .carousel-dot.active { background: #fff; }
+  
 
         .guide-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
         #hw-theme .hover-link { white-space: normal !important; word-break: break-word !important; overflow-wrap: break-word !important; }
@@ -173,7 +247,7 @@ export default function HardwareUI({ data }) {
                 <div key={idx} className="dash-card">
                   <span className="sys-label mono-text">{item.category}</span>
                   <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '0.5rem 0 1rem', lineHeight: 1.4, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
-                    <a href="#" className="hover-link">{item.title}</a>
+                    <a href={item.link_url || "#"} target={item.link_url ? "_blank" : "_self"} className="hover-link">{item.title}</a>
                   </h3>
                   <div className="mono-text" style={{ color: '#64748b', fontSize: '0.75rem', display: 'flex', justifyContent: 'space-between' }}>
                     <span>AUTH: {item.author.split(' ')[0]}</span>
@@ -195,7 +269,7 @@ export default function HardwareUI({ data }) {
                   </div>
                   <div>
                     <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: '0 0 0.5rem', lineHeight: 1.3 }}>
-                      <a href="#" className="hover-link">{item.title}</a>
+                      <a href={item.link_url || "#"} target={item.link_url ? "_blank" : "_self"} className="hover-link">{item.title}</a>
                     </h3>
                     <div className="mono-text" style={{ color: brandColorPrimary, fontSize: '0.75rem' }}>DOC_ID: {10000 + idx * 3141}</div>
                   </div>
@@ -220,7 +294,7 @@ export default function HardwareUI({ data }) {
                 </div>
                 <span className="sys-label mono-text">{item.category}</span>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0.5rem 0 0.5rem', lineHeight: 1.3 }}>
-                  <a href="#" className="hover-link">{item.title}</a>
+                  <a href={item.link_url || "#"} target={item.link_url ? "_blank" : "_self"} className="hover-link">{item.title}</a>
                 </h3>
                 <div className="mono-text" style={{ color: '#64748b', fontSize: '0.75rem' }}>SRC: {item.author}</div>
               </div>
@@ -239,7 +313,7 @@ export default function HardwareUI({ data }) {
                 </div>
                 <div style={{ flex: 1 }}>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '0 0 0.5rem' }}>
-                    <a href="#" className="hover-link">{item.title}</a>
+                    <a href={item.link_url || "#"} target={item.link_url ? "_blank" : "_self"} className="hover-link">{item.title}</a>
                   </h3>
                   <div className="mono-text" style={{ color: '#64748b', fontSize: '0.85rem' }}>
                     <span style={{ color: brandColorPrimary }}>{item.category}</span> // {item.author} // {item.date}
@@ -264,7 +338,7 @@ export default function HardwareUI({ data }) {
                 </div>
                 <div>
                   <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: '0 0 0.5rem', lineHeight: 1.3 }}>
-                    <a href="#" className="hover-link">{item.title}</a>
+                    <a href={item.link_url || "#"} target={item.link_url ? "_blank" : "_self"} className="hover-link">{item.title}</a>
                   </h3>
                   <div className="mono-text" style={{ color: '#64748b', fontSize: '0.75rem' }}>DUR: {item.duration} | {item.author.split(' ')[0]}</div>
                 </div>

@@ -3,6 +3,28 @@ import TopicNavigation from './TopicNavigation';
 export default function HybridUI({ data }) {
   const brandGradient = 'linear-gradient(135deg, #1f6fb2 0%, #2ec4b6 100%)';
   const brandColorPrimary = '#1f6fb2';
+
+  const [deviceId, setDeviceId] = useState('');
+  useEffect(() => {
+    let id = localStorage.getItem('device_id');
+    if (!id) {
+      id = 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('device_id', id);
+    }
+    setDeviceId(id);
+  }, []);
+
+  const handleInteraction = async (itemId, type) => {
+    if (!deviceId || !itemId) return;
+    try {
+      await fetch('/api/interact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId, deviceId, type })
+      });
+    } catch (e) { console.error(e); }
+  };
+  
   const neonCyan = '#2ec4b6';
 
   const SectionHeader = ({ title, icon }) => (
@@ -12,10 +34,26 @@ export default function HybridUI({ data }) {
     </h2>
   );
 
+  
+  
   return (
     <div id="hybrid-theme" style={{ display: 'block', background: '#fafafa', minHeight: '100vh', width: '100%', maxWidth: '100vw', overflowX: 'hidden', color: '#0f172a', fontFamily: 'var(--font-zoho), "Plus Jakarta Sans", "Inter", system-ui, sans-serif' }}>
       
       <style>{`
+
+        .carousel-container { position: relative; width: 100%; padding-top: 56.25%; overflow: hidden; background: #0f172a; border-radius: 8px 8px 0 0; }
+        .carousel-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease-in-out; }
+        .carousel-slide.active { opacity: 1; z-index: 10; }
+        .carousel-desc { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15,23,42,0.8); color: #fff; padding: 1rem; font-size: 0.85rem; z-index: 20; transform: translateY(100%); transition: transform 0.3s ease; }
+        .carousel-container:hover .carousel-desc { transform: translateY(0); }
+        .carousel-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: #fff; border: none; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; z-index: 30; }
+        .carousel-nav:hover { background: rgba(0,0,0,0.8); }
+        .carousel-prev { left: 10px; }
+        .carousel-next { right: 10px; }
+        .carousel-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 5px; z-index: 30; }
+        .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; }
+        .carousel-dot.active { background: #fff; }
+  
 
         .guide-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
         #hy-theme .hover-link { white-space: normal !important; word-break: break-word !important; overflow-wrap: break-word !important; }

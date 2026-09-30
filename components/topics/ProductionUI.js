@@ -4,6 +4,64 @@ export default function ProductionUI({ data }) {
   const brandGradient = 'linear-gradient(135deg, #1f6fb2 0%, #2ec4b6 100%)';
   const brandColorPrimary = '#1f6fb2';
 
+  const [deviceId, setDeviceId] = useState('');
+  useEffect(() => {
+    let id = localStorage.getItem('device_id');
+    if (!id) {
+      id = 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('device_id', id);
+    }
+    setDeviceId(id);
+  }, []);
+
+  const handleInteraction = async (itemId, type) => {
+    if (!deviceId || !itemId) return;
+    try {
+      await fetch('/api/interact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId, deviceId, type })
+      });
+    } catch (e) { console.error(e); }
+  };
+  
+
+  
+  const MultiImageCarousel = ({ item }) => {
+    const blocks = item.content_blocks && item.content_blocks.length > 0 ? item.content_blocks : [{ image_url: item.image, description: '' }];
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const next = () => setCurrentIndex((i) => (i + 1) % blocks.length);
+    const prev = () => setCurrentIndex((i) => (i - 1 + blocks.length) % blocks.length);
+
+    return (
+      <div className="carousel-container">
+        {blocks.map((b, idx) => (
+          <img key={idx} src={b.image_url} className={`carousel-slide ${idx === currentIndex ? 'active' : ''}`} />
+        ))}
+        {blocks[currentIndex]?.description && (
+          <div className="carousel-desc">{blocks[currentIndex].description}</div>
+        )}
+        
+        {blocks.length > 1 && (
+          <>
+            <button className="carousel-nav carousel-prev" onClick={prev}>‹</button>
+            <button className="carousel-nav carousel-next" onClick={next}>›</button>
+            <div className="carousel-dots">
+              {blocks.map((_, idx) => (
+                <div key={idx} className={`carousel-dot ${idx === currentIndex ? 'active' : ''}`} onClick={() => setCurrentIndex(idx)} />
+              ))}
+            </div>
+          </>
+        )}
+        
+        <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(15,23,42,0.8)', color: '#fff', padding: '0.3rem 0.8rem', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 700, zIndex: 30 }}>
+          {item.duration || `${currentIndex + 1} / ${blocks.length}`}
+        </div>
+      </div>
+    );
+  };
+
   const SectionTitle = ({ title, subtitle }) => (
     <div style={{ marginBottom: '1.5rem' }}>
       <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.25rem' }}>{title}</h3>
@@ -11,10 +69,26 @@ export default function ProductionUI({ data }) {
     </div>
   );
 
+  
+  
   return (
     <div id="prod-theme" style={{ display: 'block', background: '#ffffff', minHeight: '100vh', width: '100%', maxWidth: '100vw', overflowX: 'hidden', color: '#334155', fontFamily: 'var(--font-zoho), "Plus Jakarta Sans", "Inter", system-ui, sans-serif' }}>
       
       <style>{`
+
+        .carousel-container { position: relative; width: 100%; padding-top: 56.25%; overflow: hidden; background: #0f172a; border-radius: 8px 8px 0 0; }
+        .carousel-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease-in-out; }
+        .carousel-slide.active { opacity: 1; z-index: 10; }
+        .carousel-desc { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15,23,42,0.8); color: #fff; padding: 1rem; font-size: 0.85rem; z-index: 20; transform: translateY(100%); transition: transform 0.3s ease; }
+        .carousel-container:hover .carousel-desc { transform: translateY(0); }
+        .carousel-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: #fff; border: none; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; z-index: 30; }
+        .carousel-nav:hover { background: rgba(0,0,0,0.8); }
+        .carousel-prev { left: 10px; }
+        .carousel-next { right: 10px; }
+        .carousel-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 5px; z-index: 30; }
+        .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; }
+        .carousel-dot.active { background: #fff; }
+  
 
         .guide-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
         #prod-theme .hover-link { white-space: normal !important; word-break: break-word !important; overflow-wrap: break-word !important; }
@@ -187,7 +261,7 @@ export default function ProductionUI({ data }) {
                 {data.news.slice(0, 4).map((item, idx) => (
                   <div key={idx} style={{ borderLeft: `3px solid ${brandColorPrimary}`, paddingLeft: '1rem' }}>
                     <h4 style={{ fontSize: '1rem', fontWeight: 600, margin: '0 0 0.5rem', lineHeight: 1.3, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
-                      <a href="#" className="hover-link">{item.title}</a>
+                      <a href={item.link_url || "#"} target={item.link_url ? "_blank" : "_self"} className="hover-link">{item.title}</a>
                     </h4>
                     <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{item.author} • {item.date}</div>
                   </div>
@@ -213,7 +287,7 @@ export default function ProductionUI({ data }) {
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', marginBottom: '0.25rem' }}>{item.category}</div>
                       <h4 style={{ fontSize: '1.1rem', fontWeight: 600, margin: '0 0 0.5rem', color: '#0f172a' }}>
-                        <a href="#" className="hover-link">{item.title}</a>
+                        <a href={item.link_url || "#"} target={item.link_url ? "_blank" : "_self"} className="hover-link">{item.title}</a>
                       </h4>
                     </div>
                     <button className="ent-button">Review Doc</button>
@@ -246,7 +320,7 @@ export default function ProductionUI({ data }) {
                     </div>
                     <div style={{ padding: '1.5rem' }}>
                       <h4 style={{ fontSize: '1.05rem', fontWeight: 600, margin: '0 0 0.5rem', color: '#0f172a', lineHeight: 1.3 }}>
-                        <a href="#" className="hover-link">{item.title}</a>
+                        <a href={item.link_url || "#"} target={item.link_url ? "_blank" : "_self"} className="hover-link">{item.title}</a>
                       </h4>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
                         <span style={{ fontSize: '0.85rem', color: '#64748b' }}>{item.author}</span>
@@ -271,7 +345,7 @@ export default function ProductionUI({ data }) {
                 {data.guides.map((item, idx) => (
                   <div key={idx} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '1rem' }}>
                     <h4 style={{ fontSize: '1.05rem', fontWeight: 600, margin: '0 0 0.5rem', color: '#0f172a', lineHeight: 1.3 }}>
-                      <a href="#" className="hover-link">{item.title}</a>
+                      <a href={item.link_url || "#"} target={item.link_url ? "_blank" : "_self"} className="hover-link">{item.title}</a>
                     </h4>
                     <button className="ent-button" style={{ width: '100%', marginTop: '1rem' }}>Download PDF</button>
                   </div>
@@ -297,7 +371,7 @@ export default function ProductionUI({ data }) {
                      </div>
                      <div style={{ flex: 1 }}>
                        <h4 style={{ fontSize: '1rem', fontWeight: 600, margin: '0', color: '#0f172a' }}>
-                         <a href="#" className="hover-link">{item.title}</a>
+                         <a href={item.link_url || "#"} target={item.link_url ? "_blank" : "_self"} className="hover-link">{item.title}</a>
                        </h4>
                        <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{item.author}</div>
                      </div>

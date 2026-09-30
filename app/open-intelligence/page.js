@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { generateHomepageData } from '@/lib/open-intelligence-data';
+import TopicNavigation from '@/components/topics/TopicNavigation';
 
 export default function OpenIntelligenceHomePage() {
   const data = generateHomepageData();
@@ -164,43 +165,8 @@ export default function OpenIntelligenceHomePage() {
         }
       `}</style>
 
-      {/* TOP NAVIGATION BAR (Glassmorphism) */}
-      <div className="glass-nav" style={{ padding: '0.75rem 0', marginBottom: '3rem' }}>
-        
-        {/* Mobile Custom Dropdown */}
-        <div className="mobile-nav" style={{ padding: '0 1rem', position: 'relative' }}>
-          <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative' }}>
-            <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              style={{ width: '100%', padding: '0.85rem 1.25rem', background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '1rem', fontWeight: 600, color: '#0f172a', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', cursor: 'pointer' }}
-            >
-              Explore Topics...
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isMobileMenuOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}>
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </button>
-            
-            {isMobileMenuOpen && (
-              <div style={{ position: 'absolute', top: 'calc(100% + 0.5rem)', left: 0, right: 0, background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', overflow: 'hidden', zIndex: 100 }}>
-                <Link href="/open-intelligence/data-science" className="mobile-dropdown-item" onClick={() => setIsMobileMenuOpen(false)}>Data Science</Link>
-                <Link href="/open-intelligence/computer-vision" className="mobile-dropdown-item" onClick={() => setIsMobileMenuOpen(false)}>Computer Vision</Link>
-                <Link href="/open-intelligence/hardware-with-edge-ai" className="mobile-dropdown-item" onClick={() => setIsMobileMenuOpen(false)}>Hardware with Edge AI</Link>
-                <Link href="/open-intelligence/production-ready-systems" className="mobile-dropdown-item" onClick={() => setIsMobileMenuOpen(false)}>Production-Ready Systems</Link>
-                <Link href="/open-intelligence/hybrid-infrastructure-mastery" className="mobile-dropdown-item" onClick={() => setIsMobileMenuOpen(false)}>Hybrid Infrastructure Mastery</Link>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Desktop Links */}
-        <div className="desktop-nav" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
-          <Link href="/open-intelligence/data-science" className="custom-topic-link">Data Science</Link>
-          <Link href="/open-intelligence/computer-vision" className="custom-topic-link">Computer Vision</Link>
-          <Link href="/open-intelligence/hardware-with-edge-ai" className="custom-topic-link">Hardware with Edge AI</Link>
-          <Link href="/open-intelligence/production-ready-systems" className="custom-topic-link">Production-Ready Systems</Link>
-          <Link href="/open-intelligence/hybrid-infrastructure-mastery" className="custom-topic-link">Hybrid Infrastructure Mastery</Link>
-        </div>
-      </div>
+      {/* TOP NAVIGATION BAR (Mega Menu) */}
+      <TopicNavigation />
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1rem' }}>
         

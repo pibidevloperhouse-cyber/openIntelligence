@@ -307,9 +307,7 @@ export default async function HomePage() {
         <section style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 1rem', position: 'relative' }}>
           <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center', width: '100%' }}>
             <div style={{ textAlign: 'center', width: '100%', maxWidth: '650px' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.3rem 0.9rem', borderRadius: '30px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.2)', color: '#2563eb', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-                ⚡ Live Learning Sessions
-              </div>
+
               <h2 className="clean-blue-text" style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 900, fontFamily: 'var(--font-display)', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>
                 Upcoming Community Sessions
               </h2>

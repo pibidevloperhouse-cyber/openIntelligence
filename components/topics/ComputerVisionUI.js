@@ -4,28 +4,106 @@ export default function ComputerVisionUI({ data }) {
   const brandGradient = 'linear-gradient(135deg, #1f6fb2 0%, #2ec4b6 100%)';
   const brandColorPrimary = '#1f6fb2';
 
+  const [deviceId, setDeviceId] = useState('');
+  useEffect(() => {
+    let id = localStorage.getItem('device_id');
+    if (!id) {
+      id = 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('device_id', id);
+    }
+    setDeviceId(id);
+  }, []);
+
+  const handleInteraction = async (itemId, type) => {
+    if (!deviceId || !itemId) return;
+    try {
+      await fetch('/api/interact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId, deviceId, type })
+      });
+    } catch (e) { console.error(e); }
+  };
+  
+
   const formatNumber = (num) => {
     if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
     return num;
   };
 
-  const StatsDisplay = ({ views = 428, likes = 85, forks = 12, date = "2 days ago" }) => (
+  const StatsDisplay = ({ itemId, views = 0, likes = 0, forks = 0, date = "2 days ago" }) => {
+    const [localLikes, setLocalLikes] = useState(likes);
+    const [liked, setLiked] = useState(false);
+    
+    // Auto-view logic (fires once per item render)
+    useEffect(() => {
+      if (itemId && deviceId) {
+        handleInteraction(itemId, 'VIEW');
+      }
+    }, [itemId, deviceId]);
+
+    const onLike = () => {
+      if (!liked && itemId && deviceId) {
+        setLocalLikes(l => l + 1);
+        setLiked(true);
+        handleInteraction(itemId, 'LIKE');
+      }
+    };
+
+    return (
     <div className="topic-stats-container">
-      <div className="stat-item">
+      <div className="stat-item" title="Views">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         <span>{formatNumber(views)}</span>
       </div>
-      <div className="stat-item">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
-        <span>{formatNumber(likes)}</span>
+      <div className="stat-item" onClick={onLike} title="Like" style={{ color: liked ? '#ef4444' : 'inherit', cursor: 'pointer' }}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill={liked ? "#ef4444" : "none"} stroke="currentColor" strokeWidth="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+        <span>{formatNumber(localLikes)}</span>
       </div>
-      <div className="stat-item">
+      <div className="stat-item" title="Shares">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
         <span>{formatNumber(forks)}</span>
       </div>
       <div className="stat-date">{date}</div>
     </div>
-  );
+  )};
+  
+
+  
+  const MultiImageCarousel = ({ item }) => {
+    const blocks = item.content_blocks && item.content_blocks.length > 0 ? item.content_blocks : [{ image_url: item.image, description: '' }];
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const next = () => setCurrentIndex((i) => (i + 1) % blocks.length);
+    const prev = () => setCurrentIndex((i) => (i - 1 + blocks.length) % blocks.length);
+
+    return (
+      <div className="carousel-container">
+        {blocks.map((b, idx) => (
+          <img key={idx} src={b.image_url} className={`carousel-slide ${idx === currentIndex ? 'active' : ''}`} />
+        ))}
+        {blocks[currentIndex]?.description && (
+          <div className="carousel-desc">{blocks[currentIndex].description}</div>
+        )}
+        
+        {blocks.length > 1 && (
+          <>
+            <button className="carousel-nav carousel-prev" onClick={prev}>‹</button>
+            <button className="carousel-nav carousel-next" onClick={next}>›</button>
+            <div className="carousel-dots">
+              {blocks.map((_, idx) => (
+                <div key={idx} className={`carousel-dot ${idx === currentIndex ? 'active' : ''}`} onClick={() => setCurrentIndex(idx)} />
+              ))}
+            </div>
+          </>
+        )}
+        
+        <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(15,23,42,0.8)', color: '#fff', padding: '0.3rem 0.8rem', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 700, zIndex: 30 }}>
+          {item.duration || `${currentIndex + 1} / ${blocks.length}`}
+        </div>
+      </div>
+    );
+  };
 
   const SectionTitle = ({ title, subtitle }) => (
     <div style={{ marginBottom: '2.5rem', textAlign: 'center' }}>
@@ -38,6 +116,20 @@ export default function ComputerVisionUI({ data }) {
     <div id="cv-theme" style={{ display: 'block', background: '#f4f4f5', minHeight: '100vh', width: '100%', maxWidth: '100vw', overflowX: 'hidden', color: '#18181b', fontFamily: 'var(--font-zoho), "Plus Jakarta Sans", "Inter", system-ui, sans-serif' }}>
       
       <style>{`
+
+        .carousel-container { position: relative; width: 100%; padding-top: 56.25%; overflow: hidden; background: #0f172a; border-radius: 8px 8px 0 0; }
+        .carousel-slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease-in-out; }
+        .carousel-slide.active { opacity: 1; z-index: 10; }
+        .carousel-desc { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15,23,42,0.8); color: #fff; padding: 1rem; font-size: 0.85rem; z-index: 20; transform: translateY(100%); transition: transform 0.3s ease; }
+        .carousel-container:hover .carousel-desc { transform: translateY(0); }
+        .carousel-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: #fff; border: none; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; cursor: pointer; z-index: 30; }
+        .carousel-nav:hover { background: rgba(0,0,0,0.8); }
+        .carousel-prev { left: 10px; }
+        .carousel-next { right: 10px; }
+        .carousel-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 5px; z-index: 30; }
+        .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; }
+        .carousel-dot.active { background: #fff; }
+  
 
         .guide-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
         #cv-theme .hover-link { white-space: normal !important; word-break: break-word !important; overflow-wrap: break-word !important; }
@@ -256,11 +348,11 @@ export default function ComputerVisionUI({ data }) {
               <div key={idx} className="masonry-item cv-card-padding" style={{ padding: '2rem' }}>
                 <span className="cat-label">{item.category}</span>
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '0.5rem 0 1.5rem', lineHeight: 1.4, wordWrap: 'break-word', overflowWrap: 'break-word' }}>
-                  <a href="#" className="hover-link">{item.title}</a>
+                  <a href={item.link_url || "#"} target={item.link_url ? "_blank" : "_self"} className="hover-link">{item.title}</a>
                 </h3>
                 <div style={{ display: 'block', gap: '0.5rem', marginTop: 'auto' }}>
                   <span style={{ color: '#71717a', fontSize: '0.85rem', fontWeight: 600 }}>{item.author} • {item.date}</span>
-                  <StatsDisplay date={item.date || "Updated recently"} />
+                  <StatsDisplay itemId={item.id} views={item.views} likes={item.likes} forks={item.shares} date={item.date || "Updated recently"} />
                 </div>
               </div>
             ))}
@@ -286,7 +378,7 @@ export default function ComputerVisionUI({ data }) {
                 <div style={{ padding: '1.5rem 0 0' }}>
                   <span className="cat-label">{item.category}</span>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '0.5rem 0 1rem', lineHeight: 1.4 }}>
-                    <a href="#" className="hover-link">{item.title}</a>
+                    <a href={item.link_url || "#"} target={item.link_url ? "_blank" : "_self"} className="hover-link">{item.title}</a>
                   </h3>
                   <div style={{ color: '#71717a', fontSize: '0.9rem', fontWeight: 600 }}>{item.author}</div>
                 </div>
@@ -307,10 +399,10 @@ export default function ComputerVisionUI({ data }) {
                 <div style={{ padding: '2rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                   <span className="cat-label">{item.category}</span>
                   <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: '0.5rem 0 1rem', lineHeight: 1.3 }}>
-                    <a href="#" className="hover-link">{item.title}</a>
+                    <a href={item.link_url || "#"} target={item.link_url ? "_blank" : "_self"} className="hover-link">{item.title}</a>
                   </h3>
                   <div style={{ color: '#71717a', fontSize: '0.9rem', fontWeight: 600, marginTop: 'auto', marginBottom: '1.5rem' }}>{item.author} • {item.date}</div>
-                  <StatsDisplay date={item.date || "Updated recently"} />
+                  <StatsDisplay itemId={item.id} views={item.views} likes={item.likes} forks={item.shares} date={item.date || "Updated recently"} />
                 </div>
               </div>
             ))}
@@ -332,7 +424,7 @@ export default function ComputerVisionUI({ data }) {
                 <div>
                   <span className="cat-label" style={{ marginBottom: '0.25rem' }}>{item.category}</span>
                   <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 0.5rem', lineHeight: 1.3 }}>
-                    <a href="#" className="hover-link">{item.title}</a>
+                    <a href={item.link_url || "#"} target={item.link_url ? "_blank" : "_self"} className="hover-link">{item.title}</a>
                   </h3>
                   <div style={{ color: '#71717a', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>{item.author}</div>
                   <div style={{ display: 'inline-block', background: '#f4f4f5', padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700 }}>{item.duration}</div>

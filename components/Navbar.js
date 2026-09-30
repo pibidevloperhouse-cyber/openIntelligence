@@ -83,59 +83,43 @@ export default function Navbar() {
 
         .nav-link {
           text-decoration: none;
-          color: #000000;
-          font-weight: 600;
+          color: #ffffff;
+          font-weight: 500;
           font-size: 0.95rem;
           padding: 0.45rem 0.9rem;
           background-color: transparent;
           transition: all 0.2s;
         }
         .nav-link:hover {
-          background: linear-gradient(135deg, #1f6fb2, #2ec4b6);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          color: transparent;
+          color: #38bdf8;
         }
         .nav-link-active {
           text-decoration: none;
-          font-weight: 700 !important;
+          font-weight: 600 !important;
           font-size: 0.95rem;
           padding: 0.45rem 0.9rem;
-          background: linear-gradient(135deg, #1f6fb2, #2ec4b6) !important;
-          -webkit-background-clip: text !important;
-          -webkit-text-fill-color: transparent !important;
-          background-clip: text !important;
-          color: transparent !important;
+          color: #38bdf8 !important;
           transition: all 0.2s;
         }
         
         .mobile-nav-link {
           display: block;
           padding: 0.8rem 0;
-          color: #111827;
+          color: #ffffff;
           text-decoration: none;
           font-weight: 500;
-          border-bottom: 1px solid rgba(37,99,235,0.08);
+          border-bottom: 1px solid rgba(255,255,255,0.08);
           transition: all 0.2s;
         }
         .mobile-nav-link:hover {
-          background: linear-gradient(135deg, #1f6fb2, #2ec4b6);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          color: transparent;
+          color: #38bdf8;
         }
         .mobile-nav-link-active {
           display: block;
           padding: 0.8rem 0;
           font-weight: 600;
-          border-bottom: 1px solid rgba(37,99,235,0.08);
-          background: linear-gradient(135deg, #1f6fb2, #2ec4b6);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          color: transparent;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          color: #38bdf8;
           transition: all 0.2s;
         }
       `}</style>
@@ -144,10 +128,10 @@ export default function Navbar() {
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        background: '#ffffff',
+        background: '#020617',
         backdropFilter: 'none',
-        boxShadow: scrolled ? '0 1px 0 rgba(15,23,42,0.06)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(37,99,235,0.12)' : '1px solid transparent',
+        boxShadow: scrolled ? '0 1px 0 rgba(255,255,255,0.06)' : 'none',
+        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
         transition: 'all 0.3s ease',
       }}>
         <nav className="container" style={{
@@ -170,9 +154,7 @@ export default function Navbar() {
                 fontFamily: 'var(--font-display)',
                 fontWeight: 800,
                 fontSize: '1.15rem',
-                background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
+                color: '#ffffff'
               }}>
                 OpenIntelligence
               </span>
@@ -293,12 +275,12 @@ export default function Navbar() {
             )}
 
             {/* MOBILE / TABLET ONLY — Hamburger button */}
-            <button
+              <button
               className="nb-hamburger"
               onClick={() => setMenuOpen(o => !o)}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer', padding: '4px',
-                color: '#0f172a', alignItems: 'center', justifyContent: 'center',
+                color: '#ffffff', alignItems: 'center', justifyContent: 'center',
               }}
               aria-label="Menu"
             >
@@ -315,9 +297,9 @@ export default function Navbar() {
         {/* ── Mobile / Tablet slide-down menu ── */}
         {menuOpen && (
           <div style={{
-            background: 'rgba(255,255,255,0.98)',
-            borderTop: '1px solid rgba(37,99,235,0.12)',
-            boxShadow: '0 12px 24px -8px rgba(15,23,42,0.12)',
+            background: 'rgba(2,6,23,0.98)',
+            borderTop: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 12px 24px -8px rgba(0,0,0,0.5)',
             backdropFilter: 'blur(20px)',
             padding: '0.75rem 1.5rem 1.5rem',
           }}>
@@ -332,7 +314,7 @@ export default function Navbar() {
                         onClick={() => setMobileMeetingsOpen(!mobileMeetingsOpen)}
                         style={{
                           padding: '0.8rem 0',
-                          color: pathname === href ? '#2563eb' : 'var(--text-secondary)',
+                          color: pathname === href ? '#38bdf8' : '#ffffff',
                           fontWeight: 500,
                           background: 'none',
                           border: 'none',
