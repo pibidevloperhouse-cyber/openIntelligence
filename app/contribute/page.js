@@ -234,7 +234,7 @@ export default function ResourcesPage() {
                     border: '1px solid var(--border)',
                     backgroundColor: '#ffffff',
                     fontSize: '0.95rem',
-                    color: 'var(--text-primary)',
+                    color: '#1e293b',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
@@ -250,7 +250,7 @@ export default function ResourcesPage() {
                       {CATEGORIES.find(c => c.slug === category)?.name || 'Select Category'}
                     </span>
                   </div>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isMobileDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isMobileDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
                     <polyline points="6 9 12 15 18 9"></polyline>
                   </svg>
                 </button>
@@ -270,8 +270,8 @@ export default function ResourcesPage() {
                     display: 'flex',
                     flexDirection: 'column'
                   }}>
-                    {CATEGORIES.map(({ slug, name }) => {
-                      const isActive = category === slug;
+                    {CATEGORIES.filter(({ slug }) => slug !== category).map(({ slug, name }) => {
+                      const isActive = false;
                       const count = slug === 'all' ? globalTotal : (categoryCounts[slug] || 0);
                       const icon = ICONS[slug] || ICONS['documentation'];
 
@@ -291,7 +291,7 @@ export default function ResourcesPage() {
                             padding: '0.85rem 1.25rem',
                             border: 'none',
                             background: isActive ? 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' : '#ffffff',
-                            color: isActive ? '#ffffff' : 'var(--text-secondary)',
+                            color: isActive ? '#ffffff' : '#475569',
                             fontWeight: isActive ? 600 : 500,
                             fontSize: '0.9rem',
                             cursor: 'pointer',
@@ -301,7 +301,7 @@ export default function ResourcesPage() {
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                             <span style={{
-                              color: isActive ? '#ffffff' : 'var(--text-muted)',
+                              color: isActive ? '#ffffff' : '#94a3b8',
                               display: 'flex',
                               alignItems: 'center'
                             }}>
@@ -309,7 +309,7 @@ export default function ResourcesPage() {
                             </span>
                             {name}
                           </div>
-                          <span style={{ fontSize: '0.75rem', color: isActive ? '#ffffff' : 'var(--text-muted)', fontWeight: 600 }}>
+                          <span style={{ fontSize: '0.75rem', color: isActive ? '#ffffff' : '#94a3b8', fontWeight: 600 }}>
                             {count}
                           </span>
                         </button>

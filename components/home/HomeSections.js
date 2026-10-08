@@ -203,13 +203,13 @@ export function ContributeSection() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 text-left">
           {areas.map((area, idx) => (
-            <AnimatedFadeIn key={idx} delay={idx * 0.1} className="bg-slate-50 border border-slate-100 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group">
-              <div className="w-full h-52 overflow-hidden">
-                <img src={area.image} alt={area.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+            <AnimatedFadeIn key={idx} delay={idx * 0.1} className="bg-[#3d3d3d] border border-[#4d4d4d] rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:shadow-black/20 hover:-translate-y-2 transition-all duration-300 group flex flex-col">
+              <div className="w-full h-52 overflow-hidden bg-[#2d2d2d]">
+                <img src={area.image} alt={area.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
               </div>
-              <div className="p-8">
+              <div className="p-8 flex-grow relative">
                 <h3 className="text-xl font-bold text-transparent bg-clip-text mb-3 inline-block" style={{ backgroundImage: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>{area.title}</h3>
-                <p className="text-slate-600 leading-relaxed text-sm">{area.desc}</p>
+                <p className="text-slate-200 leading-relaxed text-sm">{area.desc}</p>
               </div>
             </AnimatedFadeIn>
           ))}
@@ -220,10 +220,10 @@ export function ContributeSection() {
             <h3 className="text-2xl md:text-3xl font-bold mb-4">Have an idea but not sure where it fits?</h3>
             <p className="text-slate-300 mb-8 max-w-2xl mx-auto text-lg">Start with the community. We can explore it together.</p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link href="/contribute" className="px-8 py-4 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_4px_15px_rgba(46,196,182,0.3)] border-0" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
+              <Link href="/contribute" className="px-8 py-4 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_4px_15px_rgba(46,196,182,0.3)] border-0 whitespace-nowrap text-center" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
                 Contribute to Open Intelligence &rarr;
               </Link>
-              <Link href="/contact-us" className="px-8 py-4 bg-transparent text-white font-bold rounded-full transition-all hover:bg-white/10 hover:scale-105 border border-white/50">
+              <Link href="/contact-us" className="px-8 py-4 bg-transparent text-white font-bold rounded-full transition-all hover:bg-white/10 hover:scale-105 border border-white/50 whitespace-nowrap text-center">
                 Share Your Contribution &rarr;
               </Link>
             </div>
@@ -276,14 +276,14 @@ export function ApplySection() {
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {problems.map((prob, idx) => (
-            <AnimatedFadeIn key={idx} delay={idx * 0.1} className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group cursor-pointer flex flex-col h-full">
+            <AnimatedFadeIn key={idx} delay={idx * 0.1} className="bg-[#3d3d3d] border border-[#4d4d4d] rounded-2xl shadow-sm overflow-hidden hover:shadow-xl hover:shadow-black/20 hover:-translate-y-2 transition-all duration-300 group cursor-pointer flex flex-col h-full">
               <Link href={`/problems#${prob.id}`} className="flex flex-col h-full">
-                <div className="w-full h-48 overflow-hidden bg-slate-100">
-                  <img src={`/${(idx + 1) * 111}.jpeg`} alt={prob.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <div className="w-full h-48 overflow-hidden bg-[#2d2d2d]">
+                  <img src={`/${(idx + 1) * 111}.jpeg`} alt={prob.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
                 </div>
-                <div className="p-8 flex flex-col flex-grow bg-white relative">
+                <div className="p-8 flex flex-col flex-grow relative">
                   <h3 className="text-xl font-bold text-transparent bg-clip-text mb-3 inline-block" style={{ backgroundImage: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>{prob.title}</h3>
-                  <p className="text-slate-600 leading-relaxed text-sm mt-auto">{prob.desc}</p>
+                  <p className="text-slate-200 leading-relaxed text-sm mt-auto">{prob.desc}</p>
                 </div>
               </Link>
             </AnimatedFadeIn>
@@ -292,10 +292,10 @@ export function ApplySection() {
 
         {/* Action Buttons Below Grid */}
         <div className="mt-16 flex flex-wrap gap-4 justify-center">
-          <Link href="/problems" className="px-8 py-4 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_8px_20px_rgba(46,196,182,0.3)] border-0" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
+          <Link href="/problems" className="px-8 py-4 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_8px_20px_rgba(46,196,182,0.3)] border-0 whitespace-nowrap text-center" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
             Explore Problems We Can Solve &rarr;
           </Link>
-          <Link href="/contact-us" className="px-8 py-4 bg-white text-slate-800 border-2 border-slate-200 font-bold rounded-full transition-all hover:border-[#2ec4b6] hover:text-[#1f6fb2] shadow-[0_4px_10px_rgba(0,0,0,0.05)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.1)] hover:-translate-y-1">
+          <Link href="/contact-us" className="px-8 py-4 bg-white text-slate-800 border-2 border-slate-200 font-bold rounded-full transition-all hover:border-[#2ec4b6] hover:text-[#1f6fb2] shadow-[0_4px_10px_rgba(0,0,0,0.05)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.1)] hover:-translate-y-1 whitespace-nowrap text-center">
             Propose an AI Use Case
           </Link>
         </div>
@@ -526,10 +526,10 @@ export function ApplyTabContent() {
               Pi Bi Open Intelligence brings open datasets, models, assistants and AI agents into real-world use, focusing on problems that affect people, communities and the planet.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link href="#explore" className="px-8 py-4 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_8px_20px_rgba(46,196,182,0.3)] border-0" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
+              <Link href="#explore" className="px-8 py-4 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_8px_20px_rgba(46,196,182,0.3)] border-0 whitespace-nowrap text-center" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
                 Explore Problems We Can Solve &rarr;
               </Link>
-              <Link href="#propose" className="px-8 py-4 bg-white text-slate-800 border-2 border-slate-200 font-bold rounded-full transition-all hover:border-[#2ec4b6] hover:text-[#1f6fb2] shadow-[0_4px_10px_rgba(0,0,0,0.05)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.1)] hover:-translate-y-1">
+              <Link href="#propose" className="px-8 py-4 bg-white text-slate-800 border-2 border-slate-200 font-bold rounded-full transition-all hover:border-[#2ec4b6] hover:text-[#1f6fb2] shadow-[0_4px_10px_rgba(0,0,0,0.05)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.1)] hover:-translate-y-1 whitespace-nowrap text-center">
                 Propose an AI Use Case
               </Link>
             </div>
