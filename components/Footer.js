@@ -3,11 +3,11 @@
 import Link from 'next/link';
 
 const footerLinks = {
-  Learn: [
+  Topic: [
     { href: '/#learn', label: 'Learn AI' },
     { href: '/#contribute', label: 'Contribute' },
-    { href: '/#apply', label: 'Apply' },
     { href: '/#empower', label: 'Empower' },
+    { href: '/#apply', label: 'Apply' },
   ],
   Resources: [
     { href: '/open-intelligence', label: 'AI & Machine Learning' },
@@ -112,14 +112,14 @@ export default function Footer() {
                 OpenIntelligence
               </span>
             </div>
-            <p style={{ color: '#000000', fontSize: '0.85rem', lineHeight: 1.6, maxWidth: '240px' }}>
-              Building AI commons — open and free. A platform by{' '}
+            <p style={{ color: '#000000', fontSize: '0.85rem', lineHeight: 1.6, maxWidth: '350px' }}>
+              Pi Bi Open Intelligence is a community-led initiative from the{' '}
               <span style={{
                 background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 fontWeight: 600
-              }}>PiBi Foundation</span> for the Madurai AI Community.
+              }}>Pi Bi Foundation</span> and Madurai AI Community, bringing people together to learn, explore and build with AI and emerging technologies.
             </p>
           </div>
 
@@ -155,24 +155,8 @@ export default function Footer() {
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               fontWeight: 600
-            }}>PiBi Foundation</span> · Open Intelligence Hub
+            }}>PiBi</span> Open Intelligence
           </p>
-          <div className="footer-bottom-info">
-            <span style={{
-              fontSize: '0.75rem',
-              padding: '0.2rem 0.6rem',
-              borderRadius: '20px',
-              background: 'rgba(16,185,129,0.1)',
-              color: '#000000',
-              border: '1px solid rgba(16,185,129,0.2)',
-              whiteSpace: 'nowrap',
-            }}>
-              Open Source
-            </span>
-            <span style={{ color: '#000000', fontSize: '0.8rem' }}>
-              Built with ❤️ for Madurai AI Community
-            </span>
-          </div>
         </div>
       </div>
     </footer>

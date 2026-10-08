@@ -106,10 +106,10 @@ export function AboutSection() {
 
                 {/* Action Buttons */}
                 <div className="pt-8 border-t border-slate-100 flex flex-wrap gap-4">
-                  <a href="#learn" className="px-6 py-2.5 text-white font-bold rounded-full shadow-sm hover:scale-105 transition-all cursor-pointer" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>Learn Something</a>
-                  <a href="#contribute" className="px-6 py-2.5 text-white font-bold rounded-full shadow-sm hover:scale-105 transition-all cursor-pointer" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>Contribute Something</a>
-                  <a href="#apply" className="px-6 py-2.5 text-white font-bold rounded-full shadow-sm hover:scale-105 transition-all cursor-pointer" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>Apply AI</a>
-                  <a href="#empower" className="px-6 py-2.5 text-white font-bold rounded-full shadow-sm hover:scale-105 transition-all cursor-pointer" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>Empower Someone</a>
+                  <a href="#learn" className="px-6 py-2.5 text-white font-bold rounded-full shadow-sm hover:scale-105 transition-all cursor-pointer" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>Learn</a>
+                  <a href="#contribute" className="px-6 py-2.5 text-white font-bold rounded-full shadow-sm hover:scale-105 transition-all cursor-pointer" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>Contribute</a>
+                  <a href="#empower" className="px-6 py-2.5 text-white font-bold rounded-full shadow-sm hover:scale-105 transition-all cursor-pointer" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>Empower</a>
+                  <a href="#apply" className="px-6 py-2.5 text-white font-bold rounded-full shadow-sm hover:scale-105 transition-all cursor-pointer" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>Apply AI for Humanity</a>
                 </div>
               </div>
 
@@ -139,9 +139,9 @@ export function LearnSection() {
                 Through the Madurai AI Community, we explore AI and emerging technologies through practical sessions, discussions, demos and hands-on learning.
               </p>
 
-              <div className="inline-block bg-[#1f6fb2] border border-[#1f6fb2]/50 text-white px-5 py-2.5 rounded-full font-medium mb-8 w-fit max-w-full text-sm shadow-sm leading-relaxed">
+              <Link href="/meetings" className="inline-block bg-[#1f6fb2] border border-[#1f6fb2]/50 text-white px-5 py-2.5 rounded-full font-medium mb-8 w-fit max-w-full text-sm shadow-sm leading-relaxed hover:scale-105 transition-transform cursor-pointer">
                 With 65+ weeks of community learning
-              </div>
+              </Link>
 
               <p className="text-slate-400 text-sm mb-10 max-w-xl leading-relaxed">
                 Explore topics across AI, Machine Learning, Deep Learning, LLMs, SLMs, Generative AI, Agentic AI, AI Architecture, AI Infrastructure, Applied AI
@@ -410,9 +410,9 @@ export function LearnTabContent() {
                 Through the Madurai AI Community, we explore AI and emerging technologies through practical sessions, discussions, demos and hands-on learning.
               </p>
 
-              <div className="inline-block bg-[#1f2937] border border-slate-700 text-slate-300 px-5 py-2.5 rounded-full font-medium mb-8 w-max text-sm shadow-sm">
+              <Link href="/meetings" className="inline-block bg-[#1f2937] border border-slate-700 text-slate-300 px-5 py-2.5 rounded-full font-medium mb-8 w-max text-sm shadow-sm hover:scale-105 transition-transform cursor-pointer">
                 With 65+ weeks of community learning
-              </div>
+              </Link>
 
               <p className="text-slate-400 text-sm mb-10 max-w-xl leading-relaxed">
                 Explore topics across AI, Machine Learning, Deep Learning, LLMs, SLMs, Generative AI, Agentic AI, AI Architecture, AI Infrastructure, Applied AI

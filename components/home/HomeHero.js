@@ -95,7 +95,7 @@ export default function HomeHero() {
           className="mt-12 flex flex-col items-start gap-8"
         >
           <Link
-            href="/contact-us"
+            href="#about"
             className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-300 border-0 rounded-full hover:scale-105 shadow-[0_4px_20px_rgba(46,196,182,0.4)]"
             style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
           >
