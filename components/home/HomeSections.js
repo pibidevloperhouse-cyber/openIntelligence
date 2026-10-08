@@ -139,7 +139,7 @@ export function LearnSection() {
                 Through the Madurai AI Community, we explore AI and emerging technologies through practical sessions, discussions, demos and hands-on learning.
               </p>
 
-              <div className="inline-block bg-[#1f6fb2] border border-[#1f6fb2]/50 text-white px-5 py-2.5 rounded-full font-medium mb-8 w-max text-sm shadow-sm">
+              <div className="inline-block bg-[#1f6fb2] border border-[#1f6fb2]/50 text-white px-5 py-2.5 rounded-full font-medium mb-8 w-fit max-w-full text-sm shadow-sm leading-relaxed">
                 With 65+ weeks of community learning
               </div>
 
@@ -148,10 +148,10 @@ export function LearnSection() {
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <Link href="/meetings" className="px-8 py-3.5 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_4px_15px_rgba(46,196,182,0.3)] border border-transparent" style={{ background: 'linear-gradient(to right, #1f6fb2, #2ec4b6)' }}>
+                <Link href="/meetings" className="px-8 py-3.5 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_4px_15px_rgba(46,196,182,0.3)] border-0 whitespace-nowrap text-center" style={{ background: 'linear-gradient(to right, #1f6fb2, #2ec4b6)' }}>
                   Upcoming Sessions &rarr;
                 </Link>
-                <Link href="/meetings?tab=past" className="px-8 py-3.5 bg-slate-700/50 hover:bg-slate-600 text-white font-bold rounded-full transition-all hover:scale-105 border border-slate-600">
+                <Link href="/meetings?tab=past" className="px-8 py-3.5 bg-slate-700/50 hover:bg-slate-600 text-white font-bold rounded-full transition-all hover:scale-105 border border-slate-600 whitespace-nowrap text-center">
                   Past Sessions &rarr;
                 </Link>
               </div>
@@ -220,7 +220,7 @@ export function ContributeSection() {
             <h3 className="text-2xl md:text-3xl font-bold mb-4">Have an idea but not sure where it fits?</h3>
             <p className="text-slate-300 mb-8 max-w-2xl mx-auto text-lg">Start with the community. We can explore it together.</p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link href="/contribute" className="px-8 py-4 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_4px_15px_rgba(46,196,182,0.3)] border border-transparent" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
+              <Link href="/contribute" className="px-8 py-4 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_4px_15px_rgba(46,196,182,0.3)] border-0" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
                 Contribute to Open Intelligence &rarr;
               </Link>
               <Link href="/contact-us" className="px-8 py-4 bg-transparent text-white font-bold rounded-full transition-all hover:bg-white/10 hover:scale-105 border border-white/50">
@@ -292,7 +292,7 @@ export function ApplySection() {
 
         {/* Action Buttons Below Grid */}
         <div className="mt-16 flex flex-wrap gap-4 justify-center">
-          <Link href="/problems" className="px-8 py-4 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_8px_20px_rgba(46,196,182,0.3)] border border-transparent" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
+          <Link href="/problems" className="px-8 py-4 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_8px_20px_rgba(46,196,182,0.3)] border-0" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
             Explore Problems We Can Solve &rarr;
           </Link>
           <Link href="/contact-us" className="px-8 py-4 bg-white text-slate-800 border-2 border-slate-200 font-bold rounded-full transition-all hover:border-[#2ec4b6] hover:text-[#1f6fb2] shadow-[0_4px_10px_rgba(0,0,0,0.05)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.1)] hover:-translate-y-1">
@@ -316,7 +316,7 @@ export function EmpowerSection() {
   ];
 
   return (
-    <section id="empower" className="py-24 px-4 text-white relative" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
+    <section id="empower" className="py-24 px-4 text-white relative bg-[#1f6fb2]">
       
       <div className="max-w-7xl mx-auto relative z-10">
 
@@ -332,14 +332,14 @@ export function EmpowerSection() {
         </AnimatedFadeIn>
 
         {/* Filter Buttons */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
+        <div className="grid grid-cols-2 md:flex md:flex-wrap justify-center gap-3 md:gap-4 mb-12 max-w-lg mx-auto md:max-w-none">
           {['article', 'guide', 'podcasts', 'trending topics'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-8 py-3 rounded-full font-bold capitalize transition-all duration-300 border ${
+              className={`px-2 md:px-8 py-3 rounded-full font-bold capitalize transition-all duration-300 border whitespace-nowrap text-sm md:text-base ${
                 activeTab === tab 
-                  ? 'bg-white text-[#1f6fb2] shadow-[0_4px_15px_rgba(255,255,255,0.3)] border-transparent scale-105'
+                  ? 'bg-white text-[#1f6fb2] shadow-[0_4px_15px_rgba(255,255,255,0.3)] border-transparent md:scale-105'
                   : 'bg-black/20 text-white border-white/20 hover:bg-black/40 hover:border-white/50'
               }`}
             >
@@ -419,7 +419,7 @@ export function LearnTabContent() {
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <Link href="/meetings" className="px-8 py-3.5 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_4px_15px_rgba(46,196,182,0.3)] border border-transparent" style={{ background: 'linear-gradient(to right, #1f6fb2, #2ec4b6)' }}>
+                <Link href="/meetings" className="px-8 py-3.5 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_4px_15px_rgba(46,196,182,0.3)] border-0" style={{ background: 'linear-gradient(to right, #1f6fb2, #2ec4b6)' }}>
                   Upcoming Sessions &rarr;
                 </Link>
                 <Link href="/meetings?tab=past" className="px-8 py-3.5 bg-slate-700/50 hover:bg-slate-600 text-white font-bold rounded-full transition-all hover:scale-105 border border-slate-600">
@@ -526,7 +526,7 @@ export function ApplyTabContent() {
               Pi Bi Open Intelligence brings open datasets, models, assistants and AI agents into real-world use, focusing on problems that affect people, communities and the planet.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link href="#explore" className="px-8 py-4 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_8px_20px_rgba(46,196,182,0.3)] border border-transparent" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
+              <Link href="#explore" className="px-8 py-4 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_8px_20px_rgba(46,196,182,0.3)] border-0" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
                 Explore Problems We Can Solve &rarr;
               </Link>
               <Link href="#propose" className="px-8 py-4 bg-white text-slate-800 border-2 border-slate-200 font-bold rounded-full transition-all hover:border-[#2ec4b6] hover:text-[#1f6fb2] shadow-[0_4px_10px_rgba(0,0,0,0.05)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.1)] hover:-translate-y-1">

@@ -96,7 +96,7 @@ export default function HomeHero() {
         >
           <Link
             href="/contact-us"
-            className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-300 border border-transparent rounded-full hover:scale-105 shadow-[0_4px_20px_rgba(46,196,182,0.4)]"
+            className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-300 border-0 rounded-full hover:scale-105 shadow-[0_4px_20px_rgba(46,196,182,0.4)]"
             style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
           >
             Explore Open Intelligence &rarr;

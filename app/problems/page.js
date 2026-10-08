@@ -126,11 +126,9 @@ const sections = [
 export default function ProblemsPage() {
   return (
     <main className="min-h-screen bg-slate-50 font-sans">
-      <Navbar />
       
       {/* Header */}
-      <div className="pt-40 pb-20 px-4 bg-slate-900 text-center relative overflow-hidden">
-        <div className="absolute top-[-50%] right-[-10%] w-[80%] h-[150%] rounded-full bg-[#2ec4b6]/10 blur-[120px] pointer-events-none"></div>
+      <div className="pt-40 pb-20 px-4 text-center relative overflow-hidden text-white" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
         <div className="max-w-4xl mx-auto relative z-10">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -193,7 +191,6 @@ export default function ProblemsPage() {
         ))}
       </div>
 
-      <Footer />
     </main>
   );
 }
