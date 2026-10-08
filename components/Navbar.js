@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/contribute', label: 'Contribute' },
   { href: '/meetings', label: 'Events' },
+  { href: '/contact-us', label: 'Contact Us' },
   { href: '/open-intelligence', label: 'Resources' },
 ];
 
@@ -275,7 +276,7 @@ export default function Navbar() {
             )}
 
             {/* MOBILE / TABLET ONLY — Hamburger button */}
-              <button
+            <button
               className="nb-hamburger"
               onClick={() => setMenuOpen(o => !o)}
               style={{

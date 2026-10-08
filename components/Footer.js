@@ -3,21 +3,23 @@
 import Link from 'next/link';
 
 const footerLinks = {
-  Explore: [
-    { href: '/contribute', label: 'Browse Resources' },
-    { href: '/meetings', label: 'Community Meetings' },
-    { href: '/submit', label: 'Submit a Resource' },
+  Learn: [
+    { href: '/#learn', label: 'Learn AI' },
+    { href: '/#contribute', label: 'Contribute' },
+    { href: '/#apply', label: 'Apply' },
+    { href: '/#empower', label: 'Empower' },
   ],
-  Categories: [
-    { href: '/contribute?category=mcp-server', label: 'MCP Servers' },
-    { href: '/contribute?category=dataset', label: 'Datasets' },
-    { href: '/contribute?category=rag-template', label: 'RAG Templates' },
-    { href: '/contribute?category=prompt-library', label: 'Prompt Libraries' },
+  Resources: [
+    { href: '/open-intelligence', label: 'AI & Machine Learning' },
+    { href: '/open-intelligence', label: 'Data Engineering' },
+    { href: '/open-intelligence', label: 'Infrastructure & Cloud' },
+    { href: '/open-intelligence', label: 'Digital Transformation' },
+    { href: '/open-intelligence', label: 'Product & Growth' },
+    { href: '/open-intelligence', label: 'Security & Governance' },
   ],
-  Community: [
-    { href: 'https://github.com', label: 'GitHub', external: true },
-    { href: '/profile', label: 'My Profile' },
-    { href: '/admin', label: 'Admin Panel' },
+  Company: [
+    { href: '/#about', label: 'About Us' },
+    { href: '/contact-us', label: 'Contact Us' },
   ],
 };
 
