@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import Link from 'next/link';
 import MeetingCard from '@/components/MeetingCard';
 import MeetingsClient from './MeetingsClient';
+import FeaturesCarousel from './FeaturesCarousel';
 
 export const metadata = {
   title: 'Community Sessions — Open Intelligence Hub',
@@ -43,15 +44,7 @@ export default async function MeetingsPage() {
 
         {/* ── Page Header ── */}
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-            marginBottom: '1.25rem', padding: '0.4rem 1.25rem', borderRadius: '24px',
-            background: '#ffffff', border: '1px solid #E7E5E4',
-            color: '#1f6fb2', fontSize: '0.85rem', fontWeight: 700,
-            boxShadow: '0 4px 12px rgba(31, 111, 178, 0.08)'
-          }}>
-            📅 Madurai AI Community
-          </div>
+
           <h1 style={{
             fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
             fontWeight: 900, fontFamily: 'var(--font-display)',
@@ -68,37 +61,15 @@ export default async function MeetingsPage() {
           </p>
         </div>
 
-        {/* ── Stats Strip Box ── */}
-        <div style={{
-          marginBottom: '3.5rem',
-          padding: '2rem 1.5rem',
-          display: 'flex',
-          justifyContent: 'space-around',
-          flexWrap: 'wrap',
-          gap: '2rem',
-          textAlign: 'center',
-          background: '#ffffff',
-          border: '1px solid #E7E5E4',
-          borderRadius: '16px',
-          boxShadow: '0 10px 30px -10px rgba(0,0,0,0.05)'
-        }}>
-          {[
-            { label: 'Upcoming', value: upcoming.length || '0', color: '#1f6fb2' },
-            { label: 'Past Sessions', value: past.length || '0', color: '#2ec4b6' },
-            { label: 'Weeks of AI', value: '52+', color: '#0284c7' },
-            { label: 'Location', value: 'Madurai', color: '#0d9488' },
-          ].map(({ label, value, color }) => (
-            <div key={label} style={{ flex: '1 1 120px' }}>
-              <div style={{ fontSize: '2rem', fontWeight: 900, color, fontFamily: 'var(--font-display)', marginBottom: '0.2rem' }}>{value}</div>
-              <div style={{ color: '#78716C', fontSize: '0.85rem', fontWeight: 500 }}>{label}</div>
-            </div>
-          ))}
-        </div>
+        {/* ── Features Grid ── */}
+          <FeaturesCarousel />
 
         {/* ── Sessions Tabs ── */}
-        <Suspense fallback={<div style={{ textAlign: 'center', color: '#78716C', padding: '2rem' }}>Loading sessions...</div>}>
-          <MeetingsClient upcoming={upcoming} past={past} />
-        </Suspense>
+        <div id="sessions-tabs">
+          <Suspense fallback={<div style={{ textAlign: 'center', color: '#78716C', padding: '2rem' }}>Loading sessions...</div>}>
+            <MeetingsClient upcoming={upcoming} past={past} />
+          </Suspense>
+        </div>
       </div>
     </div>
   );

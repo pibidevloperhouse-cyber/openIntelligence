@@ -195,26 +195,29 @@ export default function MeetingsClient({ upcoming, past }) {
           <section>
             {past.length > 0 && (
               <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
-                <input
-                  type="text"
-                  placeholder="Search past sessions by topic or description..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{
-                    padding: '0.75rem 1.25rem',
-                    borderRadius: '12px',
-                    border: '1px solid #E7E5E4',
-                    width: '100%',
-                    maxWidth: '400px',
-                    fontSize: '0.95rem',
-                    color: '#0f172a', // Added text color
-                    outline: 'none',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-                    transition: 'border-color 0.2s',
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#1f6fb2'}
-                  onBlur={(e) => e.target.style.borderColor = '#E7E5E4'}
-                />
+                <div style={{ position: 'relative', width: '100%', maxWidth: '400px' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input
+                    type="text"
+                    placeholder="Search past sessions by topic or description..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{
+                      padding: '0.75rem 1.25rem 0.75rem 2.75rem',
+                      borderRadius: '12px',
+                      border: '1px solid #E7E5E4',
+                      width: '100%',
+                      fontSize: '0.95rem',
+                      color: '#0f172a',
+                      outline: 'none',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+                      transition: 'all 0.2s ease',
+                      boxSizing: 'border-box'
+                    }}
+                    onFocus={(e) => { e.target.style.borderColor = '#1f6fb2'; e.target.style.boxShadow = '0 0 0 3px rgba(31, 111, 178, 0.1)'; }}
+                    onBlur={(e) => { e.target.style.borderColor = '#E7E5E4'; e.target.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)'; }}
+                  />
+                </div>
               </div>
             )}
             {filteredPast.length > 0 ? (

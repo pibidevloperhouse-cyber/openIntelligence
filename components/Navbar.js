@@ -9,8 +9,8 @@ const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/contribute', label: 'Contribute' },
   { href: '/meetings', label: 'Events' },
-  { href: '/contact-us', label: 'Contact Us' },
   { href: '/open-intelligence', label: 'Resources' },
+  { href: '/contact-us', label: 'Contact Us' },
 ];
 
 export default function Navbar() {

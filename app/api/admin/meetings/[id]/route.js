@@ -24,7 +24,7 @@ export async function PUT(request, { params }) {
     title, description, date, start_time, end_time, venue, registration_link, cover_image,
     // outcome fields
     outcome_title, outcome_summary, attendees_count, photos, tags, speakers,
-    status,
+    status, week_number,
   } = body;
 
   // Build update payload — only include defined fields
@@ -45,6 +45,7 @@ export async function PUT(request, { params }) {
   if (photos !== undefined)            data.photos            = photos;
   if (tags !== undefined)              data.tags              = tags;
   if (speakers !== undefined)          data.speakers          = speakers;
+  if (week_number !== undefined)       data.week_number       = week_number;
 
   // If outcome fields are being saved and status not explicit, mark COMPLETED
   if ((outcome_summary || outcome_title) && status === undefined) {

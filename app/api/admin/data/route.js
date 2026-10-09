@@ -20,7 +20,7 @@ export async function GET() {
   try {
     const [
       totalRes, pendingRes, approvedRes, featuredRes, rejectedRes, contributorsRes,
-      pendingListRes, allResourcesRes, meetingsRes, usersRes
+      pendingListRes, allResourcesRes, meetingsRes, usersRes, registrationsRes
     ] = await Promise.all([
       supabaseAdmin.from('resources').select('*', { count: 'exact', head: true }),
       supabaseAdmin.from('resources').select('*', { count: 'exact', head: true }).eq('status', 'PENDING'),
@@ -32,7 +32,8 @@ export async function GET() {
       supabaseAdmin.from('resources').select('*, resource_categories(category:categories(*)), contributor:users(username, avatar_url), resource_tags(tag:tags(*))').eq('status', 'PENDING').order('created_at', { ascending: true }),
       supabaseAdmin.from('resources').select('*, resource_categories(category:categories(*)), contributor:users(username)').order('created_at', { ascending: false }).limit(50),
       supabaseAdmin.from('meetings').select('*').order('date', { ascending: false }),
-      supabaseAdmin.from('users').select('*, resources(id, status)').order('created_at', { ascending: false })
+      supabaseAdmin.from('users').select('*, resources(id, status)').order('created_at', { ascending: false }),
+      supabaseAdmin.from('event_registrations').select('*').order('created_at', { ascending: false })
     ]);
 
     const pending_list = (pendingListRes.data || []).map(r => ({ ...r, categories: (r.resource_categories || []).map(rc => rc.category), tags: r.resource_tags || [] }));
@@ -41,6 +42,10 @@ export async function GET() {
       ...m,
       date: m.date.endsWith('Z') ? m.date : m.date + 'Z'
     }));
+    const registrationsList = (registrationsRes.data || []).map(r => {
+      const match = meetings.find(m => m.id === r.meeting_id);
+      return { ...r, meeting: { title: match?.title || 'Unknown Event' } };
+    });
 
     return NextResponse.json({
       stats: {
@@ -55,6 +60,7 @@ export async function GET() {
       resources: all_resources,
       meetings: meetings,
       users: usersRes.data || [],
+      registrations: registrationsList,
     });
   } catch (err) {
     console.error('[GET /api/admin/data]', err.message);

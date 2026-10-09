@@ -262,11 +262,13 @@ export default function AdminPage() {
   const [allResources, setAllResources] = useState([]);
   const [meetings, setMeetings] = useState([]);
   const [users, setUsers] = useState([]);
+  const [registrations, setRegistrations] = useState([]);
+  const [expandedRegs, setExpandedRegs] = useState({});
 
   // Create/Edit event form
   const [showEventForm, setShowEventForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
-  const [eventForm, setEventForm] = useState({ title: '', description: '', date: '', time: '', end_time: '', venue: '', registration_link: '', photos: '', speakers: [] });
+  const [eventForm, setEventForm] = useState({ title: '', description: '', date: '', time: '', end_time: '', venue: '', registration_link: '', photos: '', speakers: [], week_number: '' });
   const [speakerInput, setSpeakerInput] = useState('');
   const [savingEvent, setSavingEvent] = useState(false);
   const [eventError, setEventError] = useState('');
@@ -335,6 +337,7 @@ export default function AdminPage() {
     setAllResources(data.resources || []);
     setMeetings(data.meetings || []);
     setUsers(data.users || []);
+    setRegistrations(data.registrations || []);
   }, []);
 
   useEffect(() => {
@@ -378,7 +381,7 @@ export default function AdminPage() {
 
   // ── Event Handlers ──────────────────────────────────────────────────────────
   const resetEventForm = () => {
-    setEventForm({ title: '', description: '', date: '', time: '', end_time: '', venue: '', registration_link: '', cover_image: '', speakers: [] });
+    setEventForm({ title: '', description: '', date: '', time: '', end_time: '', venue: '', registration_link: '', cover_image: '', speakers: [], week_number: '' });
     setSpeakerInput('');
     setEditingEvent(null);
     setShowEventForm(false);
@@ -467,7 +470,8 @@ export default function AdminPage() {
       venue: meeting.venue,
       registration_link: meeting.registration_link,
       cover_image: meeting.cover_image || '',
-      speakers: meeting.speakers || []
+      speakers: meeting.speakers || [],
+      week_number: meeting.week_number || ''
     });
     setEditingEvent(meeting);
     setShowEventForm(true);
@@ -500,7 +504,8 @@ export default function AdminPage() {
         ...eventForm,
         date: dateTime,
         start_time: eventForm.time ? format12(eventForm.time) : null,
-        end_time: eventForm.end_time ? format12(eventForm.end_time) : null
+        end_time: eventForm.end_time ? format12(eventForm.end_time) : null,
+        week_number: eventForm.week_number ? parseInt(eventForm.week_number, 10) : null
       };
 
       const res = await fetch(url, {
@@ -612,6 +617,7 @@ export default function AdminPage() {
     { id: 'events', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>, label: 'Events', count: meetings.length },
     { id: 'users', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4-4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>, label: 'Users', count: users.length },
     { id: 'contributors', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>, label: 'Contributors', count: ghData?.summary?.contributors || 0 },
+    { id: 'registrations', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>, label: 'Registrations', count: registrations.length },
     { id: 'settings', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>, label: 'Settings' },
   ];
 
@@ -1004,12 +1010,22 @@ export default function AdminPage() {
                             </div>
                           </Field>
                         </div>
-                        <Field label="Venue">
-                          <input required placeholder="e.g. PiBi Office, Madurai / Online – Google Meet" value={eventForm.venue} onChange={(e) => setEventForm({ ...eventForm, venue: e.target.value })} className="input-field" />
-                        </Field>
-                        <Field label="Registration / Join Link (optional)">
-                          <input type="url" placeholder="https://..." value={eventForm.registration_link} onChange={(e) => setEventForm({ ...eventForm, registration_link: e.target.value })} className="input-field" />
-                        </Field>
+                        <div className="form-grid">
+                          <Field label="Venue">
+                            <input required placeholder="e.g. PiBi Office, Madurai / Online – Google Meet" value={eventForm.venue} onChange={(e) => setEventForm({ ...eventForm, venue: e.target.value })} className="input-field" />
+                          </Field>
+                          <Field label="Map Link">
+                            <input type="url" value="https://maps.app.goo.gl/Hvao81P2PoEwxEja8" readOnly className="input-field" style={{ backgroundColor: '#f8fafc', color: '#64748b' }} />
+                          </Field>
+                        </div>
+                        <div className="form-grid">
+                          <Field label="Week Number">
+                            <input type="number" placeholder="e.g. 58" value={eventForm.week_number} onChange={(e) => setEventForm({ ...eventForm, week_number: e.target.value })} className="input-field" />
+                          </Field>
+                          <Field label="Registration / Join Link (optional)">
+                            <input type="url" placeholder="https://..." value={eventForm.registration_link} onChange={(e) => setEventForm({ ...eventForm, registration_link: e.target.value })} className="input-field" />
+                          </Field>
+                        </div>
                         <Field label="Speakers (Optional)">
                           <div style={{ display: 'flex', gap: '0.5rem' }}>
                             <input type="text" placeholder="e.g. Nagaraj" value={speakerInput} onChange={(e) => setSpeakerInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (speakerInput.trim()) { setEventForm({ ...eventForm, speakers: [...(eventForm.speakers || []), speakerInput.trim()] }); setSpeakerInput(''); } } }} className="input-field" style={{ width: '100%', maxWidth: '350px', padding: '0.5rem 0.75rem', fontSize: '0.85rem' }} />
@@ -1743,6 +1759,91 @@ export default function AdminPage() {
                     </>
                   )}
                 </>
+              )}
+            </div>
+          )}
+
+          {/* ── REGISTRATIONS ────────────────────────────────────────────────── */}
+          {activeTab === 'registrations' && (
+            <div>
+              <h2 style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)', marginBottom: '1.5rem', fontSize: '1.4rem' }}>
+                Event Registrations
+              </h2>
+              {registrations.length === 0 ? (
+                <div style={{ padding: '3rem', textAlign: 'center', background: '#ffffff', borderRadius: '16px', border: '1px dashed var(--border)' }}>
+                  <svg width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" style={{ color: 'var(--text-muted)', margin: '0 auto 1rem' }}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                  <h3 style={{ margin: '0 0 0.5rem', color: 'var(--text-primary)' }}>No Registrations Found</h3>
+                  <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.9rem' }}>When users register for events, they will appear here.</p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {Object.entries(
+                    registrations.reduce((acc, reg) => {
+                      const meetId = reg.meeting_id;
+                      if (!acc[meetId]) acc[meetId] = { title: reg.meeting?.title || 'Unknown Event', regs: [] };
+                      acc[meetId].regs.push(reg);
+                      return acc;
+                    }, {})
+                  ).map(([meetId, group]) => (
+                    <div key={meetId} style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                      <div 
+                        onClick={() => setExpandedRegs(prev => ({ ...prev, [meetId]: !prev[meetId] }))}
+                        style={{ padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', background: expandedRegs[meetId] ? 'var(--bg-secondary)' : '#ffffff', transition: 'background 0.2s' }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                          <div style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)', color: 'white', padding: '0.3rem 0.8rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 800 }}>
+                            {group.regs.length} Registered
+                          </div>
+                          <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)', fontWeight: 700 }}>
+                            {group.title}
+                          </h3>
+                        </div>
+                        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ transform: expandedRegs[meetId] ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease', color: 'var(--text-muted)' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </div>
+                      
+                      {expandedRegs[meetId] && (
+                        <div style={{ borderTop: '1px solid var(--border)', overflowX: 'auto' }}>
+                          <table style={{ width: '100%', minWidth: '600px', borderCollapse: 'collapse' }}>
+                            <thead style={{ background: '#f8fafc', borderBottom: '1px solid var(--border)' }}>
+                              <tr>
+                                <th style={{ padding: '1rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.05em', width: '25%' }}>Date</th>
+                                <th style={{ padding: '1rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.05em', width: '35%' }}>Name</th>
+                                <th style={{ padding: '1rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.05em', width: '40%' }}>Contact Info</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {group.regs.map((reg, idx) => (
+                                <tr key={reg.id} style={{ borderBottom: idx === group.regs.length - 1 ? 'none' : '1px solid var(--border)', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-secondary)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                                  <td style={{ padding: '1rem 1.5rem', fontSize: '0.85rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                                    {new Date(reg.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}<br/>
+                                    <span style={{ fontSize: '0.75rem' }}>{new Date(reg.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+                                  </td>
+                                  <td style={{ padding: '1rem 1.5rem' }}>
+                                    <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.9rem' }}>{reg.name}</div>
+                                  </td>
+                                  <td style={{ padding: '1rem 1.5rem' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                      <a href={`mailto:${reg.email}`} style={{ color: '#1f6fb2', textDecoration: 'none', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 500 }}>
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                        {reg.email}
+                                      </a>
+                                      {reg.phone && (
+                                        <a href={`tel:${reg.phone}`} style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 500 }}>
+                                          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                          {reg.phone}
+                                        </a>
+                                      )}
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           )}

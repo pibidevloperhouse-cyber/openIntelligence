@@ -125,6 +125,8 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
   const [showOutcome, setShowOutcome] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
   const [activeTab, setActiveTab] = useState('about'); // 'about' | 'outcome'
+  const [isAboutExpanded, setIsAboutExpanded] = useState(false);
+  const [isOutcomeExpanded, setIsOutcomeExpanded] = useState(false);
   const [showNoOutcomeAlert, setShowNoOutcomeAlert] = useState(false);
 
   useEffect(() => {
@@ -281,39 +283,99 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
           <div style={{ background: '#f8fafc', borderRadius: '16px', overflow: 'hidden', display: 'flex', flexWrap: 'wrap', border: '1px solid #e2e8f0' }}>
             {activeTab === 'outcome' ? (
               <>
-                <div style={{ flex: '1 1 300px', minHeight: '250px', maxHeight: '400px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ flex: '1 1 300px', minHeight: '250px', background: '#f1f5f9', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '1.5rem' }}>
                   {outcomeImage ? (
-                    <img src={outcomeImage} alt="Outcome" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    <img src={outcomeImage} alt="Outcome" style={{ width: '100%', maxHeight: '500px', objectFit: 'contain', position: 'sticky', top: '1.5rem' }} />
                   ) : (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8' }}>No Outcome Image Available</div>
                   )}
                 </div>
-                <div style={{ flex: '1 1 300px', padding: '2rem' }}>
+                <div style={{ flex: '1 1 300px', padding: '2rem', display: 'flex', flexDirection: 'column' }}>
                   <h4 style={{ color: '#2563eb', fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.25rem', letterSpacing: '1px' }}>LEARNING OUTCOMES</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    {outcomesList.map((line, i) => (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative' }}>
+                    {(isOutcomeExpanded ? outcomesList : outcomesList.slice(0, 5)).map((line, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
                         <span style={{ fontSize: '0.95rem', color: '#475569', lineHeight: 1.5 }}>{line.replace(/^[-*•]\s*/, '')}</span>
                       </div>
                     ))}
+                    {outcomesList.length > 5 && (
+                      <button 
+                        onClick={() => setIsOutcomeExpanded(!isOutcomeExpanded)}
+                        style={{
+                          marginTop: '0.5rem',
+                          background: 'rgba(37, 99, 235, 0.1)',
+                          border: '1px solid rgba(37, 99, 235, 0.2)',
+                          color: '#2563eb',
+                          fontWeight: 700,
+                          fontSize: '0.85rem',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '0.5rem 1rem',
+                          borderRadius: '8px',
+                          alignSelf: 'flex-start',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(37, 99, 235, 0.15)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(37, 99, 235, 0.1)'}
+                      >
+                        {isOutcomeExpanded ? 'Read Less' : 'Read More'}
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: isOutcomeExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </button>
+                    )}
                   </div>
                 </div>
               </>
             ) : (
               <>
-                <div style={{ flex: '1 1 300px', minHeight: '250px', maxHeight: '400px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ flex: '1 1 300px', minHeight: '250px', background: '#f1f5f9', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '1.5rem' }}>
                   {aboutImage ? (
-                    <img src={aboutImage} alt="Event Poster" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    <img src={aboutImage} alt="Event Poster" style={{ width: '100%', maxHeight: '500px', objectFit: 'contain', position: 'sticky', top: '1.5rem' }} />
                   ) : (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8' }}>No Poster Available</div>
                   )}
                 </div>
-                <div style={{ flex: '1 1 300px', padding: '2rem' }}>
+                <div style={{ flex: '1 1 300px', padding: '2rem', display: 'flex', flexDirection: 'column' }}>
                   <h4 style={{ color: '#2563eb', fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '1.25rem', letterSpacing: '1px' }}>ABOUT THE EVENT</h4>
-                  <p style={{ fontSize: '0.95rem', color: '#475569', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
-                    {descText || "No description provided for this event."}
-                  </p>
+                  <div style={{ position: 'relative' }}>
+                    <p style={{ 
+                      fontSize: '0.95rem', color: '#475569', lineHeight: 1.6, whiteSpace: 'pre-wrap', margin: 0,
+                      display: '-webkit-box',
+                      WebkitLineClamp: isAboutExpanded ? 'unset' : 5,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      transition: 'all 0.3s ease'
+                    }}>
+                      {descText || "No description provided for this event."}
+                    </p>
+                    {descText && descText.length > 200 && (
+                      <button 
+                        onClick={() => setIsAboutExpanded(!isAboutExpanded)}
+                        style={{
+                          marginTop: '1rem',
+                          background: 'rgba(37, 99, 235, 0.1)',
+                          border: '1px solid rgba(37, 99, 235, 0.2)',
+                          color: '#2563eb',
+                          fontWeight: 700,
+                          fontSize: '0.85rem',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '0.5rem 1rem',
+                          borderRadius: '8px',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(37, 99, 235, 0.15)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(37, 99, 235, 0.1)'}
+                      >
+                        {isAboutExpanded ? 'Read Less' : 'Read More'}
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: isAboutExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </>
             )}
@@ -509,7 +571,28 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
       <div className="hero-content-side upcoming-content">
 
         {/* Top Badge */}
-        <div style={{ marginBottom: '1rem', display: 'flex' }}>
+        <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          {meeting.week_number && (
+            <span style={{
+              display: 'inline-flex',
+              padding: '0.4rem 1rem',
+              background: '#f1f5f9',
+              borderRadius: '30px',
+              fontSize: '0.85rem',
+              fontWeight: 900,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              border: '1px solid #e2e8f0'
+            }}>
+              <span style={{
+                background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}>
+                WEEK {meeting.week_number}
+              </span>
+            </span>
+          )}
           <span style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -558,7 +641,11 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
         {/* Location & Speaker */}
         <div className="hero-location-row">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-          <span style={{ lineHeight: 1.4 }}>{displayVenue}</span>
+          <span style={{ lineHeight: 1.4 }}>
+            <a href="https://maps.app.goo.gl/Hvao81P2PoEwxEja8" target="_blank" rel="noopener noreferrer" style={{ color: '#1f6fb2', textDecoration: 'none', transition: 'color 0.2s ease' }} onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'} onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}>
+              {displayVenue}
+            </a>
+          </span>
         </div>
         {meeting.speaker && (
           <div className="hero-location-row" style={{ marginTop: '0.75rem' }}>
@@ -604,9 +691,9 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
           </div>
 
           {registration_link ? (
-            <Link href={registration_link} target="_blank" rel="noopener noreferrer" className="hero-register-btn">
+            <a href={registration_link} target="_blank" rel="noopener noreferrer" className="hero-register-btn">
               Register Free &rarr;
-            </Link>
+            </a>
           ) : (
             <>
               <button onClick={() => setShowRegistration(true)} className="hero-register-btn">

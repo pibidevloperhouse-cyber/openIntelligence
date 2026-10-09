@@ -134,6 +134,7 @@ model Meeting {
   photos          String[] @default([]) // Supabase Storage URLs
   tags            String[] @default([]) // e.g. ["RAG","MCP","Agents"]
   speakers        String[] @default([]) // List of speaker names
+  week_number     Int?     // Manual week number
 
   created_at DateTime @default(now())
 
