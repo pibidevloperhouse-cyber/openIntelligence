@@ -188,7 +188,7 @@ export default function ProfilePage() {
                           {dayOfWeek} {dayNum} {monthNorm}, {timeStr} &middot; {reg.meeting.venue}
                         </p>
                         <p style={{ color: '#a1a1aa', fontSize: '0.8rem', margin: 0, wordBreak: 'break-word' }}>
-                          Booked {bookedDay} {bookedMonth} {bookedYear} &middot; Host {reg.meeting.host || 'Nagaraj K R'}
+                          Booked {bookedDay} {bookedMonth} {bookedYear} &middot; Host {reg.meeting.host || 'PiBi Foundation'}
                         </p>
                       </div>
 
