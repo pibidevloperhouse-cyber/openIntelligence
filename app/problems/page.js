@@ -160,7 +160,7 @@ export default function ProblemsPage() {
               className="flex flex-col md:flex-row gap-12 items-start"
             >
               {/* Category Header */}
-              <div className="md:w-1/3 sticky top-32">
+              <div className="md:w-1/3 md:sticky md:top-32 z-10">
                 <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${section.color} flex items-center justify-center text-white mb-6 shadow-lg`}>
                   {section.icon}
                 </div>
