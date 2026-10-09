@@ -630,7 +630,7 @@ export default function HeroEventCard({ meeting, isPast = false, weekNumber }) {
           </div>
           <div>
             <div className="hero-meta-label">Time</div>
-            <div className="hero-meta-value">4:00 PM - 6:00 PM</div>
+            <div className="hero-meta-value">{displayTime ? displayTime.replace('to', '-') : '10:00 AM - 12:00 PM'}</div>
           </div>
           <div>
             <div className="hero-meta-label">Duration</div>

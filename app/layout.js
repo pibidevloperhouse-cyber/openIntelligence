@@ -38,11 +38,14 @@ export const metadata = {
   },
 };
 
+import ScrollToTop from '../components/ScrollToTop';
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${plusJakarta.variable} ${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" className={`scroll-smooth ${plusJakarta.variable} ${inter.variable} ${spaceGrotesk.variable}`}>
       <body>
         <ConditionalLayout>{children}</ConditionalLayout>
+        <ScrollToTop />
       </body>
     </html>
   );

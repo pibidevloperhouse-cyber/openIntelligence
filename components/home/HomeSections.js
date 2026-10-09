@@ -31,6 +31,8 @@ function TypewriterOnce({ text, typingSpeed = 75, delay = 500, className = "", s
   );
 }
 
+
+
 function TypewriterCycle({ words, typingSpeed = 100, deletingSpeed = 50, pauseTime = 1500, className = "", style = {} }) {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [currentText, setCurrentText] = useState("");
@@ -200,7 +202,7 @@ export function ContributeSection() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 text-left">
           {areas.map((area, idx) => (
-            <AnimatedFadeIn key={idx} delay={idx * 0.1} className="bg-[#3d3d3d] border border-[#4d4d4d] rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:shadow-black/20 hover:-translate-y-2 transition-all duration-300 group flex flex-col">
+            <AnimatedFadeIn key={idx} delay={idx * 0.1} className="h-full bg-[#3d3d3d] border border-[#4d4d4d] rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:shadow-black/20 hover:-translate-y-2 transition-all duration-300 group flex flex-col">
               <div className="w-full h-52 overflow-hidden bg-[#2d2d2d]">
                 <img src={area.image} alt={area.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
               </div>
@@ -273,7 +275,7 @@ export function ApplySection() {
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {problems.map((prob, idx) => (
-            <AnimatedFadeIn key={idx} delay={idx * 0.1} className="bg-[#3d3d3d] border border-[#4d4d4d] rounded-2xl shadow-sm overflow-hidden hover:shadow-xl hover:shadow-black/20 hover:-translate-y-2 transition-all duration-300 group cursor-pointer flex flex-col h-full">
+            <AnimatedFadeIn key={idx} delay={idx * 0.1} className="h-full bg-[#3d3d3d] border border-[#4d4d4d] rounded-2xl shadow-sm overflow-hidden hover:shadow-xl hover:shadow-black/20 hover:-translate-y-2 transition-all duration-300 group cursor-pointer flex flex-col h-full">
               <Link href={`/problems#${prob.id}`} className="flex flex-col h-full">
                 <div className="w-full h-48 overflow-hidden bg-[#2d2d2d]">
                   <img src={`/${(idx + 1) * 111}.jpeg`} alt={prob.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
