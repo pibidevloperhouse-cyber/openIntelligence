@@ -22,7 +22,7 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata = {
   title: {
-    default: 'Open Intelligence Hub — Madurai AI Community',
+    default: 'PIBI Open Intelligence — Madurai AI Community',
     template: '%s | Open Intelligence Hub',
   },
   description:
@@ -32,6 +32,9 @@ export const metadata = {
     title: 'Open Intelligence Hub',
     description: 'Community platform for open-source AI resources',
     type: 'website',
+  },
+  icons: {
+    icon: '/pii.webp',
   },
 };
 

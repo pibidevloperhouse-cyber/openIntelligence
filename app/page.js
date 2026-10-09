@@ -105,7 +105,7 @@ async function getTopContributors() {
 }
 
 export const metadata = {
-  title: 'Open Intelligence Hub — Madurai AI Community',
+  title: 'PIBI Open Intelligence — Madurai AI Community',
   description: 'Discover, submit, and showcase open-source AI resources. Built by PiBi Foundation for the Madurai AI Community.',
 };
 

@@ -14,7 +14,7 @@ export default function FeaturesCarousel() {
     if (!scrollContainer) return;
 
     let scrollInterval;
-    
+
     const startScroll = () => {
       scrollInterval = setInterval(() => {
         if (scrollContainer) {
@@ -99,8 +99,8 @@ export default function FeaturesCarousel() {
           }
         }
       `}</style>
-      <div 
-        ref={scrollRef} 
+      <div
+        ref={scrollRef}
         className="flex gap-5 mb-16 overflow-x-auto snap-x snap-mandatory features-carousel-container cursor-grab active:cursor-grabbing"
         style={{
           paddingBottom: '1.5rem',
