@@ -99,8 +99,8 @@ export default function ProfilePage() {
               style={{ width: 70, height: 70, borderRadius: '50%', border: '2.5px solid rgba(99,102,241,0.5)', flexShrink: 0 }}
             />
             <div style={{ flex: 1 }}>
-              <h1 style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '1.25rem', fontFamily: 'var(--font-display)', margin: '0 0 0.2rem' }}>
-                {profile?.full_name || user.user_metadata?.full_name || user.user_metadata?.user_name || 'User'}
+              <h1 style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '1.25rem', fontFamily: 'var(--font-display)', margin: '0 0 0.2rem', textTransform: 'uppercase' }}>
+                {profile?.full_name || user.user_metadata?.full_name || user.user_metadata?.name || user.user_metadata?.user_name || user.email?.split('@')[0] || 'User'}
               </h1>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
                 @{profile?.github_username || user.user_metadata?.github_username || user.user_metadata?.user_name || user.email?.split('@')[0]}

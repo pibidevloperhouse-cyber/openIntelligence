@@ -213,8 +213,8 @@ export default function Navbar() {
                       overflow: 'hidden'
                     }}>
                       <div style={{ padding: '1.5rem 1.25rem 1rem', borderBottom: '1px solid #F3F4F6' }}>
-                        <div style={{ fontWeight: 600, color: '#111827', fontSize: '1.05rem', marginBottom: '0.2rem', letterSpacing: '-0.01em' }}>
-                          {user.user_metadata?.full_name || 'User'}
+                        <div style={{ fontWeight: 600, color: '#111827', fontSize: '1.05rem', marginBottom: '0.2rem', letterSpacing: '-0.01em', textTransform: 'uppercase' }}>
+                          {user.user_metadata?.full_name || user.user_metadata?.name || user.user_metadata?.user_name || user.email?.split('@')[0] || 'User'}
                         </div>
                         <div style={{ color: '#6B7280', fontSize: '0.9rem' }}>
                           {user.user_metadata?.user_name ? `@${user.user_metadata.user_name}` : (user.email || '@user')}
