@@ -195,9 +195,109 @@ export function ContributeSection() {
           <h3 className="text-2xl md:text-3xl font-bold mb-6 text-[#0a192f]">
             Take What <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>You Learn Further.</span>
           </h3>
-          <p className="text-lg text-slate-600 font-medium max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg text-slate-600 font-medium max-w-3xl mx-auto leading-relaxed mb-8">
             The Madurai AI Community is where we learn, explore and experiment with AI. Pi Bi Open Intelligence is where those ideas can become something others can use, learn from and build upon.
           </p>
+
+          {/* New Blinking Featured Student Button */}
+          <div className="flex justify-center">
+            <style>{`
+              @keyframes studentSuperPulse {
+                0%, 100% {
+                  box-shadow: 0 0 20px rgba(46, 196, 182, 0.5), 0 0 35px rgba(56, 189, 248, 0.4);
+                  border-color: rgba(56, 189, 248, 0.7);
+                  transform: scale(1);
+                }
+                50% {
+                  box-shadow: 0 0 35px rgba(46, 196, 182, 0.95), 0 0 65px rgba(56, 189, 248, 0.8), 0 0 90px rgba(34, 197, 94, 0.5);
+                  border-color: #ffffff;
+                  transform: scale(1.03);
+                }
+              }
+              @keyframes studentGradShimmer {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+              }
+              @keyframes liveBeaconWave1 {
+                0% { transform: scale(0.6); opacity: 1; }
+                70% { transform: scale(2.8); opacity: 0; }
+                100% { transform: scale(3.2); opacity: 0; }
+              }
+              @keyframes liveBeaconWave2 {
+                0% { transform: scale(0.6); opacity: 0.9; }
+                70% { transform: scale(2.5); opacity: 0; }
+                100% { transform: scale(3.0); opacity: 0; }
+              }
+              @keyframes liveCoreFlash {
+                0%, 100% {
+                  opacity: 1;
+                  transform: scale(1.2);
+                  box-shadow: 0 0 10px #4ade80, 0 0 22px #22c55e, 0 0 32px #06b6d4;
+                }
+                50% {
+                  opacity: 0.2;
+                  transform: scale(0.7);
+                  box-shadow: 0 0 2px #22c55e;
+                }
+              }
+              @keyframes badgeGlowPulse {
+                0%, 100% {
+                  opacity: 1;
+                  transform: scale(1);
+                  box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+                }
+                50% {
+                  opacity: 0.75;
+                  transform: scale(0.94);
+                  box-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
+                }
+              }
+              @keyframes arrowNudgeAnim {
+                0%, 100% { transform: translateX(0); }
+                50% { transform: translateX(5px); }
+              }
+            `}</style>
+            <Link
+              href="/students"
+              className="inline-flex items-center gap-3.5 px-8 py-4 rounded-full text-white font-extrabold text-base transition-all duration-300 cursor-pointer"
+              style={{
+                background: 'linear-gradient(115deg, #1f6fb2 0%, #0ea5e9 30%, #2ec4b6 70%, #10b981 100%)',
+                backgroundSize: '200% 200%',
+                border: '1.5px solid rgba(56, 189, 248, 0.85)',
+                animation: 'studentSuperPulse 2s ease-in-out infinite, studentGradShimmer 4s ease infinite',
+              }}
+            >
+              {/* Vibrant Live Blinking Radar Dot */}
+              <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, flexShrink: 0 }}>
+                <span style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: '#4ade80', animation: 'liveBeaconWave1 1.6s cubic-bezier(0, 0, 0.2, 1) infinite' }} />
+                <span style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: '#38bdf8', animation: 'liveBeaconWave2 1.6s cubic-bezier(0, 0, 0.2, 1) infinite 0.5s' }} />
+                <span style={{ position: 'relative', width: 10, height: 10, borderRadius: '50%', background: 'radial-gradient(circle, #ffffff 35%, #22c55e 80%)', animation: 'liveCoreFlash 1.2s ease-in-out infinite' }} />
+              </span>
+
+              <span className="tracking-tight text-white drop-shadow-sm">🎓 Student AI Innovation & Contributions</span>
+
+              <span
+                style={{
+                  fontSize: '0.65rem',
+                  fontWeight: 900,
+                  letterSpacing: '0.06em',
+                  padding: '2px 7px',
+                  borderRadius: '9999px',
+                  background: 'rgba(255, 255, 255, 0.25)',
+                  backdropFilter: 'blur(4px)',
+                  border: '1px solid rgba(255, 255, 255, 0.7)',
+                  color: '#ffffff',
+                  animation: 'badgeGlowPulse 1.4s infinite ease-in-out',
+                  lineHeight: 1.2,
+                }}
+              >
+                NEW
+              </span>
+
+              <span style={{ animation: 'arrowNudgeAnim 1.5s infinite ease-in-out', display: 'inline-block' }} className="text-lg leading-none font-bold">&rarr;</span>
+            </Link>
+          </div>
         </AnimatedFadeIn>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 text-left">
@@ -218,7 +318,7 @@ export function ContributeSection() {
           <div className="relative z-10">
             <h3 className="text-2xl md:text-3xl font-bold mb-4">Have an idea but not sure where it fits?</h3>
             <p className="text-slate-300 mb-8 max-w-2xl mx-auto text-lg">Start with the community. We can explore it together.</p>
-            <div className="flex flex-wrap gap-4 justify-center">
+            <div className="flex flex-wrap gap-4 justify-center items-center">
               <Link href="/contribute" className="px-8 py-4 text-white font-bold rounded-full transition-all hover:scale-105 shadow-[0_4px_15px_rgba(46,196,182,0.3)] border-0 whitespace-nowrap text-center" style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
                 Contribute to Open Intelligence &rarr;
               </Link>
@@ -337,8 +437,8 @@ export function EmpowerSection() {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-2 md:px-8 py-3 rounded-full font-bold capitalize transition-all duration-300 border whitespace-nowrap text-sm md:text-base ${activeTab === tab
-                  ? 'bg-white text-[#1f6fb2] shadow-[0_4px_15px_rgba(255,255,255,0.3)] border-transparent md:scale-105'
-                  : 'bg-black/20 text-white border-white/20 hover:bg-black/40 hover:border-white/50'
+                ? 'bg-white text-[#1f6fb2] shadow-[0_4px_15px_rgba(255,255,255,0.3)] border-transparent md:scale-105'
+                : 'bg-black/20 text-white border-white/20 hover:bg-black/40 hover:border-white/50'
                 }`}
             >
               {tab}
@@ -651,8 +751,8 @@ export function FeatureTabsSection() {
                 key={idx}
                 onClick={() => setActiveTab(idx)}
                 className={`text-left text-3xl md:text-4xl font-extrabold pl-6 py-2 border-l-4 transition-all duration-300 ${activeTab === idx
-                    ? 'border-[#ff5e00] text-white'
-                    : 'border-transparent text-slate-600 hover:text-slate-400'
+                  ? 'border-[#ff5e00] text-white'
+                  : 'border-transparent text-slate-600 hover:text-slate-400'
                   }`}
               >
                 {tab}

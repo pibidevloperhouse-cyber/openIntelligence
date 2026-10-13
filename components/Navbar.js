@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: '/meetings', label: 'Events' },
   { href: '/open-intelligence', label: 'Resources' },
   { href: '/contact-us', label: 'Contact Us' },
+  { href: '/students', label: 'Student', isSpecial: true },
 ];
 
 export default function Navbar() {
@@ -87,9 +88,10 @@ export default function Navbar() {
           color: #ffffff;
           font-weight: 500;
           font-size: 0.95rem;
-          padding: 0.45rem 0.9rem;
+          padding: 0.45rem 0.8rem;
           background-color: transparent;
           transition: all 0.2s;
+          white-space: nowrap;
         }
         .nav-link:hover {
           color: #38bdf8;
@@ -98,9 +100,10 @@ export default function Navbar() {
           text-decoration: none;
           font-weight: 600 !important;
           font-size: 0.95rem;
-          padding: 0.45rem 0.9rem;
+          padding: 0.45rem 0.8rem;
           color: #38bdf8 !important;
           transition: all 0.2s;
+          white-space: nowrap;
         }
         
         .mobile-nav-link {
@@ -122,6 +125,171 @@ export default function Navbar() {
           border-bottom: 1px solid rgba(255,255,255,0.08);
           color: #38bdf8;
           transition: all 0.2s;
+        }
+
+        /* ── Special Student Nav Link with Blinking & Glowing Radar Effect ── */
+        @keyframes studentRadarPing {
+          0% {
+            transform: scale(0.85);
+            opacity: 0.9;
+          }
+          70% {
+            transform: scale(2.4);
+            opacity: 0;
+          }
+          100% {
+            transform: scale(2.6);
+            opacity: 0;
+          }
+        }
+
+        @keyframes studentDotPulse {
+          0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+            box-shadow: 0 0 6px #38bdf8, 0 0 12px #2ec4b6;
+          }
+          50% {
+            opacity: 0.35;
+            transform: scale(0.75);
+            box-shadow: 0 0 2px #38bdf8;
+          }
+        }
+
+        @keyframes studentPillPulse {
+          0%, 100% {
+            border-color: rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.25), inset 0 0 8px rgba(56, 189, 248, 0.08);
+          }
+          50% {
+            border-color: rgba(46, 196, 182, 0.9);
+            box-shadow: 0 0 18px rgba(46, 196, 182, 0.55), 0 0 26px rgba(56, 189, 248, 0.35), inset 0 0 12px rgba(46, 196, 182, 0.2);
+          }
+        }
+
+        @keyframes studentBadgeShine {
+          0%, 100% {
+            opacity: 0.85;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.08);
+            box-shadow: 0 0 8px #2ec4b6;
+          }
+        }
+
+        .student-nav-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          text-decoration: none;
+          font-weight: 600;
+          font-size: 0.92rem;
+          padding: 0.35rem 0.8rem;
+          border-radius: 9999px;
+          background: rgba(15, 23, 42, 0.75);
+          border: 1px solid rgba(56, 189, 248, 0.5);
+          color: #ffffff;
+          position: relative;
+          transition: all 0.25s ease;
+          animation: studentPillPulse 2.4s ease-in-out infinite;
+          white-space: nowrap;
+        }
+
+        .student-nav-link:hover {
+          background: rgba(56, 189, 248, 0.18);
+          border-color: #38bdf8;
+          color: #38bdf8;
+          transform: translateY(-1px);
+          box-shadow: 0 0 22px rgba(56, 189, 248, 0.6);
+        }
+
+        .student-nav-link-active {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          text-decoration: none;
+          font-weight: 700 !important;
+          font-size: 0.92rem;
+          padding: 0.35rem 0.8rem;
+          border-radius: 9999px;
+          background: linear-gradient(135deg, rgba(31, 111, 178, 0.45), rgba(46, 196, 182, 0.45));
+          border: 1.5px solid #38bdf8 !important;
+          color: #38bdf8 !important;
+          box-shadow: 0 0 20px rgba(56, 189, 248, 0.6), inset 0 0 12px rgba(46, 196, 182, 0.3) !important;
+          white-space: nowrap;
+        }
+
+        .student-dot-wrapper {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 10px;
+          height: 10px;
+        }
+
+        .student-dot-ring {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          background: #38bdf8;
+          animation: studentRadarPing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+
+        .student-dot-core {
+          position: relative;
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #38bdf8;
+          animation: studentDotPulse 1.4s ease-in-out infinite;
+        }
+
+        .student-badge-tag {
+          font-size: 0.62rem;
+          font-weight: 800;
+          letter-spacing: 0.04em;
+          padding: 1px 5px;
+          border-radius: 9999px;
+          background: linear-gradient(135deg, #1f6fb2, #2ec4b6);
+          color: #ffffff;
+          animation: studentBadgeShine 2s infinite ease-in-out;
+          text-transform: uppercase;
+          line-height: 1.3;
+        }
+
+        /* Mobile specific styling for Student link */
+        .mobile-student-link {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.75rem 0.9rem;
+          margin: 0.5rem 0;
+          border-radius: 10px;
+          background: rgba(56, 189, 248, 0.08);
+          border: 1px solid rgba(56, 189, 248, 0.4);
+          color: #ffffff;
+          text-decoration: none;
+          font-weight: 600;
+          animation: studentPillPulse 2.4s ease-in-out infinite;
+          transition: all 0.2s;
+        }
+
+        .mobile-student-link-active {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.75rem 0.9rem;
+          margin: 0.5rem 0;
+          border-radius: 10px;
+          background: linear-gradient(135deg, rgba(31, 111, 178, 0.35), rgba(46, 196, 182, 0.35));
+          border: 1.5px solid #38bdf8;
+          color: #38bdf8;
+          font-weight: 700;
+          box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
         }
       `}</style>
 
@@ -163,9 +331,26 @@ export default function Navbar() {
           </div>
 
           {/* ── Desktop Links (Center) ── */}
-          <div className="nb-desktop-links" style={{ display: 'none', gap: '0.5rem', alignItems: 'center', justifyContent: 'center' }}>
-            {NAV_LINKS.map(({ href, label }) => {
-              const isActive = pathname === href;
+          <div className="nb-desktop-links" style={{ display: 'none', gap: '0.4rem', alignItems: 'center', justifyContent: 'center' }}>
+            {NAV_LINKS.map(({ href, label, isSpecial }) => {
+              const isActive = pathname === href || (href === '/students' && (pathname === '/students' || pathname === '/student'));
+              if (isSpecial) {
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={isActive ? 'student-nav-link-active' : 'student-nav-link'}
+                    title="Student Hub"
+                  >
+                    <span className="student-dot-wrapper">
+                      <span className="student-dot-ring"></span>
+                      <span className="student-dot-core"></span>
+                    </span>
+                    <span>{label}</span>
+                    <span className="student-badge-tag">NEW</span>
+                  </Link>
+                );
+              }
               return (
                 <Link key={href} href={href} className={isActive ? 'nav-link-active' : 'nav-link'}>
                   {label}
@@ -306,7 +491,27 @@ export default function Navbar() {
           }}>
 
             {/* Nav links */}
-            {NAV_LINKS.map(({ href, label }) => {
+            {NAV_LINKS.map(({ href, label, isSpecial }) => {
+              const isActive = pathname === href || (href === '/students' && (pathname === '/students' || pathname === '/student'));
+              if (isSpecial) {
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setMenuOpen(false)}
+                    className={isActive ? 'mobile-student-link-active' : 'mobile-student-link'}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className="student-dot-wrapper">
+                        <span className="student-dot-ring"></span>
+                        <span className="student-dot-core"></span>
+                      </span>
+                      <span>{label}</span>
+                    </div>
+                    <span className="student-badge-tag">NEW</span>
+                  </Link>
+                );
+              }
               if (label === 'Events') {
                 return (
                   <div key={href} style={{ borderBottom: '1px solid rgba(37,99,235,0.08)' }}>

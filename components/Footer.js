@@ -6,6 +6,7 @@ const footerLinks = {
   Topic: [
     { href: '/#learn', label: 'Learn AI' },
     { href: '/#contribute', label: 'Contribute' },
+    { href: '/students', label: 'Student Hub' },
     { href: '/#empower', label: 'Empower' },
     { href: '/#apply', label: 'Apply' },
   ],
@@ -20,6 +21,7 @@ const footerLinks = {
   Company: [
     { href: '/#about', label: 'About Us' },
     { href: '/contact-us', label: 'Contact Us' },
+    { href: '/students', label: 'Campus Chapters' },
   ],
 };
 

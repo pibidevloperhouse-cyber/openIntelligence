@@ -97,10 +97,11 @@ export default function ContactUsPage() {
                 <label className="block text-sm font-bold text-slate-800 mb-2">Country *</label>
                 <select 
                   required
+                  defaultValue=""
                   className="w-full bg-[#f8fafc] border border-slate-200 rounded-lg p-3.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#1f6fb2]/20 focus:border-[#1f6fb2] transition-colors appearance-none cursor-pointer"
                   style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2364748b\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundPosition: 'right 1rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em' }}
                 >
-                  <option value="" disabled selected>Select Country</option>
+                  <option value="" disabled>Select Country</option>
                   <option value="India">India</option>
                   <option value="United States">United States</option>
                   <option value="United Kingdom">United Kingdom</option>

@@ -84,6 +84,38 @@ body {
   background: rgba(46, 196, 182, 0.9);
 }
 
+/* Clean light scrollbar for modals on white backgrounds */
+.modal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.modal-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-scroll::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+  border-radius: 9999px;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8 !important;
+}
+
+/* Hide scrollbars for horizontal carousels / tabs on mobile */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* ── Glassmorphism Card ────────────────────────────────────────── */
 .glass-card {
   background: rgba(15, 22, 35, 0.7);
@@ -478,7 +510,8 @@ body {
     flex-direction: column !important;
   }
 
-  .past-event-img-container, .event-row-img-container {
+  .past-event-img-container,
+  .event-row-img-container {
     width: 100% !important;
     height: 320px !important;
   }
@@ -500,13 +533,193 @@ body {
   background: #ffffff;
   border-radius: 16px;
   border: 1px solid rgba(226, 232, 240, 0.8);
-  box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
 .premium-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 30px -4px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.08);
 }
 
+/* ── Blinking Radar & Pulse Glow Utilities ──────────────────────── */
+@keyframes radarBeaconPing {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.9;
+  }
+  70% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@keyframes radarBeaconPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 6px #38bdf8, 0 0 12px #2ec4b6;
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.75);
+    box-shadow: 0 0 2px #38bdf8;
+  }
+}
+
+@keyframes studentPillPulse {
+  0%, 100% {
+    border-color: rgba(56, 189, 248, 0.55);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.35), inset 0 0 8px rgba(56, 189, 248, 0.1);
+  }
+  50% {
+    border-color: rgba(46, 196, 182, 0.95);
+    box-shadow: 0 0 22px rgba(46, 196, 182, 0.65), 0 0 32px rgba(56, 189, 248, 0.4), inset 0 0 12px rgba(46, 196, 182, 0.25);
+  }
+}
+
+@keyframes pillPulseGlow {
+  0%, 100% {
+    border-color: rgba(56, 189, 248, 0.55);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.35), inset 0 0 8px rgba(56, 189, 248, 0.1);
+  }
+  50% {
+    border-color: rgba(46, 196, 182, 0.95);
+    box-shadow: 0 0 22px rgba(46, 196, 182, 0.65), 0 0 32px rgba(56, 189, 248, 0.4), inset 0 0 12px rgba(46, 196, 182, 0.25);
+  }
+}
+
+@keyframes badgeShineAnim {
+  0%, 100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+    box-shadow: 0 0 8px #2ec4b6;
+  }
+}
+
+.radar-dot-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+}
+
+.radar-dot-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #38bdf8;
+  animation: radarBeaconPing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.radar-dot-core {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #38bdf8;
+  animation: radarBeaconPulse 1.4s ease-in-out infinite;
+}
+
+.radar-badge-tag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 1.5px 6px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #1f6fb2, #2ec4b6);
+  color: #ffffff;
+  animation: badgeShineAnim 2s infinite ease-in-out;
+  text-transform: uppercase;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.blinking-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1.5px solid rgba(56, 189, 248, 0.6);
+  color: #ffffff !important;
+  position: relative;
+  transition: all 0.25s ease;
+  animation: studentPillPulse 2.2s ease-in-out infinite;
+  white-space: nowrap;
+}
+
+.blinking-pill-btn:hover {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+  color: #38bdf8 !important;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.7);
+}
+
+/* ── Student Showcase Landing Page Utilities ────────────────────── */
+.bg-brand-gradient {
+  background: linear-gradient(135deg, #1f6fb2, #2ec4b6);
+}
+
+.text-brand-gradient {
+  background: linear-gradient(135deg, #1f6fb2, #2ec4b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.clean-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.clean-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 10px 25px -5px rgba(31, 111, 178, 0.12), 0 8px 10px -6px rgba(46, 196, 182, 0.08);
+  transform: translateY(-3px);
+}
+
+@keyframes softFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-soft-float {
+  animation: softFloat 5s ease-in-out infinite;
+}
+
+@keyframes gentlePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.15);
+  }
+}
+
+.animate-gentle-pulse {
+  animation: gentlePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

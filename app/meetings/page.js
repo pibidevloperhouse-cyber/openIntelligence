@@ -8,6 +8,10 @@ import FeaturesCarousel from './FeaturesCarousel';
 export const metadata = {
   title: 'Community Sessions — Open Intelligence Hub',
   description: 'Upcoming and past Madurai AI Community sessions by PiBi Foundation.',
+  robots: {
+    index: false,
+    follow: true,
+  },
 };
 
 export const revalidate = 60; // Refresh cache every 60 seconds on Vercel
