@@ -86,7 +86,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <p className="text-base sm:text-lg text-slate-600 max-w-2xl font-normal leading-relaxed">
               Showcase outstanding student engineering innovations. Compete for{' '}
               <strong className="text-slate-900 font-semibold font-stylized">
-                {currency === 'INR' ? '₹xxx' : '$xxx'} in Top 3 cash prizes
+                {currency === 'INR' ? '₹30,000' : '$360'} in Top 3 cash prizes
               </strong>
               . The winning projects will be officially launched and published on{' '}
               <strong className="text-[#1f6fb2] font-semibold underline decoration-[#2ec4b6] underline-offset-4">
@@ -196,7 +196,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                       <Award className="w-4 h-4" /> Top 3 Grand Prize Tier
                     </span>
                     <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#2ec4b6]/15 text-[#0e8579] border border-[#2ec4b6]/30 font-stylized">
-                      {currency === 'INR' ? '₹xxx Pool' : '$xxx Pool'}
+                      {currency === 'INR' ? '₹30,000 Pool' : '$360 Pool'}
                     </span>
                   </div>
 
@@ -230,7 +230,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 <div>
                   <div className="text-[9px] sm:text-[10px] text-slate-500 uppercase font-stylized">1st Prize</div>
                   <div className="text-[11px] sm:text-xs font-bold text-slate-900 font-stylized whitespace-nowrap">
-                    {currency === 'INR' ? '₹xxx Cash' : '$xxx Cash'}
+                    {currency === 'INR' ? '₹15,000 Cash' : '$180 Cash'}
                   </div>
                 </div>
               </div>
@@ -262,7 +262,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 WebkitTextFillColor: 'transparent',
               }}
             >
-              {currency === 'INR' ? '₹xxx' : '$xxx'}
+              {currency === 'INR' ? '₹30,000' : '$360'}
             </span>
             <span className="text-xs sm:text-sm text-slate-600 font-medium mt-1 block">
               Total Cash Prize Pool

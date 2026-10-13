@@ -155,7 +155,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => setMobileMenuOpen(false)}
               className="block py-2 text-slate-700 hover:text-[#1f6fb2] font-medium"
             >
-              Top 3 Prizes (₹xxx Pool)
+              Top 3 Prizes ({currency === 'INR' ? '₹30,000' : '$360'} Pool)
             </a>
             <a
               href="#open-intelligence"
