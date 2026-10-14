@@ -8,15 +8,8 @@ import {
   Sparkles,
   CheckCircle2,
 } from 'lucide-react';
-import { StudentProject } from '../types';
 
-interface SubmitProjectModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmitSuccess: (newProject: StudentProject) => void;
-}
-
-export const SubmitProjectModal: React.FC<SubmitProjectModalProps> = ({
+export const SubmitProjectModal = ({
   isOpen,
   onClose,
   onSubmitSuccess,
@@ -24,7 +17,7 @@ export const SubmitProjectModal: React.FC<SubmitProjectModalProps> = ({
   const [formData, setFormData] = useState({
     title: '',
     tagline: '',
-    category: 'AI & ML' as StudentProject['category'],
+    category: 'AI & ML',
     leadStudent: '',
     teamMembers: '',
     institution: '',
@@ -41,7 +34,7 @@ export const SubmitProjectModal: React.FC<SubmitProjectModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
-      const handleKeyDown = (e: KeyboardEvent) => {
+      const handleKeyDown = (e) => {
         if (e.key === 'Escape') onClose();
       };
       window.addEventListener('keydown', handleKeyDown);
@@ -54,10 +47,10 @@ export const SubmitProjectModal: React.FC<SubmitProjectModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.title || !formData.leadStudent || !formData.institution || !formData.description) {
-      setError('Please fill in all required fields (Project Title, Lead Student, Institution, and Description).');
+    if (!formData.title || !formData.leadStudent || !formData.institution || !formData.description || !formData.demoUrl) {
+      setError('Please fill in all required fields including Live Demo / Video Pitch Link.');
       return;
     }
 
@@ -77,7 +70,7 @@ export const SubmitProjectModal: React.FC<SubmitProjectModalProps> = ({
       ? formData.tags.split(',').map((s) => s.trim())
       : [formData.category, 'Prototype'];
 
-    const newProject: StudentProject = {
+    const newProject = {
       id: `proj-${Date.now()}`,
       title: formData.title,
       tagline: formData.tagline || 'Student breakthrough innovation entered for 2026 Awards',
@@ -94,7 +87,7 @@ export const SubmitProjectModal: React.FC<SubmitProjectModalProps> = ({
       demoUrl: formData.demoUrl || undefined,
       architectureHighlights: [
         'Direct submission into the 2026 National Innovation Call',
-        'Eligible for Top 3 Cash Rewards & Open Intelligence Feature',
+        'Eligible for Top 3 Cash Rewards & PiBi Open Intelligence Feature',
         'Peer-review and grand jury evaluation queued',
       ],
       impactMetric: 'Newly submitted for evaluation in National Student Innovation 2026',
@@ -142,7 +135,7 @@ export const SubmitProjectModal: React.FC<SubmitProjectModalProps> = ({
                 </span>
               </div>
               <p className="text-[11px] sm:text-xs text-slate-500 truncate sm:whitespace-normal">
-                Compete for Top 3 cash prizes & publication on Open Intelligence
+                Compete for Top 3 cash prizes & publication on PiBi Open Intelligence
               </p>
             </div>
           </div>
@@ -172,7 +165,7 @@ export const SubmitProjectModal: React.FC<SubmitProjectModalProps> = ({
               <p className="text-slate-600 text-xs sm:text-sm max-w-md mx-auto">
                 Your project has been recorded in the live 2026 Showcase gallery. The judging jury
                 will review your submission for the <strong className="text-slate-900">Top 3 Cash Prizes</strong> and
-                <strong className="text-[#1f6fb2]"> Open Intelligence publication</strong>!
+                <strong className="text-[#1f6fb2]"> PiBi Open Intelligence publication</strong>!
               </p>
             </div>
           ) : (
@@ -208,7 +201,7 @@ export const SubmitProjectModal: React.FC<SubmitProjectModalProps> = ({
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        category: e.target.value as StudentProject['category'],
+                        category: e.target.value,
                       })
                     }
                     className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm sm:text-xs focus:outline-none focus:border-[#2ec4b6] focus:ring-2 focus:ring-[#2ec4b6]/20 transition-all cursor-pointer"
@@ -313,10 +306,11 @@ export const SubmitProjectModal: React.FC<SubmitProjectModalProps> = ({
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-stylized text-slate-700 font-semibold">
-                    Live Demo / Video Pitch Link
+                    Live Demo / Video Pitch Link <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="url"
+                    required
                     value={formData.demoUrl}
                     onChange={(e) => setFormData({ ...formData, demoUrl: e.target.value })}
                     placeholder="https://my-app.demo.com"
@@ -357,3 +351,4 @@ export const SubmitProjectModal: React.FC<SubmitProjectModalProps> = ({
     </div>
   );
 };
+export default SubmitProjectModal;

@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { FAQ_ITEMS } from '../data/projectsData';
 
-export const FaqSection: React.FC = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+export const FaqSection = () => {
+  const [openIndex, setOpenIndex] = useState(0);
 
-  const toggle = (idx: number) => {
+  const toggle = (idx) => {
     setOpenIndex(openIndex === idx ? null : idx);
   };
 
@@ -35,7 +35,7 @@ export const FaqSection: React.FC = () => {
 
           <p className="text-slate-600 text-sm sm:text-base">
             Everything you need to know about student eligibility, cash prize disbursement, and how your project
-            will be featured on Open Intelligence.
+            will be featured on PiBi Open Intelligence.
           </p>
         </div>
 
@@ -90,3 +90,4 @@ export const FaqSection: React.FC = () => {
     </section>
   );
 };
+export default FaqSection;

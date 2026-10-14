@@ -1,13 +1,13 @@
 import StudentShowcaseHome from '@/components/student-showcase/app/page';
 
 export const metadata = {
-  title: "PIBI TECH | Student Project Showcase 2026 — Win Top 3 Prizes & Launch on Open Intelligence",
+  title: "PIBI TECH | Student Project Showcase 2026 — Win Top 3 Prizes & Launch on PiBi Open Intelligence",
   description:
-    "PIBI TECH National Student Project Showcase and Awards. Compete for Top 3 cash prizes and get your project officially published and featured on Open Intelligence.",
+    "PIBI TECH National Student Project Showcase and Awards. Compete for Top 3 cash prizes and get your project officially published and featured on PiBi Open Intelligence.",
   keywords: [
     "PIBI TECH",
     "student projects",
-    "Open Intelligence",
+    "PiBi Open Intelligence",
     "project showcase",
     "student innovation",
     "cash prizes",

@@ -1,26 +1,21 @@
-import type { Metadata } from "next";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "PIBI TECH | Student Project Showcase 2026 — Win Top 3 Prizes & Launch on Open Intelligence",
+export const metadata = {
+  title: "PIBI TECH | Student Project Showcase 2026 — Win Top 3 Prizes & Launch on PiBi Open Intelligence",
   description:
-    "PIBI TECH National Student Project Showcase and Awards. Compete for Top 3 cash prizes and get your project officially published and featured on Open Intelligence.",
+    "PIBI TECH National Student Project Showcase and Awards. Compete for Top 3 cash prizes and get your project officially published and featured on PiBi Open Intelligence.",
   keywords: [
     "PIBI TECH",
     "student projects",
-    "Open Intelligence",
+    "PiBi Open Intelligence",
     "project showcase",
     "student innovation",
     "cash prizes",
   ],
-  authors: [{ name: "PIBI TECH in partnership with Open Intelligence" }],
+  authors: [{ name: "PIBI TECH in partnership with PiBi Open Intelligence" }],
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>

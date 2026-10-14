@@ -4,13 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Trophy, Globe, Award, Sparkles, Menu, X } from 'lucide-react';
 
-interface NavbarProps {
-  onOpenSubmitModal: () => void;
-  currency: 'INR' | 'USD';
-  onToggleCurrency: () => void;
-}
-
-export const Navbar: React.FC<NavbarProps> = ({
+export const Navbar = ({
   onOpenSubmitModal,
   currency,
   onToggleCurrency,
@@ -48,13 +42,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="object-contain"
               />
             </div>
-              <div>
-                <span
-                  className="font-extrabold text-xl tracking-tight text-slate-900 block"
-                  style={{ fontFamily: 'var(--font-plus-jakarta)' }}
-                >
-                  PIBI TECH
-                </span>
+            <div>
+              <span
+                className="font-extrabold text-xl tracking-tight text-slate-900 block"
+                style={{ fontFamily: 'var(--font-plus-jakarta)' }}
+              >
+                PIBI TECH
+              </span>
               <p className="text-[10px] text-slate-500 uppercase tracking-wider font-stylized">
                 Student Project Innovation 2026
               </p>
@@ -81,7 +75,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="hover:text-[#0e8579] transition-colors flex items-center gap-1.5"
             >
               <Award className="w-4 h-4 text-[#2ec4b6]" />
-              <span>Open Intelligence</span>
+              <span>PiBi Open Intelligence</span>
             </a>
             <a
               href="#timeline"
@@ -162,7 +156,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => setMobileMenuOpen(false)}
               className="block py-2 text-slate-700 hover:text-[#0e8579] font-medium"
             >
-              Featured on Open Intelligence
+              Featured on PiBi Open Intelligence
             </a>
             <a
               href="#timeline"
@@ -195,3 +189,4 @@ export const Navbar: React.FC<NavbarProps> = ({
     </nav>
   );
 };
+export default Navbar;

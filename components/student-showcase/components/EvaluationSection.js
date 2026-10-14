@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { TIMELINE_STEPS } from '../data/projectsData';
 
-export const EvaluationSection: React.FC = () => {
+export const EvaluationSection = () => {
   return (
     <section id="timeline" className="py-24 relative overflow-hidden bg-slate-50/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -31,7 +31,7 @@ export const EvaluationSection: React.FC = () => {
           </h2>
 
           <p className="text-slate-600 text-base sm:text-lg">
-            A transparent evaluation process led by experienced engineers and Open Intelligence
+            A transparent evaluation process led by experienced engineers and PiBi Open Intelligence
             curators to evaluate innovation, execution, and real-world impact.
           </p>
         </div>
@@ -176,3 +176,4 @@ export const EvaluationSection: React.FC = () => {
     </section>
   );
 };
+export default EvaluationSection;

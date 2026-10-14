@@ -13,17 +13,8 @@ import {
   CheckCircle2,
   Sparkles,
 } from 'lucide-react';
-import { StudentProject } from '../types';
 
-interface ProjectDetailModalProps {
-  project: StudentProject | null;
-  onClose: () => void;
-  onUpvote: (id: string) => void;
-  hasUpvoted: boolean;
-  currency: 'INR' | 'USD';
-}
-
-export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
+export const ProjectDetailModal = ({
   project,
   onClose,
   onUpvote,
@@ -31,7 +22,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
   currency,
 }) => {
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e) => {
       if (e.key === 'Escape') onClose();
     };
     if (project) {
@@ -111,7 +102,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             {project.openIntelligenceFeatured && (
               <span className="px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold bg-white text-[#0e8579] border border-[#2ec4b6]/40 shadow-xs flex items-center gap-1 font-stylized">
                 <Globe className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#2ec4b6]" />
-                <span className="hidden sm:inline">Featured on Open Intelligence</span>
+                <span className="hidden sm:inline">Featured on PiBi Open Intelligence</span>
                 <span className="sm:hidden">Featured</span>
               </span>
             )}
@@ -264,3 +255,4 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
     </div>
   );
 };
+export default ProjectDetailModal;

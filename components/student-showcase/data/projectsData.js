@@ -1,6 +1,4 @@
-import { StudentProject, FaqItem, TimelineStep } from '../types';
-
-export const INITIAL_PROJECTS: StudentProject[] = [
+export const INITIAL_PROJECTS = [
   {
     id: 'proj-1',
     title: 'NeuroPulse AI',
@@ -98,58 +96,61 @@ export const INITIAL_PROJECTS: StudentProject[] = [
     openIntelligenceFeatured: false,
     demoUrl: 'https://agrosense.farm-iot.io',
     githubUrl: 'https://github.com/deepa-m/agrosense-mesh',
+    videoUrl: 'https://youtube.com/watch?v=demo4',
     architectureHighlights: [
-      'LoRaWAN range up to 8.5 km across agricultural terrain',
-      'Ultra low power consumption lasting 3 years on single 18650 cell',
-      'Automated valve actuation with localized offline fallback algorithms',
+      'Custom RF 868MHz frequency hopping mesh protocol spanning 4.2 sq km',
+      'Sub-milliwatt sleep cycle powered by 3.3V supercapacitor & solar harvester',
+      'Real-time automated solenoid drip valve control via local edge inference',
     ],
-    impactMetric: 'Reduced farm water wastage by 42% in field trials across 15 acres',
+    impactMetric: 'Reduced agricultural water consumption by 34% across 12-acre trial',
   },
   {
     id: 'proj-5',
-    title: 'EduVoice Universal',
-    tagline: 'Bidirectional Real-Time Indian Sign Language Interpreter with Haptic Feedback',
+    title: 'VocalBionics Sign-to-Speech Glove',
+    tagline: 'Real-time Sign Language Translation Glove with Haptic Feedback',
     description:
-      'A multi-modal computer vision and sensor glove system translating 28 Indian Sign Language dialects into synthesized vocal speech and vice versa with 96% precision.',
+      'A low-cost wearable sensory glove translating complex sign language gestures into natural vocalized speech and vice versa in 8 regional languages.',
     category: 'Healthcare & Assistive',
-    leadStudent: 'Vikram Ramachandran',
-    teamMembers: ['Vikram Ramachandran', 'Tanvi Kulkarni'],
-    institution: 'BITS Pilani',
-    image: '/images/project_eduvoice.jpg',
-    tags: ['Computer Vision', 'Assistive Tech', 'Sign Language', 'Flutter', 'WebRTC'],
+    leadStudent: 'Siddharth Nair',
+    teamMembers: ['Siddharth Nair', 'Meera Krishnan'],
+    institution: 'Vellore Institute of Technology (VIT)',
+    image: '/images/project_vocalbionics.jpg',
+    tags: ['Assistive Tech', 'TinyML', 'Embedded C', 'Haptics', 'Accessibility'],
     upvotes: 395,
     openIntelligenceFeatured: false,
-    demoUrl: 'https://eduvoice-accessibility.org',
-    githubUrl: 'https://github.com/vikram-r/eduvoice-isl',
+    demoUrl: 'https://vocalbionics.org',
+    githubUrl: 'https://github.com/siddharth-n/vocal-glove-tinyml',
+    videoUrl: 'https://youtube.com/watch?v=demo5',
     architectureHighlights: [
-      'Spatial 3D hand tracking operating at 60 FPS on mid-tier mobile browsers',
-      'Text-to-sign 3D holographic avatar rendering in real time',
-      'Offline regional dictionary support for Tamil, Hindi, Telugu, and English',
+      '10-point flex-resistive sensory integration with 6-DOF IMU filtering',
+      'Quantized TinyML neural net running on ARM Cortex-M4 with under 15ms latency',
+      'Onboard offline TTS synthesized in Tamil, Hindi, Telugu, and English',
     ],
-    impactMetric: 'Over 1,200 deaf and mute students onboarded across pilot schools',
+    impactMetric: 'Over 200 gestures recognized with 96.2% real-world accuracy',
   },
   {
     id: 'proj-6',
-    title: 'VeloceCharge Smart Grid OS',
-    tagline: 'Distributed EV Fleet Smart Charging Optimizer with Dynamic Tariffs',
+    title: 'GridVolt Decentralized EV Load Balancer',
+    tagline: 'Peer-to-Peer Smart Grid Micro-Transactions for Community EV Charging',
     description:
-      'An intelligent grid balancing software suite utilizing reinforcement learning to minimize commercial EV charging costs while preserving lithium-ion battery health cycles.',
+      'A distributed protocol for dynamic grid power distribution across residential solar panels and community electric vehicle stations to prevent local substation overload.',
     category: 'Robotics & GreenTech',
-    leadStudent: 'Ananya Nair',
-    teamMembers: ['Ananya Nair', 'Karthik Subramanian', 'Rohit Sen'],
-    institution: 'Vellore Institute of Technology (VIT)',
-    image: '/images/project_velocecharge.jpg',
-    tags: ['CleanTech', 'Reinforcement Learning', 'EV Infra', 'Next.js', 'Go'],
-    upvotes: 367,
+    leadStudent: 'Tanvi Agarwal',
+    teamMembers: ['Tanvi Agarwal', 'Rohan Mehta', 'Aditya Sen'],
+    institution: 'BITS Pilani',
+    image: '/images/project_gridvolt.jpg',
+    tags: ['Smart Grid', 'Clean Energy', 'Go', 'Distributed Systems', 'MQTT'],
+    upvotes: 312,
     openIntelligenceFeatured: false,
-    demoUrl: 'https://velocecharge-os.dev',
-    githubUrl: 'https://github.com/ananya-nair/velocecharge-os',
+    demoUrl: 'https://gridvolt-balancer.tech',
+    githubUrl: 'https://github.com/tanvi-a/gridvolt-balancer',
+    videoUrl: 'https://youtube.com/watch?v=demo6',
     architectureHighlights: [
-      'Multi-agent Q-learning grid balancing simulation model',
-      'Live Open Charge Point Protocol (OCPP 2.0.1) compliance engine',
-      '28% degradation reduction in fast-charging cycle stress tests',
+      'Consensus engine processing 2,400 load adjustment signals per second',
+      'Predictive transformer forecasting localized neighborhood transformer strain',
+      'Direct OCPP 2.0.1 compliance for commercial charger compatibility',
     ],
-    impactMetric: 'Prevented peak load spikes across 35 commercial charging stations',
+    impactMetric: '28% degradation reduction in fast-charging cycle stress tests',
   },
 ];
 
@@ -164,14 +165,13 @@ export const PRIZE_TIERS = [
     tagline: 'The Pinnacle of Student Engineering',
     perks: [
       '₹15,000 Direct Cash Prize transferred to team',
-      'Exclusive Cover Story & Homepage Launch on Open Intelligence',
-      'Official Open Intelligence Verified Builder Badge',
+      'Exclusive Cover Story & Homepage Launch on PiBi Open Intelligence',
+      'Official PiBi Open Intelligence Verified Builder Badge',
       'Winner Trophy & Prestigious Gold Distinction Certificate',
       'Direct 1-on-1 Pitch Session with Tech Investors & VC Scouts',
-      '$5,000 Cloud Infrastructure & AI Compute Credits',
       'Incubation & Patent Filing Mentorship Support',
     ],
-    highlight: 'Featured Globally on Open Intelligence',
+    highlight: 'Featured Globally on PiBi Open Intelligence',
   },
   {
     place: 2,
@@ -183,14 +183,13 @@ export const PRIZE_TIERS = [
     tagline: 'Exemplary Technological Execution',
     perks: [
       '₹10,000 Direct Cash Prize transferred to team',
-      'Official Spotlight Showcase on Open Intelligence Projects Hub',
-      'Open Intelligence Verified Innovator Certificate',
+      'Official Spotlight Showcase on PiBi Open Intelligence Projects Hub',
+      'PiBi Open Intelligence Verified Innovator Certificate',
       'Silver Trophy & Commendation Certificate',
       'Mentorship Sessions with Silicon Valley & Indian Founders',
-      '$2,500 Cloud Infrastructure Credits',
       'Fast-track interview invitations at partnering tech startups',
     ],
-    highlight: 'Spotlight on Open Intelligence',
+    highlight: 'Spotlight on PiBi Open Intelligence',
   },
   {
     place: 3,
@@ -202,18 +201,17 @@ export const PRIZE_TIERS = [
     tagline: 'Outstanding Vision & Impact',
     perks: [
       '₹5,000 Direct Cash Prize transferred to team',
-      'Featured Project Listing on Open Intelligence Ecosystem Directory',
-      'Open Intelligence Student Builder Certificate',
+      'Featured Project Listing on PiBi Open Intelligence Ecosystem Directory',
+      'PiBi Open Intelligence Student Builder Certificate',
       'Bronze Trophy & Certificate of Achievement',
       'Technical Architecture Review with Senior Staff Engineers',
-      '$1,000 Cloud & Tooling Licenses',
       'Community recognition across 150K+ developers',
     ],
-    highlight: 'Listed on Open Intelligence',
+    highlight: 'Listed on PiBi Open Intelligence',
   },
 ];
 
-export const TIMELINE_STEPS: TimelineStep[] = [
+export const TIMELINE_STEPS = [
   {
     date: 'Phase 1: Present Day',
     title: 'Project Submissions Open',
@@ -223,7 +221,7 @@ export const TIMELINE_STEPS: TimelineStep[] = [
   {
     date: 'Phase 2: In 14 Days',
     title: 'Shortlisting & Jury Review',
-    description: 'Engineering leads, Open Intelligence editors, and faculty evaluate code repositories & metrics.',
+    description: 'Engineering leads, PiBi Open Intelligence editors, and faculty evaluate code repositories & metrics.',
     status: 'upcoming',
   },
   {
@@ -234,13 +232,13 @@ export const TIMELINE_STEPS: TimelineStep[] = [
   },
   {
     date: 'Phase 4: Finale Night',
-    title: 'Top 3 Cash Awards & Open Intelligence Publishing',
-    description: 'Top 3 cash prizes awarded immediately & winning projects are published on the Open Intelligence website.',
+    title: 'Top 3 Cash Awards & PiBi Open Intelligence Publishing',
+    description: 'Top 3 cash prizes awarded immediately & winning projects are published on the PiBi Open Intelligence website.',
     status: 'upcoming',
   },
 ];
 
-export const FAQ_ITEMS: FaqItem[] = [
+export const FAQ_ITEMS = [
   {
     category: 'Prizes & Money',
     question: 'How and when will the top 3 cash prize amounts be disbursed?',
@@ -248,10 +246,10 @@ export const FAQ_ITEMS: FaqItem[] = [
       'The cash prizes (₹15,000 for 1st place, ₹10,000 for 2nd place, and ₹5,000 for 3rd place) are disbursed directly to the winning teams via direct bank transfer or UPI within 48 hours of the Grand Finale announcement, along with physical trophies and official certificates.',
   },
   {
-    category: 'Open Intelligence Feature',
-    question: 'How will winning projects be featured on Open Intelligence?',
+    category: 'PiBi Open Intelligence Feature',
+    question: 'How will winning projects be featured on PiBi Open Intelligence?',
     answer:
-      'Winners get an exclusive dedicated project showcase page on Open Intelligence (openintelligence.org). This includes full project documentation, interactive architecture demos, team bios, GitHub repository highlights, and a spotlight article distributed to over 150,000 subscribers and venture capital scouts globally.',
+      'Winners get an exclusive dedicated project showcase page on PiBi Open Intelligence (www.pibiopenintelligence.com). This includes full project documentation, interactive architecture demos, team bios, GitHub repository highlights, and a spotlight article distributed to over 150,000 subscribers and venture capital scouts globally.',
   },
   {
     category: 'Eligibility',
@@ -263,7 +261,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     category: 'Intellectual Property',
     question: 'Do students retain full ownership of their intellectual property (IP)?',
     answer:
-      'Yes, 100%! All code, hardware schematics, and intellectual property remain entirely owned by the students. Open Intelligence acts strictly as a publishing spotlight and accelerator to give your project global visibility.',
+      'Yes, 100%! All code, hardware schematics, and intellectual property remain entirely owned by the students. PiBi Open Intelligence acts strictly as a publishing spotlight and accelerator to give your project global visibility.',
   },
   {
     category: 'Submissions',

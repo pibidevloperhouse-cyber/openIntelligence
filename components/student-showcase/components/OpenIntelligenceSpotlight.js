@@ -12,14 +12,10 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 
-interface OpenIntelligenceSpotlightProps {
-  onOpenSubmitModal: () => void;
-}
-
-export const OpenIntelligenceSpotlight: React.FC<OpenIntelligenceSpotlightProps> = ({
+export const OpenIntelligenceSpotlight = ({
   onOpenSubmitModal,
 }) => {
-  const [activeTab, setActiveTab] = useState<'publishing' | 'reach' | 'career'>('publishing');
+  const [activeTab, setActiveTab] = useState('publishing');
 
   return (
     <section
@@ -42,15 +38,15 @@ export const OpenIntelligenceSpotlight: React.FC<OpenIntelligenceSpotlightProps>
                 WebkitTextFillColor: 'transparent',
               }}
             >
-              Open Intelligence
+              PiBi Open Intelligence
             </span>
           </h2>
 
           <p className="text-slate-600 text-base sm:text-lg">
             Winners don&apos;t just walk away with cash prizes. Your projects will be officially
             hosted, published, and featured as flagship innovations on{' '}
-            <strong className="text-[#1f6fb2] font-semibold">Open Intelligence</strong>{' '}
-            (openintelligence.org), giving you international visibility.
+            <strong className="text-[#1f6fb2] font-semibold">PiBi Open Intelligence</strong>{' '}
+            (www.pibiopenintelligence.com), giving you international visibility.
           </p>
         </div>
 
@@ -68,7 +64,7 @@ export const OpenIntelligenceSpotlight: React.FC<OpenIntelligenceSpotlightProps>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-stylized text-slate-600">
                   <span className="text-[#1f6fb2]">https://</span>
-                  <span>openintelligence.org/showcase/winners-2026</span>
+                  <span>www.pibiopenintelligence.com/showcase/winners-2026</span>
                 </div>
                 <div className="text-[11px] font-stylized text-[#0e8579] flex items-center gap-1 font-semibold">
                   <span className="w-2 h-2 rounded-full bg-[#2ec4b6] animate-gentle-pulse" />
@@ -80,7 +76,7 @@ export const OpenIntelligenceSpotlight: React.FC<OpenIntelligenceSpotlightProps>
               <div className="relative aspect-[16/10] w-full bg-slate-50">
                 <Image
                   src="/images/open_intelligence_demo.jpg"
-                  alt="Open Intelligence Student Showcase Platform"
+                  alt="PiBi Open Intelligence Student Showcase Platform"
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                   className="object-cover"
@@ -91,7 +87,7 @@ export const OpenIntelligenceSpotlight: React.FC<OpenIntelligenceSpotlightProps>
               <div className="p-4 bg-white border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
                 <div className="flex items-center gap-2 text-slate-700">
                   <ShieldCheck className="w-4 h-4 text-[#2ec4b6]" />
-                  <span className="font-medium">Verified Open Intelligence Publication Status</span>
+                  <span className="font-medium">Verified PiBi Open Intelligence Publication Status</span>
                 </div>
                 <span className="text-[#1f6fb2] font-stylized font-semibold">
                   Official Launch Guarantee
@@ -159,17 +155,17 @@ export const OpenIntelligenceSpotlight: React.FC<OpenIntelligenceSpotlightProps>
                   style={{ fontFamily: 'var(--font-plus-jakarta)' }}
                 >
                   <Code2 className="w-5 h-5 text-[#1f6fb2]" />
-                  <span>Dedicated Showcase on Open Intelligence</span>
+                  <span>Dedicated Showcase on PiBi Open Intelligence</span>
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                   Every winning project gets an interactive feature article and dedicated profile page
-                  on Open Intelligence. We showcase your problem statement, system architecture,
+                  on PiBi Open Intelligence. We showcase your problem statement, system architecture,
                   source code, and live demo.
                 </p>
                 <div className="space-y-2 pt-2">
                   <div className="flex items-start gap-2 text-xs text-slate-700">
                     <CheckCircle2 className="w-4 h-4 text-[#2ec4b6] shrink-0 mt-0.5" />
-                    <span>Permanent URL: openintelligence.org/showcase/your-project</span>
+                    <span>Permanent URL: www.pibiopenintelligence.com/showcase/your-project</span>
                   </div>
                   <div className="flex items-start gap-2 text-xs text-slate-700">
                     <CheckCircle2 className="w-4 h-4 text-[#2ec4b6] shrink-0 mt-0.5" />
@@ -194,14 +190,14 @@ export const OpenIntelligenceSpotlight: React.FC<OpenIntelligenceSpotlightProps>
                   <span>150,000+ Worldwide Readership</span>
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Open Intelligence is visited by engineering managers, AI researchers, and
+                  PiBi Open Intelligence is visited by engineering managers, AI researchers, and
                   open-source contributors worldwide. Your project will be read and applauded
                   internationally.
                 </p>
                 <div className="space-y-2 pt-2">
                   <div className="flex items-start gap-2 text-xs text-slate-700">
                     <CheckCircle2 className="w-4 h-4 text-[#2ec4b6] shrink-0 mt-0.5" />
-                    <span>Featured in Open Intelligence Weekly Tech Dispatch</span>
+                    <span>Featured in PiBi Open Intelligence Weekly Tech Dispatch</span>
                   </div>
                   <div className="flex items-start gap-2 text-xs text-slate-700">
                     <CheckCircle2 className="w-4 h-4 text-[#2ec4b6] shrink-0 mt-0.5" />
@@ -227,7 +223,7 @@ export const OpenIntelligenceSpotlight: React.FC<OpenIntelligenceSpotlightProps>
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                   Founders and venture scouts actively look for exceptional student engineers on
-                  Open Intelligence. Past featured students have secured pre-seed funding and
+                  PiBi Open Intelligence. Past featured students have secured pre-seed funding and
                   interviews at top tier companies.
                 </p>
                 <div className="space-y-2 pt-2">
@@ -241,7 +237,7 @@ export const OpenIntelligenceSpotlight: React.FC<OpenIntelligenceSpotlightProps>
                   </div>
                   <div className="flex items-start gap-2 text-xs text-slate-700">
                     <CheckCircle2 className="w-4 h-4 text-[#2ec4b6] shrink-0 mt-0.5" />
-                    <span>Letters of Recommendation from Open Intelligence leadership</span>
+                    <span>Letters of Recommendation from PiBi Open Intelligence leadership</span>
                   </div>
                 </div>
               </div>
@@ -269,3 +265,4 @@ export const OpenIntelligenceSpotlight: React.FC<OpenIntelligenceSpotlightProps>
     </section>
   );
 };
+export default OpenIntelligenceSpotlight;

@@ -13,12 +13,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 
-interface HeroSectionProps {
-  onOpenSubmitModal: () => void;
-  currency: 'INR' | 'USD';
-}
-
-export const HeroSection: React.FC<HeroSectionProps> = ({
+export const HeroSection = ({
   onOpenSubmitModal,
   currency,
 }) => {
@@ -66,7 +61,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.14]"
               style={{ fontFamily: 'var(--font-plus-jakarta)' }}
             >
-              Showcase Student Projects.{' '}
+              Don&apos;t Waste Your College Project.{' '}
               <span
                 className="block mt-1.5"
                 style={{
@@ -78,7 +73,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 Win Top 3 Cash Rewards.
               </span>
               <span className="block mt-1 text-slate-800 text-3xl sm:text-4xl lg:text-5xl font-bold">
-                Get Featured on Open Intelligence.
+                Get Featured on PiBi Open Intelligence.
               </span>
             </h1>
 
@@ -90,7 +85,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </strong>
               . The winning projects will be officially launched and published on{' '}
               <strong className="text-[#1f6fb2] font-semibold underline decoration-[#2ec4b6] underline-offset-4">
-                Open Intelligence
+                PiBi Open Intelligence
               </strong>{' '}
               with global reach to tech founders, recruiters, and developers.
             </p>
@@ -128,7 +123,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </div>
               <div className="flex items-center gap-2 col-span-2 sm:col-span-1">
                 <Globe className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Open Intelligence Feature</span>
+                <span>PiBi Open Intelligence Feature</span>
               </div>
             </div>
 
@@ -208,14 +203,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   </h3>
                   <p className="text-xs text-slate-600 leading-relaxed">
                     Winning projects are published as featured case studies on{' '}
-                    <span className="text-[#1f6fb2] font-semibold">Open Intelligence</span>,
+                    <span className="text-[#1f6fb2] font-semibold">PiBi Open Intelligence</span>,
                     reaching top engineering leads and investors.
                   </p>
 
                   <div className="pt-2 flex items-center justify-between text-xs text-slate-500 border-t border-slate-100">
                     <span className="flex items-center gap-1 text-slate-700 font-medium">
                       <ShieldCheck className="w-4 h-4 text-[#2ec4b6]" />
-                      Verified Open Intelligence Showcase
+                      Verified PiBi Open Intelligence Showcase
                     </span>
                     <span className="font-stylized text-[#1f6fb2] font-semibold">Edition 2026</span>
                   </div>
@@ -243,7 +238,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 <div>
                   <div className="text-[9px] sm:text-[10px] text-slate-500 uppercase font-stylized">Publishing</div>
                   <div className="text-[11px] sm:text-xs font-bold text-slate-900 font-stylized whitespace-nowrap">
-                    Open Intelligence
+                    PiBi Open Intelligence
                   </div>
                 </div>
               </div>
@@ -283,7 +278,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               100%
             </span>
             <span className="text-xs sm:text-sm text-slate-600 font-medium mt-1 block">
-              Open Intelligence Featured
+              PiBi Open Intelligence Featured
             </span>
           </div>
 
@@ -300,3 +295,4 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     </section>
   );
 };
+export default HeroSection;

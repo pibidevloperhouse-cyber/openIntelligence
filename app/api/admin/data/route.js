@@ -28,7 +28,7 @@ export async function GET() {
       supabaseAdmin.from('resources').select('*', { count: 'exact', head: true }).eq('status', 'FEATURED'),
       supabaseAdmin.from('resources').select('*', { count: 'exact', head: true }).eq('status', 'REJECTED'),
       supabaseAdmin.from('users').select('*', { count: 'exact', head: true }).eq('role', 'CONTRIBUTOR'),
-      
+
       supabaseAdmin.from('resources').select('*, resource_categories(category:categories(*)), contributor:users(username, avatar_url), resource_tags(tag:tags(*))').eq('status', 'PENDING').order('created_at', { ascending: true }),
       supabaseAdmin.from('resources').select('*, resource_categories(category:categories(*)), contributor:users(username)').order('created_at', { ascending: false }).limit(50),
       supabaseAdmin.from('meetings').select('*').order('date', { ascending: false }),

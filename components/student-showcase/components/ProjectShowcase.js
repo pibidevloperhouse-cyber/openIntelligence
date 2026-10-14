@@ -12,16 +12,6 @@ import {
   GraduationCap,
   Sparkles,
 } from 'lucide-react';
-import { StudentProject } from '../types';
-
-interface ProjectShowcaseProps {
-  projects: StudentProject[];
-  onSelectProject: (project: StudentProject) => void;
-  onUpvote: (id: string) => void;
-  upvotedIds: Set<string>;
-  currency: 'INR' | 'USD';
-  onOpenSubmitModal: () => void;
-}
 
 const CATEGORIES = [
   'All',
@@ -32,7 +22,7 @@ const CATEGORIES = [
   'Healthcare & Assistive',
 ];
 
-export const ProjectShowcase: React.FC<ProjectShowcaseProps> = ({
+export const ProjectShowcase = ({
   projects,
   onSelectProject,
   onUpvote,
@@ -84,7 +74,7 @@ export const ProjectShowcase: React.FC<ProjectShowcaseProps> = ({
 
           <p className="text-slate-600 text-base sm:text-lg">
             Discover student creations across AI, Robotics, GreenTech, and Web3.
-            Top 3 ranked entries win cash prizes and an exclusive feature on Open Intelligence.
+            Top 3 ranked entries win cash prizes and an exclusive feature on PiBi Open Intelligence.
           </p>
         </div>
 
@@ -202,7 +192,7 @@ export const ProjectShowcase: React.FC<ProjectShowcaseProps> = ({
                     {project.openIntelligenceFeatured && (
                       <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-bold bg-white text-[#0e8579] border border-[#2ec4b6]/40 shadow-xs flex items-center gap-1 font-stylized">
                         <Globe className="w-3 h-3 text-[#2ec4b6]" />
-                        <span>Open Intelligence</span>
+                        <span>PiBi Open Intelligence</span>
                       </div>
                     )}
 
@@ -296,7 +286,7 @@ export const ProjectShowcase: React.FC<ProjectShowcaseProps> = ({
           </h3>
           <p className="text-slate-600 text-sm max-w-xl mx-auto">
             Submit your student project to compete for the Top 3 Cash Rewards and get officially
-            featured on Open Intelligence.
+            featured on PiBi Open Intelligence.
           </p>
           <div className="pt-2">
             <button
@@ -313,3 +303,4 @@ export const ProjectShowcase: React.FC<ProjectShowcaseProps> = ({
     </section>
   );
 };
+export default ProjectShowcase;

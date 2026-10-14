@@ -10,20 +10,23 @@ import { FaqSection } from '../components/FaqSection';
 import { ProjectDetailModal } from '../components/ProjectDetailModal';
 import { SubmitProjectModal } from '../components/SubmitProjectModal';
 import { INITIAL_PROJECTS } from '../data/projectsData';
-import { StudentProject } from '../types';
 
 export default function Home() {
-  const [projects, setProjects] = useState<StudentProject[]>(INITIAL_PROJECTS);
-  const [selectedProject, setSelectedProject] = useState<StudentProject | null>(null);
+  const [projects, setProjects] = useState(INITIAL_PROJECTS);
+  const [selectedProject, setSelectedProject] = useState(null);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
-  const [upvotedIds, setUpvotedIds] = useState<Set<string>>(new Set());
-  const [currency] = useState<'INR' | 'USD'>('INR');
+  const [upvotedIds, setUpvotedIds] = useState(new Set());
+  const [currency, setCurrency] = useState('INR');
+
+  const toggleCurrency = () => {
+    setCurrency((prev) => (prev === 'INR' ? 'USD' : 'INR'));
+  };
 
   useEffect(() => {
     setProjects(INITIAL_PROJECTS);
   }, []);
 
-  const handleUpvote = (id: string) => {
+  const handleUpvote = (id) => {
     setUpvotedIds((prev) => {
       const next = new Set(prev);
       const isCurrentlyUpvoted = next.has(id);
@@ -62,7 +65,7 @@ export default function Home() {
     });
   };
 
-  const handleNewProject = (newProject: StudentProject) => {
+  const handleNewProject = (newProject) => {
     setProjects((prev) => [newProject, ...prev]);
   };
 
@@ -84,14 +87,16 @@ export default function Home() {
           onOpenSubmitModal={() => setIsSubmitModalOpen(true)}
         />
 
-        <ProjectShowcase
+        {/* Student Project Showcase Gallery section - Un-comment when ready */}
+        {/* <ProjectShowcase
           projects={projects}
           onSelectProject={setSelectedProject}
           onUpvote={handleUpvote}
           upvotedIds={upvotedIds}
           currency={currency}
           onOpenSubmitModal={() => setIsSubmitModalOpen(true)}
-        />
+        /> */}
+
 
         <EvaluationSection />
 

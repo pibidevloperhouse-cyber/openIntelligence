@@ -4,11 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { ArrowUp, Sparkles, Mail } from 'lucide-react';
 
-interface FooterProps {
-  onOpenSubmitModal: () => void;
-}
-
-export const Footer: React.FC<FooterProps> = ({ onOpenSubmitModal }) => {
+export const Footer = ({ onOpenSubmitModal }) => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -42,7 +38,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSubmitModal }) => {
             <p className="text-xs sm:text-sm text-slate-600 max-w-md leading-relaxed">
               PIBI TECH is dedicated to empowering student creators and engineers.
               Rewarding Top 3 student projects with direct cash prizes and launching their innovations
-              globally on the Open Intelligence ecosystem.
+              globally on the PiBi Open Intelligence ecosystem.
             </p>
 
             <div className="pt-1 flex items-center gap-2 text-xs text-slate-600">
@@ -69,7 +65,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSubmitModal }) => {
               </li>
               <li>
                 <a href="#open-intelligence" className="hover:text-[#0e8579] transition-colors">
-                  Open Intelligence Publishing
+                  PiBi Open Intelligence Publishing
                 </a>
               </li>
               <li>
@@ -108,7 +104,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSubmitModal }) => {
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>
             © 2026 PIBI TECH Student Showcase. In official partnership with{' '}
-            <strong className="text-slate-700">Open Intelligence</strong>.
+            <strong className="text-slate-700">PiBi Open Intelligence</strong>.
           </div>
 
           <div className="flex items-center gap-4">
@@ -126,3 +122,4 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSubmitModal }) => {
     </footer>
   );
 };
+export default Footer;

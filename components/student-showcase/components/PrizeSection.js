@@ -10,15 +10,11 @@ import {
   ExternalLink,
   Gift,
   PartyPopper,
+  ArrowRight,
 } from 'lucide-react';
 import { PRIZE_TIERS } from '../data/projectsData';
 
-interface PrizeSectionProps {
-  currency: 'INR' | 'USD';
-  onOpenSubmitModal: () => void;
-}
-
-export const PrizeSection: React.FC<PrizeSectionProps> = ({
+export const PrizeSection = ({
   currency,
   onOpenSubmitModal,
 }) => {
@@ -55,14 +51,14 @@ export const PrizeSection: React.FC<PrizeSectionProps> = ({
                 WebkitTextFillColor: 'transparent',
               }}
             >
-              Open Intelligence Launch
+              PiBi Open Intelligence Launch
             </span>
           </h2>
 
           <p className="text-slate-600 text-base sm:text-lg">
             Hard work deserves real recognition. Top 3 student projects win direct cash prizes,
             official trophies, and are permanently published and featured on{' '}
-            <span className="text-[#1f6fb2] font-semibold">Open Intelligence</span>.
+            <span className="text-[#1f6fb2] font-semibold">PiBi Open Intelligence</span>.
           </p>
 
           {/* Interactive Confetti Button */}
@@ -107,7 +103,7 @@ export const PrizeSection: React.FC<PrizeSectionProps> = ({
               <div className="p-3.5 rounded-xl bg-[#2ec4b6]/10 border border-[#2ec4b6]/30 text-xs text-slate-800 flex items-start gap-2.5">
                 <ExternalLink className="w-4 h-4 text-[#0e8579] shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-[#0e8579]">Featured on Open Intelligence</strong>: Spotlight profile on Open Intelligence Projects Hub.
+                  <strong className="text-[#0e8579]">Featured on PiBi Open Intelligence</strong>: Spotlight profile on PiBi Open Intelligence Projects Hub.
                 </div>
               </div>
 
@@ -120,15 +116,6 @@ export const PrizeSection: React.FC<PrizeSectionProps> = ({
                   </div>
                 ))}
               </div>
-            </div>
-
-            <div className="pt-6 mt-6 border-t border-slate-100">
-              <button
-                onClick={onOpenSubmitModal}
-                className="w-full py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
-              >
-                Compete for 2nd Place
-              </button>
             </div>
           </div>
 
@@ -172,11 +159,11 @@ export const PrizeSection: React.FC<PrizeSectionProps> = ({
               <div className="p-4 rounded-2xl bg-gradient-to-r from-[#1f6fb2]/10 to-[#2ec4b6]/10 border border-[#2ec4b6]/40 text-xs text-slate-800 space-y-1.5">
                 <div className="flex items-center gap-2 font-bold text-[#1f6fb2] text-sm">
                   <ExternalLink className="w-4 h-4 text-[#2ec4b6]" />
-                  <span>Grand Open Intelligence Launch</span>
+                  <span>Grand PiBi Open Intelligence Launch</span>
                 </div>
                 <p className="text-[11px] leading-relaxed text-slate-600">
                   Winning project will be <strong>officially published as a Cover Story</strong> on
-                  the Open Intelligence homepage with interactive demo sandbox & global newsletter blast.
+                  the PiBi Open Intelligence homepage with interactive demo sandbox & global newsletter blast.
                 </p>
               </div>
 
@@ -191,16 +178,6 @@ export const PrizeSection: React.FC<PrizeSectionProps> = ({
                   </div>
                 ))}
               </div>
-            </div>
-
-            <div className="pt-6 mt-6 border-t border-slate-100">
-              <button
-                onClick={onOpenSubmitModal}
-                className="w-full py-3.5 rounded-xl font-bold text-sm text-white shadow-md hover:shadow-lg transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
-                style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
-              >
-                Submit Project For 1st Place
-              </button>
             </div>
           </div>
 
@@ -232,7 +209,7 @@ export const PrizeSection: React.FC<PrizeSectionProps> = ({
               <div className="p-3.5 rounded-xl bg-[#2ec4b6]/10 border border-[#2ec4b6]/30 text-xs text-slate-800 flex items-start gap-2.5">
                 <ExternalLink className="w-4 h-4 text-[#0e8579] shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-[#0e8579]">Featured on Open Intelligence</strong>: Permanent listing in Open Intelligence Innovation Directory.
+                  <strong className="text-[#0e8579]">Featured on PiBi Open Intelligence</strong>: Permanent listing in PiBi Open Intelligence Innovation Directory.
                 </div>
               </div>
 
@@ -246,16 +223,22 @@ export const PrizeSection: React.FC<PrizeSectionProps> = ({
                 ))}
               </div>
             </div>
-
-            <div className="pt-6 mt-6 border-t border-slate-100">
-              <button
-                onClick={onOpenSubmitModal}
-                className="w-full py-2.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
-              >
-                Compete for 3rd Place
-              </button>
-            </div>
           </div>
+        </div>
+
+        {/* General Submit Project CTA */}
+        <div className="mt-10 text-center">
+          <button
+            onClick={onOpenSubmitModal}
+            className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-xl font-bold text-sm sm:text-base text-white shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
+          >
+            <span>Submit Project</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+          <p className="text-xs text-slate-500 mt-2 font-medium">
+            Open for all college & university students • Free to participate
+          </p>
         </div>
 
         {/* Bonus recognition for all Top 10 Finalists */}
@@ -272,7 +255,7 @@ export const PrizeSection: React.FC<PrizeSectionProps> = ({
                 Perks for All Top 10 Finalists
               </h4>
               <p className="text-xs text-slate-500">
-                Official Certificate of National Distinction + Free Developer Tooling Licenses + Open Intelligence Badges.
+                Official Certificate of National Distinction + Free Developer Tooling Licenses + PiBi Open Intelligence Badges.
               </p>
             </div>
           </div>
@@ -287,3 +270,4 @@ export const PrizeSection: React.FC<PrizeSectionProps> = ({
     </section>
   );
 };
+export default PrizeSection;
