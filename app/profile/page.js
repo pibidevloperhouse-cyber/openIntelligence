@@ -90,6 +90,31 @@ export default function ProfilePage() {
     <div className="light-theme" style={{ minHeight: '100vh', paddingTop: '2.5rem', paddingBottom: '4rem' }}>
       <div className="container" style={{ maxWidth: '1000px' }}>
 
+        {/* Banned Alert */}
+        {profile?.bio === '__BANNED__' && (
+          <div style={{
+            background: '#FEF2F2',
+            border: '1px solid #FCA5A5',
+            borderRadius: '12px',
+            padding: '1.25rem 1.5rem',
+            marginBottom: '1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+            boxShadow: '0 4px 12px rgba(239, 68, 68, 0.08)'
+          }}>
+            <span style={{ fontSize: '2rem' }}>🚫</span>
+            <div>
+              <div style={{ color: '#991B1B', fontWeight: 700, fontSize: '1rem', marginBottom: '0.2rem' }}>
+                Account Suspended
+              </div>
+              <div style={{ color: '#B91C1C', fontSize: '0.85rem', lineHeight: 1.4 }}>
+                Your account has been banned by an administrator. You cannot submit resources or participate in community contributions.
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Profile header */}
         {user && (
           <div className="glass-card" style={{ padding: '1.75rem', marginBottom: '1.5rem', display: 'flex', gap: '1.25rem', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -99,13 +124,22 @@ export default function ProfilePage() {
               style={{ width: 70, height: 70, borderRadius: '50%', border: '2.5px solid rgba(99,102,241,0.5)', flexShrink: 0 }}
             />
             <div style={{ flex: 1 }}>
-              <h1 style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '1.25rem', fontFamily: 'var(--font-display)', margin: '0 0 0.2rem', textTransform: 'uppercase' }}>
-                {profile?.full_name || user.user_metadata?.full_name || user.user_metadata?.name || user.user_metadata?.user_name || user.email?.split('@')[0] || 'User'}
-              </h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <h1 style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '1.25rem', fontFamily: 'var(--font-display)', margin: 0, textTransform: 'uppercase' }}>
+                  {profile?.full_name || user.user_metadata?.full_name || user.user_metadata?.name || user.user_metadata?.user_name || user.email?.split('@')[0] || 'User'}
+                </h1>
+                {profile?.bio === '__BANNED__' && (
+                  <span style={{ background: '#FEE2E2', color: '#DC2626', fontSize: '0.7rem', fontWeight: 700, padding: '0.2rem 0.5rem', borderRadius: '4px', textTransform: 'uppercase' }}>
+                    Banned
+                  </span>
+                )}
+              </div>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
                 @{profile?.github_username || user.user_metadata?.github_username || user.user_metadata?.user_name || user.email?.split('@')[0]}
               </div>
-              {profile?.bio && <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.35rem' }}>{profile.bio}</div>}
+              {profile?.bio && profile.bio !== '__BANNED__' && (
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.35rem' }}>{profile.bio}</div>
+              )}
             </div>
 
             {/* Stats */}
@@ -122,9 +156,15 @@ export default function ProfilePage() {
               ))}
             </div>
 
-            <Link href="/submit" className="btn-primary" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
-              + Submit Resource
-            </Link>
+            {profile?.bio !== '__BANNED__' ? (
+              <Link href="/submit" className="btn-primary" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
+                + Submit Resource
+              </Link>
+            ) : (
+              <span style={{ fontSize: '0.8rem', background: '#FEE2E2', color: '#991B1B', fontWeight: 600, padding: '0.5rem 0.9rem', borderRadius: '6px' }}>
+                Contribution Disabled
+              </span>
+            )}
           </div>
         )}
 

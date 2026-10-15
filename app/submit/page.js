@@ -22,6 +22,7 @@ export default function SubmitPage() {
   const supabase = createClient();
 
   const [user, setUser]               = useState(null);
+  const [isBanned, setIsBanned]       = useState(false);
   const [loading, setLoading]         = useState(true);
   const [githubUrl, setGithubUrl]     = useState('');
   const [fetching, setFetching]       = useState(false);
@@ -36,7 +37,7 @@ export default function SubmitPage() {
   const [success, setSuccess]         = useState(false);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(async ({ data }) => {
       if (!data?.user) {
         // Immediately redirect to GitHub login if not authenticated
         supabase.auth.signInWithOAuth({
@@ -47,6 +48,18 @@ export default function SubmitPage() {
         });
       } else {
         setUser(data.user);
+        try {
+          const { data: profile } = await supabase
+            .from('users')
+            .select('bio')
+            .eq('id', data.user.id)
+            .single();
+          if (profile?.bio === '__BANNED__') {
+            setIsBanned(true);
+          }
+        } catch (e) {
+          console.error(e);
+        }
         setLoading(false);
       }
     });
@@ -125,6 +138,27 @@ export default function SubmitPage() {
     return (
       <div className="light-theme" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem' }}>
         <span style={{ color: 'var(--text-muted)' }}>Redirecting to GitHub Login...</span>
+      </div>
+    );
+  }
+
+  if (isBanned) {
+    return (
+      <div className="light-theme" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+        <div className="glass-card" style={{ padding: '3.5rem 2.5rem', textAlign: 'center', maxWidth: '500px', width: '100%', border: '1px solid #FCA5A5', background: '#FFF5F5', borderRadius: '16px', boxShadow: '0 10px 30px rgba(239, 68, 68, 0.08)' }}>
+          <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>🚫</div>
+          <h2 style={{ color: '#991B1B', fontWeight: 800, fontFamily: 'var(--font-display)', marginBottom: '0.75rem', fontSize: '1.6rem' }}>
+            Account Suspended
+          </h2>
+          <p style={{ color: '#B91C1C', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '2rem' }}>
+            Your account has been restricted by an administrator. You are not permitted to submit resources or contribute to Open Intelligence.
+          </p>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+            <button onClick={() => router.push('/')} className="btn-outline" style={{ borderColor: '#FCA5A5', color: '#991B1B', fontWeight: 600 }}>
+              Return to Home
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

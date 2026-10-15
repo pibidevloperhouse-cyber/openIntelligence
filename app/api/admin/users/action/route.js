@@ -23,9 +23,29 @@ export async function PATCH(req) {
     }
 
     if (action === 'ban') {
+      // 1. Mark user as BANNED
       await supabaseAdmin.from('users').update({ bio: '__BANNED__' }).eq('id', userId);
+      // 2. Hide all resources contributed by this user immediately
+      await supabaseAdmin.from('resources').update({ status: 'REJECTED' }).eq('contributor_id', userId);
+      // 3. Hide any student projects submitted by this user
+      const { data: userRec } = await supabaseAdmin.from('users').select('username, email').eq('id', userId).single();
+      if (userRec?.username) {
+        await supabaseAdmin.from('student_project_submissions')
+          .update({ status: 'REJECTED' })
+          .or(`lead_student.ilike.%${userRec.username}%,github_url.ilike.%${userRec.username}%`);
+      }
     } else if (action === 'unban') {
+      // 1. Unban user
       await supabaseAdmin.from('users').update({ bio: null }).eq('id', userId);
+      // 2. Restore their resources
+      await supabaseAdmin.from('resources').update({ status: 'APPROVED' }).eq('contributor_id', userId);
+      // 3. Restore student projects
+      const { data: userRec } = await supabaseAdmin.from('users').select('username, email').eq('id', userId).single();
+      if (userRec?.username) {
+        await supabaseAdmin.from('student_project_submissions')
+          .update({ status: 'APPROVED' })
+          .or(`lead_student.ilike.%${userRec.username}%,github_url.ilike.%${userRec.username}%`);
+      }
     }
 
     return NextResponse.json({ success: true });

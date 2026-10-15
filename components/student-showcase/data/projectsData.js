@@ -213,27 +213,27 @@ export const PRIZE_TIERS = [
 
 export const TIMELINE_STEPS = [
   {
-    date: 'Phase 1: Present Day',
-    title: 'Project Submissions Open',
-    description: 'Submit your working prototypes, research code, and demo links via the submission portal.',
+    date: 'Phase 1: Deadline Nov 14',
+    title: 'Project Registration & Submissions',
+    description: 'Register your team and submit your working AI/ML prototypes, code repository, and demo links before November 14.',
     status: 'active',
   },
   {
-    date: 'Phase 2: In 14 Days',
-    title: 'Shortlisting & Jury Review',
-    description: 'Engineering leads, PiBi Open Intelligence editors, and faculty evaluate code repositories & metrics.',
+    date: 'Phase 2: Nov 30',
+    title: 'Shortlisted Teams Announcement',
+    description: 'Evaluation jury reviews submitted code, architecture, and impact metrics to announce the shortlisted teams on November 30.',
     status: 'upcoming',
   },
   {
-    date: 'Phase 3: In 24 Days',
-    title: 'Grand Finale Demo Day',
-    description: 'Top 10 finalist teams present live demonstrations in front of the grand judging panel.',
+    date: 'Phase 3: Dec 12',
+    title: 'Shortlisted Teams Live Evaluation',
+    description: 'Shortlisted qualifiers compete in an exclusive live demonstration round on December 12 with in-depth jury review and Q&A.',
     status: 'upcoming',
   },
   {
-    date: 'Phase 4: Finale Night',
-    title: 'Top 3 Cash Awards & PiBi Open Intelligence Publishing',
-    description: 'Top 3 cash prizes awarded immediately & winning projects are published on the PiBi Open Intelligence website.',
+    date: 'Phase 4: Winners & Awards',
+    title: 'Top 3 Winners & Prize Distribution',
+    description: 'The grand jury evaluates finalist performances to select the Top 3 winners and distribute ₹30,000 cash prizes.',
     status: 'upcoming',
   },
 ];

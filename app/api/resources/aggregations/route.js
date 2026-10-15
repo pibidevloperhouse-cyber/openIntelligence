@@ -1,10 +1,33 @@
 import { NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    try {
+      const cookieStore = await cookies();
+      const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        {
+          cookies: {
+            getAll: () => cookieStore.getAll(),
+            setAll: (toSet) => toSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
+          },
+        }
+      );
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabaseAdmin.from('users').select('bio').eq('id', user.id).single();
+        if (profile?.bio === '__BANNED__') {
+          return NextResponse.json({ categoryCounts: {}, tagCounts: {}, totalCount: 0, banned: true }, { status: 403 });
+        }
+      }
+    } catch {}
+
     // Fetch only the necessary fields to compute aggregations across all approved resources.
     const { data: dbResources, error } = await supabaseAdmin
       .from('resources')

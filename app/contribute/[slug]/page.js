@@ -95,6 +95,8 @@ export default async function ResourceDetailPage({ params }) {
   }
 
   if (!resource) notFound();
+  if (resource.contributor?.bio === '__BANNED__') notFound();
+  if (resource.status !== 'APPROVED' && resource.status !== 'FEATURED') notFound();
 
   // Fetch GitHub forkers for this specific repo (parallel with other data already loaded)
   const { forkers, forkCount } = await getRepoForkers(resource.github_url);

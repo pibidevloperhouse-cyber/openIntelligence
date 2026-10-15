@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import ResourceListItem from '@/components/ResourceListItem';
+import { createClient } from '@/lib/supabase/client';
 
 const ICONS = {
   all: <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 7.6 7.6 2.4-7.6 2.4-2.4 7.6-2.4-7.6-7.6-2.4 7.6-2.4z" /></svg>,
@@ -29,6 +30,7 @@ const CATEGORIES = [
 export default function ResourcesPage() {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isBanned, setIsBanned] = useState(false);
 
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
@@ -42,6 +44,22 @@ export default function ResourcesPage() {
   const [categoryCounts, setCategoryCounts] = useState({});
   const [tagCounts, setTagCounts] = useState({});
   const [globalTotal, setGlobalTotal] = useState(0);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (user) {
+        try {
+          const { data: profile } = await supabase.from('users').select('bio').eq('id', user.id).single();
+          if (profile?.bio === '__BANNED__') {
+            setIsBanned(true);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    });
+  }, []);
 
   const fetchResources = useCallback(async () => {
     setLoading(true);
@@ -59,6 +77,12 @@ export default function ResourcesPage() {
 
       const res = await fetch(`/api/resources?${params}`);
       const data = await res.json();
+      if (data.banned || res.status === 403) {
+        setIsBanned(true);
+        setResources([]);
+        setTotal(0);
+        return;
+      }
       setResources(data.resources || []);
       setTotal(data.total || 0);
     } catch (err) {
@@ -72,6 +96,12 @@ export default function ResourcesPage() {
     try {
       const res = await fetch('/api/resources/aggregations');
       const data = await res.json();
+      if (data.banned || res.status === 403) {
+        setCategoryCounts({});
+        setTagCounts({});
+        setGlobalTotal(0);
+        return;
+      }
       setCategoryCounts(data.categoryCounts || {});
       setTagCounts(data.tagCounts || {});
       setGlobalTotal(data.totalCount || 0);
@@ -188,32 +218,73 @@ export default function ResourcesPage() {
               {globalTotal} open-source AI resources from the Madurai AI community
             </p>
           </div>
-          <Link href="/submit" style={{ textDecoration: 'none' }}>
-            <button style={{
-              background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
-              border: 'none',
-              color: '#ffffff',
-              padding: '0.65rem 1.35rem',
-              borderRadius: '8px',
-              fontWeight: 600,
-              fontSize: '0.9rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(31, 111, 178, 0.25)',
-              transition: 'transform 0.15s ease, box-shadow 0.15s ease'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
-            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-            >
-              <span style={{ color: '#ffffff', fontWeight: 800 }}>+</span> Submit a resource
-            </button>
-          </Link>
+          {!isBanned && (
+            <Link href="/submit" style={{ textDecoration: 'none' }}>
+              <button style={{
+                background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
+                border: 'none',
+                color: '#ffffff',
+                padding: '0.65rem 1.35rem',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(31, 111, 178, 0.25)',
+                transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+              >
+                <span style={{ color: '#ffffff', fontWeight: 800 }}>+</span> Submit a resource
+              </button>
+            </Link>
+          )}
         </div>
 
-        {/* 2-Column Layout */}
-        <div className="resources-layout">
+        {isBanned ? (
+          <div style={{
+            background: '#FFF5F5',
+            border: '1px solid #FCA5A5',
+            borderRadius: '16px',
+            padding: '4rem 2rem',
+            textAlign: 'center',
+            maxWidth: '680px',
+            margin: '3rem auto 5rem',
+            boxShadow: '0 10px 25px rgba(239, 68, 68, 0.06)'
+          }}>
+            <div style={{ fontSize: '3.5rem', marginBottom: '1.25rem' }}>🚫</div>
+            <h2 style={{
+              color: '#991B1B',
+              fontWeight: 800,
+              fontFamily: 'var(--font-display)',
+              marginBottom: '0.75rem',
+              fontSize: '1.6rem'
+            }}>
+              Access Restricted
+            </h2>
+            <p style={{
+              color: '#B91C1C',
+              fontSize: '0.95rem',
+              lineHeight: 1.6,
+              maxWidth: '520px',
+              margin: '0 auto 2rem'
+            }}>
+              Your account has been suspended by the administrator. You are restricted from viewing community contributions and submitting new resources.
+            </p>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+              <Link href="/" style={{ textDecoration: 'none' }}>
+                <button className="btn-outline" style={{ borderColor: '#FCA5A5', color: '#991B1B', fontWeight: 600, padding: '0.6rem 1.4rem' }}>
+                  Return to Home
+                </button>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          /* 2-Column Layout */
+          <div className="resources-layout">
 
           {/* Sidebar */}
           <aside>
@@ -511,6 +582,7 @@ export default function ResourcesPage() {
             )}
           </main>
         </div>
+        )}
       </div>
     </div>
   );

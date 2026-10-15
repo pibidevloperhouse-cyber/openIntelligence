@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { HeroSection } from '../components/HeroSection';
+import { JourneySection } from '../components/JourneySection';
 import { PrizeSection } from '../components/PrizeSection';
 import { OpenIntelligenceSpotlight } from '../components/OpenIntelligenceSpotlight';
 import { ProjectShowcase } from '../components/ProjectShowcase';
@@ -77,6 +78,8 @@ export default function Home() {
           onOpenSubmitModal={() => setIsSubmitModalOpen(true)}
           currency={currency}
         />
+
+        <JourneySection />
 
         <PrizeSection
           currency={currency}

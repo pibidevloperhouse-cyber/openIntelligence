@@ -111,7 +111,7 @@ export default function Footer() {
                 fontSize: '1.15rem',
                 color: '#000000'
               }}>
-                Pi Bi OpenIntelligence
+                OpenIntelligence
               </span>
             </div>
             <p style={{ color: '#000000', fontSize: '0.85rem', lineHeight: 1.6, maxWidth: '350px' }}>

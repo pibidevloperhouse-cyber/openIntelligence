@@ -20,7 +20,8 @@ export async function GET() {
   try {
     const [
       totalRes, pendingRes, approvedRes, featuredRes, rejectedRes, contributorsRes,
-      pendingListRes, allResourcesRes, meetingsRes, usersRes, registrationsRes
+      pendingListRes, allResourcesRes, meetingsRes, usersRes, registrationsRes,
+      studentSubmissionsRes
     ] = await Promise.all([
       supabaseAdmin.from('resources').select('*', { count: 'exact', head: true }),
       supabaseAdmin.from('resources').select('*', { count: 'exact', head: true }).eq('status', 'PENDING'),
@@ -33,7 +34,8 @@ export async function GET() {
       supabaseAdmin.from('resources').select('*, resource_categories(category:categories(*)), contributor:users(username)').order('created_at', { ascending: false }).limit(50),
       supabaseAdmin.from('meetings').select('*').order('date', { ascending: false }),
       supabaseAdmin.from('users').select('*, resources(id, status)').order('created_at', { ascending: false }),
-      supabaseAdmin.from('event_registrations').select('*').order('created_at', { ascending: false })
+      supabaseAdmin.from('event_registrations').select('*').order('created_at', { ascending: false }),
+      supabaseAdmin.from('student_project_submissions').select('*').order('created_at', { ascending: false })
     ]);
 
     const pending_list = (pendingListRes.data || []).map(r => ({ ...r, categories: (r.resource_categories || []).map(rc => rc.category), tags: r.resource_tags || [] }));
@@ -46,6 +48,7 @@ export async function GET() {
       const match = meetings.find(m => m.id === r.meeting_id);
       return { ...r, meeting: { title: match?.title || 'Unknown Event' } };
     });
+    const studentRegistrationsList = studentSubmissionsRes?.data || [];
 
     return NextResponse.json({
       stats: {
@@ -54,13 +57,15 @@ export async function GET() {
         approved: approvedRes.count || 0,
         featured: featuredRes.count || 0,
         rejected: rejectedRes.count || 0,
-        contributors: contributorsRes.count || 0
+        contributors: contributorsRes.count || 0,
+        studentRegistrations: studentRegistrationsList.length,
       },
       pending: pending_list,
       resources: all_resources,
       meetings: meetings,
       users: usersRes.data || [],
       registrations: registrationsList,
+      studentRegistrations: studentRegistrationsList,
     });
   } catch (err) {
     console.error('[GET /api/admin/data]', err.message);

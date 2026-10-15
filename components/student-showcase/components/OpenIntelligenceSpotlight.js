@@ -10,6 +10,9 @@ import {
   TrendingUp,
   CheckCircle2,
   ShieldCheck,
+  ArrowRight,
+  Briefcase,
+  Sparkles,
 } from 'lucide-react';
 
 export const OpenIntelligenceSpotlight = ({
@@ -20,11 +23,11 @@ export const OpenIntelligenceSpotlight = ({
   return (
     <section
       id="open-intelligence"
-      className="py-24 relative overflow-hidden bg-white"
+      className="pt-10 pb-10 sm:pt-12 sm:pb-12 relative overflow-hidden bg-white"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
+        <div className="text-center max-w-3xl mx-auto space-y-3.5 mb-10 sm:mb-12">
 
           <h2
             className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight"
@@ -99,13 +102,13 @@ export const OpenIntelligenceSpotlight = ({
           {/* Right: What You Get Tabs & Details */}
           <div className="lg:col-span-5 space-y-6">
             {/* Interactive Tab Selector */}
-            <div className="flex p-1 rounded-xl bg-slate-100 border border-slate-200">
+            <div className="flex p-1.5 rounded-2xl bg-slate-100/90 border border-slate-200/90 gap-1.5">
               <button
                 onClick={() => setActiveTab('publishing')}
-                className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                   activeTab === 'publishing'
-                    ? 'text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'text-white shadow-md shadow-[#1f6fb2]/25'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
                 }`}
                 style={
                   activeTab === 'publishing'
@@ -113,14 +116,15 @@ export const OpenIntelligenceSpotlight = ({
                     : {}
                 }
               >
-                1. Publication
+                <Code2 className="w-3.5 h-3.5 shrink-0" />
+                <span>1. Publication</span>
               </button>
               <button
                 onClick={() => setActiveTab('reach')}
-                className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                   activeTab === 'reach'
-                    ? 'text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'text-white shadow-md shadow-[#1f6fb2]/25'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
                 }`}
                 style={
                   activeTab === 'reach'
@@ -128,14 +132,15 @@ export const OpenIntelligenceSpotlight = ({
                     : {}
                 }
               >
-                2. Global Reach
+                <Globe className="w-3.5 h-3.5 shrink-0" />
+                <span>2. Global Reach</span>
               </button>
               <button
                 onClick={() => setActiveTab('career')}
-                className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                   activeTab === 'career'
-                    ? 'text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'text-white shadow-md shadow-[#1f6fb2]/25'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
                 }`}
                 style={
                   activeTab === 'career'
@@ -143,121 +148,174 @@ export const OpenIntelligenceSpotlight = ({
                     : {}
                 }
               >
-                3. Career & VC
+                <Briefcase className="w-3.5 h-3.5 shrink-0" />
+                <span>3. Career & VC</span>
               </button>
             </div>
 
-            {/* Tab 1 Content */}
-            {activeTab === 'publishing' && (
-              <div className="space-y-4 p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
-                <h3
-                  className="text-lg font-bold text-slate-900 flex items-center gap-2"
-                  style={{ fontFamily: 'var(--font-plus-jakarta)' }}
-                >
-                  <Code2 className="w-5 h-5 text-[#1f6fb2]" />
-                  <span>Dedicated Showcase on PiBi Open Intelligence</span>
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Every winning project gets an interactive feature article and dedicated profile page
-                  on PiBi Open Intelligence. We showcase your problem statement, system architecture,
-                  source code, and live demo.
-                </p>
-                <div className="space-y-2 pt-2">
-                  <div className="flex items-start gap-2 text-xs text-slate-700">
-                    <CheckCircle2 className="w-4 h-4 text-[#2ec4b6] shrink-0 mt-0.5" />
-                    <span>Permanent URL: www.pibiopenintelligence.com/showcase/your-project</span>
+            {/* Unified Showcase Card */}
+            <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+              {/* Tab 1 Content */}
+              {activeTab === 'publishing' && (
+                <div className="p-6 sm:p-7 space-y-4">
+                  <div>
+                    <h3
+                      className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-tight"
+                      style={{ fontFamily: 'var(--font-plus-jakarta)' }}
+                    >
+                      Dedicated Feature on PiBi Open Intelligence
+                    </h3>
+                    <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                      Every winning project gets an interactive feature article and dedicated profile page
+                      on PiBi Open Intelligence. We showcase your problem statement, system architecture,
+                      source code, and live demo.
+                    </p>
                   </div>
-                  <div className="flex items-start gap-2 text-xs text-slate-700">
-                    <CheckCircle2 className="w-4 h-4 text-[#2ec4b6] shrink-0 mt-0.5" />
-                    <span>Video demo and interactive sandbox embed</span>
-                  </div>
-                  <div className="flex items-start gap-2 text-xs text-slate-700">
-                    <CheckCircle2 className="w-4 h-4 text-[#2ec4b6] shrink-0 mt-0.5" />
-                    <span>Verified Author Badge on student profiles</span>
+
+                  {/* Curated Deliverables */}
+                  <div className="space-y-2 pt-1">
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
+                      <div className="w-5 h-5 rounded-full bg-blue-500/10 text-[#1f6fb2] flex items-center justify-center shrink-0 mt-0.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-xs sm:text-[13px] text-slate-700 font-medium leading-snug">
+                        Permanent URL:{' '}
+                        <code className="font-mono text-[11px] bg-slate-200/70 text-slate-800 px-1.5 py-0.5 rounded">
+                          /showcase/your-project
+                        </code>
+                      </span>
+                    </div>
+
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
+                      <div className="w-5 h-5 rounded-full bg-blue-500/10 text-[#1f6fb2] flex items-center justify-center shrink-0 mt-0.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-xs sm:text-[13px] text-slate-700 font-medium leading-snug">
+                        Video demo walkthrough and interactive sandbox embed
+                      </span>
+                    </div>
+
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
+                      <div className="w-5 h-5 rounded-full bg-blue-500/10 text-[#1f6fb2] flex items-center justify-center shrink-0 mt-0.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-xs sm:text-[13px] text-slate-700 font-medium leading-snug">
+                        Verified Author Badge permanently assigned to your profile
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Tab 2 Content */}
-            {activeTab === 'reach' && (
-              <div className="space-y-4 p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
-                <h3
-                  className="text-lg font-bold text-slate-900 flex items-center gap-2"
-                  style={{ fontFamily: 'var(--font-plus-jakarta)' }}
-                >
-                  <TrendingUp className="w-5 h-5 text-[#1f6fb2]" />
-                  <span>150,000+ Worldwide Readership</span>
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  PiBi Open Intelligence is visited by engineering managers, AI researchers, and
-                  open-source contributors worldwide. Your project will be read and applauded
-                  internationally.
-                </p>
-                <div className="space-y-2 pt-2">
-                  <div className="flex items-start gap-2 text-xs text-slate-700">
-                    <CheckCircle2 className="w-4 h-4 text-[#2ec4b6] shrink-0 mt-0.5" />
-                    <span>Featured in PiBi Open Intelligence Weekly Tech Dispatch</span>
+              {/* Tab 2 Content */}
+              {activeTab === 'reach' && (
+                <div className="p-6 sm:p-7 space-y-4">
+                  <div>
+                    <h3
+                      className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-tight"
+                      style={{ fontFamily: 'var(--font-plus-jakarta)' }}
+                    >
+                      150,000+ Worldwide Readership
+                    </h3>
+                    <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                      PiBi Open Intelligence is visited by engineering managers, AI researchers, and
+                      open-source contributors worldwide. Your project will be read and applauded
+                      internationally.
+                    </p>
                   </div>
-                  <div className="flex items-start gap-2 text-xs text-slate-700">
-                    <CheckCircle2 className="w-4 h-4 text-[#2ec4b6] shrink-0 mt-0.5" />
-                    <span>Social syndication across LinkedIn, X, and Dev communities</span>
-                  </div>
-                  <div className="flex items-start gap-2 text-xs text-slate-700">
-                    <CheckCircle2 className="w-4 h-4 text-[#2ec4b6] shrink-0 mt-0.5" />
-                    <span>Direct GitHub stars and open-source contributor traffic</span>
+
+                  {/* Curated Deliverables */}
+                  <div className="space-y-2 pt-1">
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
+                      <div className="w-5 h-5 rounded-full bg-teal-500/10 text-[#0e8579] flex items-center justify-center shrink-0 mt-0.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-xs sm:text-[13px] text-slate-700 font-medium leading-snug">
+                        Featured in PiBi Open Intelligence Weekly Tech Dispatch
+                      </span>
+                    </div>
+
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
+                      <div className="w-5 h-5 rounded-full bg-teal-500/10 text-[#0e8579] flex items-center justify-center shrink-0 mt-0.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-xs sm:text-[13px] text-slate-700 font-medium leading-snug">
+                        Social syndication across LinkedIn, X, and Dev communities
+                      </span>
+                    </div>
+
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
+                      <div className="w-5 h-5 rounded-full bg-teal-500/10 text-[#0e8579] flex items-center justify-center shrink-0 mt-0.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-xs sm:text-[13px] text-slate-700 font-medium leading-snug">
+                        Direct GitHub repository stars and open-source contributor traffic
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Tab 3 Content */}
-            {activeTab === 'career' && (
-              <div className="space-y-4 p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
-                <h3
-                  className="text-lg font-bold text-slate-900 flex items-center gap-2"
-                  style={{ fontFamily: 'var(--font-plus-jakarta)' }}
-                >
-                  <Users className="w-5 h-5 text-[#1f6fb2]" />
-                  <span>VC & High-Tier Recruitment Access</span>
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Founders and venture scouts actively look for exceptional student engineers on
-                  PiBi Open Intelligence. Past featured students have secured pre-seed funding and
-                  interviews at top tier companies.
-                </p>
-                <div className="space-y-2 pt-2">
-                  <div className="flex items-start gap-2 text-xs text-slate-700">
-                    <CheckCircle2 className="w-4 h-4 text-[#2ec4b6] shrink-0 mt-0.5" />
-                    <span>Direct intro to angels & seed accelerators</span>
+              {/* Tab 3 Content */}
+              {activeTab === 'career' && (
+                <div className="p-6 sm:p-7 space-y-4">
+                  <div>
+                    <h3
+                      className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-tight"
+                      style={{ fontFamily: 'var(--font-plus-jakarta)' }}
+                    >
+                      VC & High-Tier Recruitment Access
+                    </h3>
+                    <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                      Founders and venture scouts actively look for exceptional student engineers on
+                      PiBi Open Intelligence. Past featured students have secured pre-seed funding and
+                      interviews at top tier companies.
+                    </p>
                   </div>
-                  <div className="flex items-start gap-2 text-xs text-slate-700">
-                    <CheckCircle2 className="w-4 h-4 text-[#2ec4b6] shrink-0 mt-0.5" />
-                    <span>Fast-tracked engineering internship interviews</span>
-                  </div>
-                  <div className="flex items-start gap-2 text-xs text-slate-700">
-                    <CheckCircle2 className="w-4 h-4 text-[#2ec4b6] shrink-0 mt-0.5" />
-                    <span>Letters of Recommendation from PiBi Open Intelligence leadership</span>
+
+                  {/* Curated Deliverables */}
+                  <div className="space-y-2 pt-1">
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
+                      <div className="w-5 h-5 rounded-full bg-indigo-500/10 text-indigo-700 flex items-center justify-center shrink-0 mt-0.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-xs sm:text-[13px] text-slate-700 font-medium leading-snug">
+                        Direct introductions to active angel investors & seed accelerators
+                      </span>
+                    </div>
+
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
+                      <div className="w-5 h-5 rounded-full bg-indigo-500/10 text-indigo-700 flex items-center justify-center shrink-0 mt-0.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-xs sm:text-[13px] text-slate-700 font-medium leading-snug">
+                        Fast-tracked engineering internship interviews with partner startups
+                      </span>
+                    </div>
+
+                    <div className="p-2.5 sm:p-3 rounded-xl bg-slate-50/80 border border-slate-100 flex items-start gap-2.5">
+                      <div className="w-5 h-5 rounded-full bg-indigo-500/10 text-indigo-700 flex items-center justify-center shrink-0 mt-0.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-xs sm:text-[13px] text-slate-700 font-medium leading-snug">
+                        Executive Letters of Recommendation from PiBi leadership
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Action Card */}
-            <div className="p-4.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-4">
-              <div>
-                <span className="text-xs text-slate-500 block">Ready to get featured?</span>
-                <span className="text-sm font-bold text-slate-900 font-stylized">
-                  Join the 2026 Showcase
-                </span>
+              {/* Integrated Centered Bottom Action Bar inside the card */}
+              <div className="p-4 sm:py-5 sm:px-6 bg-slate-50/80 border-t border-slate-100 flex items-center justify-center">
+                <button
+                  onClick={onOpenSubmitModal}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-bold text-xs sm:text-sm text-white shadow-md shadow-[#1f6fb2]/15 transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg hover:shadow-[#1f6fb2]/25"
+                  style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
+                >
+                  <span>Submit Project</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
               </div>
-              <button
-                onClick={onOpenSubmitModal}
-                className="px-4 py-2 rounded-xl font-semibold text-xs text-white shadow-sm transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
-                style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
-              >
-                Submit Project
-              </button>
             </div>
           </div>
         </div>

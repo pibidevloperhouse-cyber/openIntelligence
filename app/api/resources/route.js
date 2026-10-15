@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export async function GET(request) {
@@ -11,6 +13,27 @@ export async function GET(request) {
   const skip     = (page - 1) * limit;
 
   try {
+    // Check if requesting user is logged in and banned
+    try {
+      const cookieStore = await cookies();
+      const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        {
+          cookies: {
+            getAll: () => cookieStore.getAll(),
+            setAll: (toSet) => toSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
+          },
+        }
+      );
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabaseAdmin.from('users').select('bio').eq('id', user.id).single();
+        if (profile?.bio === '__BANNED__') {
+          return NextResponse.json({ resources: [], total: 0, banned: true, error: 'Your account has been banned. You cannot view community contributions.' }, { status: 403 });
+        }
+      }
+    } catch {}
     const selectStr = category !== 'all' 
       ? '*, resource_categories!inner(category:categories!inner(*)), contributor:users!inner(username, avatar_url, bio), resource_tags(tag:tags(*))'
       : '*, resource_categories(category:categories(*)), contributor:users!inner(username, avatar_url, bio), resource_tags(tag:tags(*))';

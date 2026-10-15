@@ -28,6 +28,7 @@ export const SubmitProjectModal = ({
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
   // Lock body scroll and handle Escape key on mobile & desktop
@@ -47,58 +48,104 @@ export const SubmitProjectModal = ({
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.title || !formData.leadStudent || !formData.institution || !formData.description || !formData.demoUrl) {
       setError('Please fill in all required fields including Live Demo / Video Pitch Link.');
       return;
     }
 
-    // Trigger celebration confetti
-    confetti({
-      particleCount: 100,
-      spread: 80,
-      origin: { y: 0.5 },
-      colors: ['#1f6fb2', '#2ec4b6', '#0e8579', '#38bdf8'],
-    });
+    setError('');
+    setIsSubmitting(true);
 
-    const parsedMembers = formData.teamMembers
-      ? formData.teamMembers.split(',').map((s) => s.trim())
-      : [formData.leadStudent];
+    try {
+      const parsedMembers = formData.teamMembers
+        ? formData.teamMembers.split(',').map((s) => s.trim()).filter(Boolean)
+        : [formData.leadStudent.trim()];
 
-    const parsedTags = formData.tags
-      ? formData.tags.split(',').map((s) => s.trim())
-      : [formData.category, 'Prototype'];
+      const parsedTags = formData.tags
+        ? formData.tags.split(',').map((s) => s.trim()).filter(Boolean)
+        : [formData.category, 'Prototype'];
 
-    const newProject = {
-      id: `proj-${Date.now()}`,
-      title: formData.title,
-      tagline: formData.tagline || 'Student breakthrough innovation entered for 2026 Awards',
-      category: formData.category,
-      leadStudent: formData.leadStudent,
-      teamMembers: parsedMembers,
-      institution: formData.institution,
-      description: formData.description,
-      image: '/images/hero_banner_real.jpg',
-      tags: parsedTags,
-      upvotes: 1,
-      openIntelligenceFeatured: false,
-      githubUrl: formData.githubUrl || undefined,
-      demoUrl: formData.demoUrl || undefined,
-      architectureHighlights: [
-        'Direct submission into the 2026 National Innovation Call',
-        'Eligible for Top 3 Cash Rewards & PiBi Open Intelligence Feature',
-        'Peer-review and grand jury evaluation queued',
-      ],
-      impactMetric: 'Newly submitted for evaluation in National Student Innovation 2026',
-    };
+      const res = await fetch('/api/student-projects', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          tagline: formData.tagline,
+          category: formData.category,
+          leadStudent: formData.leadStudent,
+          teamMembers: parsedMembers,
+          institution: formData.institution,
+          description: formData.description,
+          githubUrl: formData.githubUrl,
+          demoUrl: formData.demoUrl,
+          tags: parsedTags,
+        }),
+      });
 
-    setSubmitted(true);
-    setTimeout(() => {
-      onSubmitSuccess(newProject);
-      setSubmitted(false);
-      onClose();
-    }, 2000);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to submit project');
+      }
+
+      // Trigger celebration confetti
+      confetti({
+        particleCount: 100,
+        spread: 80,
+        origin: { y: 0.5 },
+        colors: ['#1f6fb2', '#2ec4b6', '#0e8579', '#38bdf8'],
+      });
+
+      const newProject = {
+        id: data.project?.id || `proj-${Date.now()}`,
+        title: formData.title,
+        tagline: formData.tagline || 'Student breakthrough innovation entered for 2026 Awards',
+        category: formData.category,
+        leadStudent: formData.leadStudent,
+        teamMembers: parsedMembers,
+        institution: formData.institution,
+        description: formData.description,
+        image: '/images/hero_banner_real.jpg',
+        tags: parsedTags,
+        upvotes: 1,
+        openIntelligenceFeatured: false,
+        githubUrl: formData.githubUrl || undefined,
+        demoUrl: formData.demoUrl || undefined,
+        architectureHighlights: [
+          'Direct submission into the 2026 National Innovation Call',
+          'Eligible for Top 3 Cash Rewards & PiBi Open Intelligence Feature',
+          'Peer-review and grand jury evaluation queued',
+        ],
+        impactMetric: 'Newly submitted for evaluation in National Student Innovation 2026',
+      };
+
+      setSubmitted(true);
+      setTimeout(() => {
+        if (onSubmitSuccess) onSubmitSuccess(newProject);
+        setSubmitted(false);
+        setFormData({
+          title: '',
+          tagline: '',
+          category: 'AI & ML',
+          leadStudent: '',
+          teamMembers: '',
+          institution: '',
+          description: '',
+          tags: '',
+          githubUrl: '',
+          demoUrl: '',
+        });
+        onClose();
+      }, 2000);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Failed to submit project. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -337,11 +384,12 @@ export const SubmitProjectModal = ({
               <div className="pt-3 sm:pt-4 border-t border-slate-100">
                 <button
                   type="submit"
-                  className="w-full py-3.5 px-4 rounded-xl font-bold text-sm text-white shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99]"
+                  disabled={isSubmitting}
+                  className="w-full py-3.5 px-4 rounded-xl font-bold text-sm text-white shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
                   style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
                 >
-                  <Sparkles className="w-4 h-4 text-amber-200" />
-                  <span>Submit Project For Evaluation</span>
+                  <Sparkles className={`w-4 h-4 text-amber-200 ${isSubmitting ? 'animate-spin' : ''}`} />
+                  <span>{isSubmitting ? 'Submitting Project...' : 'Submit Project For Evaluation'}</span>
                 </button>
               </div>
             </form>

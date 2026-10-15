@@ -265,6 +265,64 @@ export default function AdminPage() {
   const [registrations, setRegistrations] = useState([]);
   const [expandedRegs, setExpandedRegs] = useState({});
 
+  // Student Registrations (2026 Showcase Submissions)
+  const [studentRegistrations, setStudentRegistrations] = useState([]);
+  const [studentSearch, setStudentSearch] = useState('');
+  const [studentStatusFilter, setStudentStatusFilter] = useState('ALL');
+  const [studentCategoryFilter, setStudentCategoryFilter] = useState('ALL');
+  const [viewingStudentProject, setViewingStudentProject] = useState(null);
+  const [studentProjectToDelete, setStudentProjectToDelete] = useState(null);
+  const [studentActionLoading, setStudentActionLoading] = useState('');
+
+  const handleUpdateStudentStatus = async (id, newStatus) => {
+    setStudentActionLoading(id);
+    try {
+      const res = await fetch('/api/admin/student-projects', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status: newStatus }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update status');
+
+      setStudentRegistrations(prev =>
+        prev.map(p => (p.id === id ? { ...p, status: newStatus } : p))
+      );
+      if (viewingStudentProject?.id === id) {
+        setViewingStudentProject(prev => ({ ...prev, status: newStatus }));
+      }
+      showToast(`Status updated to ${newStatus}`, 'success');
+    } catch (err) {
+      showToast(err.message, 'error');
+    } finally {
+      setStudentActionLoading('');
+    }
+  };
+
+  const handleDeleteStudentProject = async (id) => {
+    setStudentActionLoading(id);
+    try {
+      const res = await fetch('/api/admin/student-projects', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete submission');
+
+      setStudentRegistrations(prev => prev.filter(p => p.id !== id));
+      if (viewingStudentProject?.id === id) {
+        setViewingStudentProject(null);
+      }
+      setStudentProjectToDelete(null);
+      showToast('Student submission deleted successfully', 'success');
+    } catch (err) {
+      showToast(err.message, 'error');
+    } finally {
+      setStudentActionLoading('');
+    }
+  };
+
   // Create/Edit event form
   const [showEventForm, setShowEventForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
@@ -338,6 +396,7 @@ export default function AdminPage() {
     setMeetings(data.meetings || []);
     setUsers(data.users || []);
     setRegistrations(data.registrations || []);
+    setStudentRegistrations(data.studentRegistrations || []);
   }, []);
 
   useEffect(() => {
@@ -370,13 +429,24 @@ export default function AdminPage() {
 
   const handleUserAction = async (userId, action) => {
     setActionLoading(userId + action);
-    await fetch('/api/admin/users/action', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, action }),
-    });
-    await loadData();
-    setActionLoading('');
+    try {
+      const res = await fetch('/api/admin/users/action', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, action }),
+      });
+      if (res.ok) {
+        showToast(action === 'ban' ? 'User banned successfully! Contributions locked.' : 'User unbanned successfully! Access restored.');
+      } else {
+        const d = await res.json();
+        showToast(d?.error || 'Action failed', 'error');
+      }
+      await loadData();
+    } catch (err) {
+      showToast(err.message, 'error');
+    } finally {
+      setActionLoading('');
+    }
   };
 
   // ── Event Handlers ──────────────────────────────────────────────────────────
@@ -618,6 +688,7 @@ export default function AdminPage() {
     { id: 'users', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4-4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>, label: 'Users', count: users.length },
     { id: 'contributors', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>, label: 'Contributors', count: ghData?.summary?.contributors || 0 },
     { id: 'registrations', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>, label: 'Registrations', count: registrations.length },
+    { id: 'student_registrations', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>, label: 'Student Register', count: studentRegistrations.length },
     { id: 'settings', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>, label: 'Settings' },
   ];
 
@@ -804,7 +875,7 @@ export default function AdminPage() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.6rem', fontWeight: 800, margin: 0, background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textTransform: 'capitalize' }}>
-                {activeTab === 'pending' ? 'Pending Review' : activeTab}
+                {activeTab === 'pending' ? 'Pending Review' : activeTab === 'student_registrations' ? 'Student Register' : activeTab}
               </h1>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: '4px 0 0' }}>
                 Open Intelligence Hub · Madurai AI Community
@@ -835,6 +906,7 @@ export default function AdminPage() {
                   { label: 'Contributors', value: stats.contributors || 0, color: '#8b5cf6', icon: <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> },
                   { label: 'Upcoming Events', value: upcoming.length, color: '#ec4899', icon: <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> },
                   { label: 'Past Sessions', value: pastEvents.length, color: '#64748b', icon: <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg> },
+                  { label: 'Student Register', value: studentRegistrations.length, color: '#0ea5e9', icon: <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg> },
                 ].map(({ label, value, color, icon }) => (
                   <div key={label} style={{ background: '#ffffff', border: '1px solid var(--border)', padding: '1.25rem', borderRadius: '14px', display: 'flex', flexDirection: 'column', gap: '1rem', transition: 'transform 0.2s' }}>
                     <div style={{ fontSize: '1.1rem', opacity: 0.9, color }}>{icon}</div>
@@ -1786,7 +1858,7 @@ export default function AdminPage() {
                     }, {})
                   ).map(([meetId, group]) => (
                     <div key={meetId} style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
-                      <div 
+                      <div
                         onClick={() => setExpandedRegs(prev => ({ ...prev, [meetId]: !prev[meetId] }))}
                         style={{ padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', background: expandedRegs[meetId] ? 'var(--bg-secondary)' : '#ffffff', transition: 'background 0.2s' }}
                       >
@@ -1800,7 +1872,7 @@ export default function AdminPage() {
                         </div>
                         <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ transform: expandedRegs[meetId] ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease', color: 'var(--text-muted)' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
                       </div>
-                      
+
                       {expandedRegs[meetId] && (
                         <div style={{ borderTop: '1px solid var(--border)', overflowX: 'auto' }}>
                           <table style={{ width: '100%', minWidth: '600px', borderCollapse: 'collapse' }}>
@@ -1815,7 +1887,7 @@ export default function AdminPage() {
                               {group.regs.map((reg, idx) => (
                                 <tr key={reg.id} style={{ borderBottom: idx === group.regs.length - 1 ? 'none' : '1px solid var(--border)', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-secondary)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                                   <td style={{ padding: '1rem 1.5rem', fontSize: '0.85rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-                                    {new Date(reg.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}<br/>
+                                    {new Date(reg.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}<br />
                                     <span style={{ fontSize: '0.75rem' }}>{new Date(reg.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
                                   </td>
                                   <td style={{ padding: '1rem 1.5rem' }}>
@@ -1845,6 +1917,455 @@ export default function AdminPage() {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* ── STUDENT REGISTRATIONS ────────────────────────────────────── */}
+          {activeTab === 'student_registrations' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+                <div>
+                  <h2 style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)', margin: '0 0 0.35rem', fontSize: '1.4rem', fontWeight: 700 }}>
+                    Student Register
+                  </h2>
+                  <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                    Student projects & registrations submitted for the National Innovation Showcase 2026.
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <a
+                    href="/students"
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '6px',
+                      padding: '0.5rem 0.9rem', borderRadius: '8px',
+                      background: 'rgba(31, 111, 178, 0.08)', color: '#1f6fb2',
+                      border: '1px solid rgba(31, 111, 178, 0.2)', fontSize: '0.8rem',
+                      fontWeight: 600, textDecoration: 'none', transition: 'all 0.2s',
+                    }}
+                  >
+                    <span>View Student Portal</span>
+                    <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                  </a>
+                  <button
+                    onClick={loadData}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '6px',
+                      padding: '0.5rem 0.9rem', borderRadius: '8px',
+                      background: '#ffffff', color: 'var(--text-secondary)',
+                      border: '1px solid var(--border)', fontSize: '0.8rem',
+                      fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
+                    }}
+                  >
+                    <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+                    Refresh
+                  </button>
+                </div>
+              </div>
+
+              {/* KPI Stat Cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+                <div style={{ background: '#ffffff', border: '1px solid var(--border)', borderRadius: '12px', padding: '1rem', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Total Registered</div>
+                  <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '4px', fontFamily: 'var(--font-display)' }}>
+                    {studentRegistrations.length}
+                  </div>
+                </div>
+                <div style={{ background: '#ffffff', border: '1px solid rgba(245,158,11,0.25)', borderRadius: '12px', padding: '1rem', boxShadow: '0 2px 4px rgba(245,158,11,0.05)' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#d97706', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Pending Review</div>
+                  <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f59e0b', marginTop: '4px', fontFamily: 'var(--font-display)' }}>
+                    {studentRegistrations.filter(s => (s.status || 'PENDING') === 'PENDING').length}
+                  </div>
+                </div>
+                <div style={{ background: '#ffffff', border: '1px solid rgba(16,185,129,0.25)', borderRadius: '12px', padding: '1rem', boxShadow: '0 2px 4px rgba(16,185,129,0.05)' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Approved</div>
+                  <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#10b981', marginTop: '4px', fontFamily: 'var(--font-display)' }}>
+                    {studentRegistrations.filter(s => s.status === 'APPROVED').length}
+                  </div>
+                </div>
+                <div style={{ background: '#ffffff', border: '1px solid rgba(239,68,68,0.25)', borderRadius: '12px', padding: '1rem', boxShadow: '0 2px 4px rgba(239,68,68,0.05)' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Rejected</div>
+                  <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#ef4444', marginTop: '4px', fontFamily: 'var(--font-display)' }}>
+                    {studentRegistrations.filter(s => s.status === 'REJECTED').length}
+                  </div>
+                </div>
+              </div>
+
+              {/* Filters and Search Bar */}
+              <div style={{ background: '#ffffff', border: '1px solid var(--border)', borderRadius: '14px', padding: '1rem 1.25rem', marginBottom: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                {/* Search */}
+                <div style={{ position: 'relative', flex: '1 1 260px', minWidth: '220px' }}>
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input
+                    type="text"
+                    placeholder="Search by student, college, title, tech..."
+                    value={studentSearch}
+                    onChange={e => setStudentSearch(e.target.value)}
+                    style={{
+                      width: '100%', padding: '0.55rem 1rem 0.55rem 2.25rem',
+                      borderRadius: '8px', border: '1px solid var(--border)',
+                      fontSize: '0.85rem', color: 'var(--text-primary)',
+                      background: 'var(--bg-secondary, #f8fafc)', outline: 'none'
+                    }}
+                  />
+                  {studentSearch && (
+                    <button
+                      onClick={() => setStudentSearch('')}
+                      style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8rem' }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                {/* Status Tabs */}
+                <div style={{ display: 'flex', gap: '6px', background: 'var(--bg-secondary, #f8fafc)', padding: '4px', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                  {[
+                    { key: 'ALL', label: 'All' },
+                    { key: 'PENDING', label: 'Pending' },
+                    { key: 'APPROVED', label: 'Approved' },
+                    { key: 'REJECTED', label: 'Rejected' },
+                  ].map(tab => (
+                    <button
+                      key={tab.key}
+                      onClick={() => setStudentStatusFilter(tab.key)}
+                      style={{
+                        padding: '0.4rem 0.8rem', borderRadius: '7px',
+                        border: 'none', fontSize: '0.78rem', fontWeight: 600,
+                        cursor: 'pointer', transition: 'all 0.15s',
+                        background: studentStatusFilter === tab.key ? 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' : 'transparent',
+                        color: studentStatusFilter === tab.key ? '#ffffff' : 'var(--text-secondary)',
+                        boxShadow: studentStatusFilter === tab.key ? '0 2px 6px rgba(31, 111, 178, 0.2)' : 'none',
+                      }}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Category Dropdown */}
+                <div>
+                  <select
+                    value={studentCategoryFilter}
+                    onChange={e => setStudentCategoryFilter(e.target.value)}
+                    style={{
+                      padding: '0.55rem 0.9rem', borderRadius: '8px',
+                      border: '1px solid var(--border)', fontSize: '0.82rem',
+                      color: 'var(--text-primary)', background: '#ffffff',
+                      cursor: 'pointer', outline: 'none'
+                    }}
+                  >
+                    <option value="ALL">All Categories</option>
+                    <option value="AI & ML">AI & ML</option>
+                    <option value="Robotics & GreenTech">Robotics & GreenTech</option>
+                    <option value="Cybersecurity & Web3">Cybersecurity & Web3</option>
+                    <option value="IoT & Hardware">IoT & Hardware</option>
+                    <option value="Healthcare & Assistive">Healthcare & Assistive</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Submissions List */}
+              {(() => {
+                const filtered = studentRegistrations.filter(p => {
+                  if (studentStatusFilter !== 'ALL' && (p.status || 'PENDING') !== studentStatusFilter) {
+                    return false;
+                  }
+                  if (studentCategoryFilter !== 'ALL' && p.category !== studentCategoryFilter) {
+                    return false;
+                  }
+                  if (studentSearch.trim()) {
+                    const q = studentSearch.toLowerCase();
+                    const matchLead = p.lead_student?.toLowerCase().includes(q);
+                    const matchInst = p.institution?.toLowerCase().includes(q);
+                    const matchTitle = p.title?.toLowerCase().includes(q);
+                    const matchTagline = p.tagline?.toLowerCase().includes(q);
+                    const matchDesc = p.description?.toLowerCase().includes(q);
+                    const matchTags = Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase().includes(q));
+                    const matchTeam = Array.isArray(p.team_members) && p.team_members.some(m => m.toLowerCase().includes(q));
+                    return matchLead || matchInst || matchTitle || matchTagline || matchDesc || matchTags || matchTeam;
+                  }
+                  return true;
+                });
+
+                if (filtered.length === 0) {
+                  return (
+                    <div style={{ padding: '3.5rem 1.5rem', textAlign: 'center', background: '#ffffff', borderRadius: '16px', border: '1px dashed var(--border)' }}>
+                      <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(31, 111, 178, 0.1)', color: '#1f6fb2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                        <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                      </div>
+                      <h3 style={{ margin: '0 0 0.5rem', color: 'var(--text-primary)', fontSize: '1.15rem' }}>
+                        {studentRegistrations.length === 0 ? 'No Student Registrations Yet' : 'No Matching Registrations'}
+                      </h3>
+                      <p style={{ margin: '0 0 1.25rem', color: 'var(--text-muted)', fontSize: '0.88rem', maxWidth: '420px', marginLeft: 'auto', marginRight: 'auto' }}>
+                        {studentRegistrations.length === 0
+                          ? 'When students submit their project entry from the Student Showcase page modal, their submissions will be listed here.'
+                          : 'Try clearing your search query or switching filters to see other registrations.'}
+                      </p>
+                      {studentRegistrations.length === 0 && (
+                        <a
+                          href="/students"
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '8px',
+                            padding: '0.6rem 1.25rem', borderRadius: '8px',
+                            background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
+                            color: '#ffffff', fontWeight: 600, fontSize: '0.85rem',
+                            textDecoration: 'none', boxShadow: '0 4px 10px rgba(31, 111, 178, 0.2)'
+                          }}
+                        >
+                          Go to Student Portal to Test Submit ↗
+                        </a>
+                      )}
+                    </div>
+                  );
+                }
+
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {filtered.map(proj => {
+                      const isPending = (proj.status || 'PENDING') === 'PENDING';
+                      const isApproved = proj.status === 'APPROVED';
+                      const isRejected = proj.status === 'REJECTED';
+
+                      return (
+                        <div
+                          key={proj.id}
+                          style={{
+                            background: '#ffffff',
+                            borderRadius: '16px',
+                            border: '1px solid var(--border)',
+                            padding: '1.5rem',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                            transition: 'transform 0.2s, box-shadow 0.2s',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '1rem',
+                          }}
+                        >
+                          {/* Card Header Row */}
+                          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                              <span style={{
+                                background: 'linear-gradient(135deg, rgba(31, 111, 178, 0.1), rgba(46, 196, 182, 0.1))',
+                                color: '#1f6fb2', border: '1px solid rgba(31, 111, 178, 0.2)',
+                                padding: '3px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.2px'
+                              }}>
+                                {proj.category || 'AI & ML'}
+                              </span>
+
+                              {/* Status Badge */}
+                              {isPending && (
+                                <span style={{
+                                  background: 'rgba(245, 158, 11, 0.12)', color: '#d97706',
+                                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                                  padding: '3px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700,
+                                  display: 'inline-flex', alignItems: 'center', gap: '5px'
+                                }}>
+                                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#f59e0b' }}></span>
+                                  Pending Review
+                                </span>
+                              )}
+                              {isApproved && (
+                                <span style={{
+                                  background: 'rgba(16, 185, 129, 0.12)', color: '#059669',
+                                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                                  padding: '3px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700,
+                                  display: 'inline-flex', alignItems: 'center', gap: '5px'
+                                }}>
+                                  <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                  Approved
+                                </span>
+                              )}
+                              {isRejected && (
+                                <span style={{
+                                  background: 'rgba(239, 68, 68, 0.12)', color: '#dc2626',
+                                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                                  padding: '3px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700,
+                                  display: 'inline-flex', alignItems: 'center', gap: '5px'
+                                }}>
+                                  <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                  Rejected
+                                </span>
+                              )}
+                            </div>
+
+                            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                              <span>
+                                {proj.created_at ? new Date(proj.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Recent'}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Title & Tagline */}
+                          <div>
+                            <h3 style={{ margin: '0 0 4px', fontSize: '1.25rem', color: 'var(--text-primary)', fontWeight: 800 }}>
+                              {proj.title}
+                            </h3>
+                            {proj.tagline && (
+                              <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem', fontStyle: 'italic' }}>
+                                "{proj.tagline}"
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Student Details Grid */}
+                          <div style={{
+                            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                            gap: '0.75rem', padding: '0.9rem 1.1rem', background: 'var(--bg-secondary, #f8fafc)',
+                            borderRadius: '10px', border: '1px solid var(--border)'
+                          }}>
+                            <div>
+                              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Lead Student</div>
+                              <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span>👤</span> {proj.lead_student}
+                              </div>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>College / University</div>
+                              <div style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span>🏛️</span> {proj.institution}
+                              </div>
+                            </div>
+                            {Array.isArray(proj.team_members) && proj.team_members.length > 0 && (
+                              <div style={{ gridColumn: '1 / -1' }}>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em', marginBottom: '4px' }}>Team Members</div>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                  {proj.team_members.map((member, i) => (
+                                    <span key={i} style={{ fontSize: '0.78rem', background: '#ffffff', border: '1px solid var(--border)', padding: '2px 8px', borderRadius: '6px', color: 'var(--text-primary)' }}>
+                                      {member}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Description excerpt */}
+                          {proj.description && (
+                            <p style={{
+                              margin: 0, color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: 1.6,
+                              display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden'
+                            }}>
+                              {proj.description}
+                            </p>
+                          )}
+
+                          {/* Tech Stack Chips */}
+                          {Array.isArray(proj.tags) && proj.tags.length > 0 && (
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                              {proj.tags.map((tag, i) => (
+                                <span key={i} style={{ fontSize: '0.72rem', background: '#f1f5f9', color: '#475569', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>
+                                  #{tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Action Toolbar */}
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border)' }}>
+                            {/* External Links */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                              {proj.demo_url && (
+                                <a
+                                  href={proj.demo_url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  style={{
+                                    display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                    padding: '0.4rem 0.8rem', borderRadius: '7px',
+                                    background: 'rgba(31, 111, 178, 0.1)', color: '#1f6fb2',
+                                    border: '1px solid rgba(31, 111, 178, 0.25)', fontSize: '0.78rem',
+                                    fontWeight: 600, textDecoration: 'none'
+                                  }}
+                                >
+                                  <span>🌐 Live Demo</span>
+                                  <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                </a>
+                              )}
+                              {proj.github_url && (
+                                <a
+                                  href={proj.github_url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  style={{
+                                    display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                    padding: '0.4rem 0.8rem', borderRadius: '7px',
+                                    background: '#f8fafc', color: '#0f172a',
+                                    border: '1px solid var(--border)', fontSize: '0.78rem',
+                                    fontWeight: 600, textDecoration: 'none'
+                                  }}
+                                >
+                                  <span>💻 GitHub</span>
+                                  <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                </a>
+                              )}
+                              <Btn
+                                variant="outline"
+                                onClick={() => setViewingStudentProject(proj)}
+                                style={{ padding: '0.4rem 0.8rem', fontSize: '0.78rem' }}
+                              >
+                                View Details
+                              </Btn>
+                            </div>
+
+                            {/* Status Change Buttons */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: 'auto' }}>
+                              {!isApproved && (
+                                <Btn
+                                  variant="success"
+                                  disabled={studentActionLoading === proj.id}
+                                  onClick={() => handleUpdateStudentStatus(proj.id, 'APPROVED')}
+                                  style={{ padding: '0.4rem 0.85rem', fontSize: '0.78rem' }}
+                                >
+                                  Approve
+                                </Btn>
+                              )}
+                              {!isRejected && (
+                                <Btn
+                                  variant="danger"
+                                  disabled={studentActionLoading === proj.id}
+                                  onClick={() => handleUpdateStudentStatus(proj.id, 'REJECTED')}
+                                  style={{ padding: '0.4rem 0.85rem', fontSize: '0.78rem' }}
+                                >
+                                  Reject
+                                </Btn>
+                              )}
+                              {!isPending && (
+                                <Btn
+                                  variant="warning"
+                                  disabled={studentActionLoading === proj.id}
+                                  onClick={() => handleUpdateStudentStatus(proj.id, 'PENDING')}
+                                  style={{ padding: '0.4rem 0.85rem', fontSize: '0.78rem' }}
+                                >
+                                  Pending
+                                </Btn>
+                              )}
+                              <button
+                                onClick={() => setStudentProjectToDelete(proj)}
+                                title="Delete submission"
+                                style={{
+                                  background: 'none', border: '1px solid var(--border)',
+                                  borderRadius: '7px', color: 'var(--text-muted)',
+                                  padding: '0.4rem 0.6rem', cursor: 'pointer', display: 'flex', alignItems: 'center',
+                                  transition: 'color 0.2s, border-color 0.2s',
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.borderColor = '#ef4444'; }}
+                                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
+                              >
+                                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
           )}
 
@@ -1928,7 +2449,7 @@ export default function AdminPage() {
                     if (newPassword.length < 8) { setPwMessage({ type: 'error', text: 'Password must be at least 8 characters' }); return; }
                     if (newPassword !== confirmPassword) { setPwMessage({ type: 'error', text: 'Passwords do not match' }); return; }
                     setPwLoading(true); setPwMessage({ type: '', text: '' });
-                    
+
                     // Verify old password first
                     const { error: signInError } = await supabase.auth.signInWithPassword({
                       email: adminUser?.email,
@@ -1978,6 +2499,575 @@ export default function AdminPage() {
             <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
               <Btn variant="outline" onClick={() => setEventToDelete(null)} style={{ flex: 1, padding: '0.75rem', fontSize: '1rem' }}>Cancel</Btn>
               <Btn variant="danger" onClick={confirmDeleteEvent} style={{ flex: 1, padding: '0.75rem', fontSize: '1rem', background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>Yes, Delete</Btn>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── STUDENT PROJECT DETAIL MODAL ────────────────────────────────────── */}
+      {viewingStudentProject && (
+        <div
+          className="light-theme"
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(15, 23, 42, 0.72)', backdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 1000, padding: '1rem',
+          }}
+          onClick={() => setViewingStudentProject(null)}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '20px',
+              maxWidth: '720px',
+              width: '100%',
+              maxHeight: '90vh',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 25px 60px -15px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(15, 23, 42, 0.05)',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Modal Header (Fixed at top) */}
+            <div style={{
+              padding: '1.25rem 1.75rem',
+              borderBottom: '1px solid #e2e8f0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: '#ffffff',
+              flexShrink: 0
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem' }}>
+                  <span style={{
+                    fontSize: '0.72rem',
+                    background: '#eff6ff',
+                    color: '#1d4ed8',
+                    border: '1px solid #dbeafe',
+                    padding: '2px 9px',
+                    borderRadius: '12px',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.03em'
+                  }}>
+                    {viewingStudentProject.category || 'AI & ML'}
+                  </span>
+                  <span style={{
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    padding: '2px 9px',
+                    borderRadius: '12px',
+                    background: viewingStudentProject.status === 'APPROVED' ? '#dcfce7' : viewingStudentProject.status === 'REJECTED' ? '#fee2e2' : '#fef3c7',
+                    color: viewingStudentProject.status === 'APPROVED' ? '#15803d' : viewingStudentProject.status === 'REJECTED' ? '#b91c1c' : '#b45309',
+                    border: `1px solid ${viewingStudentProject.status === 'APPROVED' ? '#bbf7d0' : viewingStudentProject.status === 'REJECTED' ? '#fecaca' : '#fde68a'}`
+                  }}>
+                    ● {viewingStudentProject.status || 'PENDING'}
+                  </span>
+                </div>
+                <h2 style={{
+                  margin: 0,
+                  fontSize: '1.4rem',
+                  fontWeight: 800,
+                  color: '#0f172a',
+                  fontFamily: 'var(--font-display)',
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1.2
+                }}>
+                  {viewingStudentProject.title}
+                </h2>
+              </div>
+              <button
+                onClick={() => setViewingStudentProject(null)}
+                style={{
+                  background: '#f1f5f9',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '50%',
+                  width: '36px',
+                  height: '36px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.1rem',
+                  cursor: 'pointer',
+                  color: '#64748b',
+                  transition: 'all 0.15s'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#e2e8f0'; e.currentTarget.style.color = '#0f172a'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#64748b'; }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body (Scrollable with crisp colors) */}
+            <div className="custom-scrollbar" style={{
+              padding: '1.5rem 1.75rem',
+              overflowY: 'auto',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1.25rem',
+              background: '#fafafb'
+            }}>
+              {/* Tagline / Pitch */}
+              {viewingStudentProject.tagline && (
+                <div style={{
+                  padding: '1rem 1.25rem',
+                  background: '#ffffff',
+                  borderLeft: '4px solid #1f6fb2',
+                  borderRadius: '10px',
+                  border: '1px solid #e2e8f0',
+                  borderLeftWidth: '4px',
+                  borderLeftColor: '#1f6fb2',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                }}>
+                  <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: '#64748b', fontWeight: 800, letterSpacing: '0.06em', marginBottom: '4px' }}>
+                    TAGLINE / ONE-LINE PITCH
+                  </div>
+                  <div style={{ fontSize: '0.98rem', fontStyle: 'italic', color: '#1e293b', fontWeight: 500, lineHeight: 1.5 }}>
+                    "{viewingStudentProject.tagline}"
+                  </div>
+                </div>
+              )}
+
+              {/* Student Metadata Card */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+                gap: '1rem',
+                background: '#ffffff',
+                padding: '1.25rem',
+                borderRadius: '12px',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+              }}>
+                <div>
+                  <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                    Lead Student
+                  </div>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0f172a', marginTop: '3px' }}>
+                    {viewingStudentProject.lead_student}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                    College / University
+                  </div>
+                  <div style={{ fontSize: '0.98rem', fontWeight: 600, color: '#0f172a', marginTop: '3px' }}>
+                    {viewingStudentProject.institution}
+                  </div>
+                </div>
+
+                {Array.isArray(viewingStudentProject.team_members) && viewingStudentProject.team_members.length > 0 && (
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '4px' }}>
+                      Additional Team Members
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {viewingStudentProject.team_members.map((member, mIdx) => (
+                        <span key={mIdx} style={{
+                          fontSize: '0.82rem',
+                          background: '#f1f5f9',
+                          color: '#1e293b',
+                          padding: '3px 10px',
+                          borderRadius: '6px',
+                          fontWeight: 600,
+                          border: '1px solid #e2e8f0'
+                        }}>
+                          {member}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                    Status
+                  </div>
+                  <div style={{
+                    fontSize: '0.9rem',
+                    fontWeight: 700,
+                    marginTop: '3px',
+                    color: viewingStudentProject.status === 'APPROVED' ? '#15803d' : viewingStudentProject.status === 'REJECTED' ? '#b91c1c' : '#b45309'
+                  }}>
+                    {viewingStudentProject.status || 'PENDING'}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                    Submitted On
+                  </div>
+                  <div style={{ fontSize: '0.88rem', color: '#334155', fontWeight: 600, marginTop: '3px' }}>
+                    {viewingStudentProject.created_at ? new Date(viewingStudentProject.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) : 'Recent'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div>
+                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#475569', fontWeight: 800, letterSpacing: '0.05em', marginBottom: '8px' }}>
+                  Project Description & Problem Solved
+                </div>
+                <div style={{
+                  fontSize: '0.94rem',
+                  lineHeight: 1.65,
+                  color: '#1e293b',
+                  background: '#ffffff',
+                  padding: '1.25rem',
+                  borderRadius: '12px',
+                  border: '1px solid #e2e8f0',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+                  whiteSpace: 'pre-wrap'
+                }}>
+                  {viewingStudentProject.description}
+                </div>
+              </div>
+
+              {/* Tech Stack Tags */}
+              {Array.isArray(viewingStudentProject.tags) && viewingStudentProject.tags.length > 0 && (
+                <div>
+                  <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#475569', fontWeight: 800, letterSpacing: '0.05em', marginBottom: '8px' }}>
+                    Tech Stack Tags
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {viewingStudentProject.tags.map((t, idx) => (
+                      <span key={idx} style={{
+                        fontSize: '0.8rem',
+                        background: '#eff6ff',
+                        color: '#1d4ed8',
+                        padding: '4px 12px',
+                        borderRadius: '8px',
+                        fontWeight: 600,
+                        border: '1px solid #dbeafe'
+                      }}>
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Project External Links */}
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
+                {viewingStudentProject.demo_url && (
+                  <a
+                    href={viewingStudentProject.demo_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      flex: '1 1 220px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '0.8rem 1.25rem',
+                      borderRadius: '10px',
+                      background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
+                      color: '#ffffff',
+                      textDecoration: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.88rem',
+                      boxShadow: '0 4px 12px rgba(31, 111, 178, 0.25)',
+                      transition: 'transform 0.15s, box-shadow 0.15s'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                  >
+                    <span>🌐 Open Live Demo / Video Pitch</span>
+                    <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                  </a>
+                )}
+                {viewingStudentProject.github_url && (
+                  <a
+                    href={viewingStudentProject.github_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      flex: '1 1 200px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '0.8rem 1.25rem',
+                      borderRadius: '10px',
+                      background: '#0f172a',
+                      color: '#ffffff',
+                      textDecoration: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.88rem',
+                      border: '1px solid #1e293b',
+                      transition: 'transform 0.15s'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                  >
+                    <span>💻 GitHub Repository</span>
+                    <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer with Actions (Sticky Bottom, Never Cut Off) */}
+            <div style={{
+              padding: '1.1rem 1.75rem',
+              borderTop: '1px solid #e2e8f0',
+              background: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '0.75rem',
+              flexShrink: 0
+            }}>
+              <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  style={{
+                    background: '#10b981',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '0.6rem 1.2rem',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    cursor: studentActionLoading === viewingStudentProject.id ? 'wait' : 'pointer',
+                    opacity: viewingStudentProject.status === 'APPROVED' ? 0.6 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 6px rgba(16, 185, 129, 0.25)',
+                    transition: 'all 0.15s'
+                  }}
+                  disabled={studentActionLoading === viewingStudentProject.id || viewingStudentProject.status === 'APPROVED'}
+                  onClick={() => handleUpdateStudentStatus(viewingStudentProject.id, 'APPROVED')}
+                >
+                  <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Approve Submission
+                </button>
+
+                <button
+                  type="button"
+                  style={{
+                    background: '#ef4444',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '0.6rem 1.2rem',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    cursor: studentActionLoading === viewingStudentProject.id ? 'wait' : 'pointer',
+                    opacity: viewingStudentProject.status === 'REJECTED' ? 0.6 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 6px rgba(239, 68, 68, 0.25)',
+                    transition: 'all 0.15s'
+                  }}
+                  disabled={studentActionLoading === viewingStudentProject.id || viewingStudentProject.status === 'REJECTED'}
+                  onClick={() => handleUpdateStudentStatus(viewingStudentProject.id, 'REJECTED')}
+                >
+                  <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  Reject Submission
+                </button>
+
+                <button
+                  type="button"
+                  style={{
+                    background: '#f8fafc',
+                    color: '#d97706',
+                    border: '1px solid #fde68a',
+                    borderRadius: '8px',
+                    padding: '0.6rem 1.1rem',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    cursor: studentActionLoading === viewingStudentProject.id ? 'wait' : 'pointer',
+                    opacity: viewingStudentProject.status === 'PENDING' ? 0.6 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                  disabled={studentActionLoading === viewingStudentProject.id || viewingStudentProject.status === 'PENDING'}
+                  onClick={() => handleUpdateStudentStatus(viewingStudentProject.id, 'PENDING')}
+                >
+                  ⏳ Set Pending
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setViewingStudentProject(null)}
+                style={{
+                  background: '#f8fafc',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '8px',
+                  padding: '0.6rem 1.25rem',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  color: '#475569',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#e2e8f0'; e.currentTarget.style.color = '#0f172a'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#475569'; }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── DELETE CONFIRMATION MODAL ─────────────────────────────────────── */}
+      {studentProjectToDelete && (
+        <div
+          className="light-theme"
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(15, 23, 42, 0.72)', backdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 1000, padding: '1rem',
+          }}
+          onClick={() => setStudentProjectToDelete(null)}
+        >
+          <div
+            style={{
+              background: '#ffffff', borderRadius: '16px', maxWidth: '440px', width: '100%',
+              border: '1px solid #e2e8f0', padding: '1.75rem', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)',
+              display: 'flex', flexDirection: 'column', gap: '1rem'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </div>
+            <div>
+              <h3 style={{ margin: '0 0 6px', fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
+                Delete Student Submission?
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.9rem', color: '#475569', lineHeight: 1.5 }}>
+                Are you sure you want to delete <strong style={{ color: '#0f172a' }}>"{studentProjectToDelete.title}"</strong> submitted by <strong style={{ color: '#0f172a' }}>{studentProjectToDelete.lead_student}</strong>? This action cannot be undone.
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <Btn variant="outline" onClick={() => setStudentProjectToDelete(null)}>Cancel</Btn>
+              <Btn
+                variant="danger"
+                disabled={studentActionLoading === studentProjectToDelete.id}
+                onClick={() => handleDeleteStudentProject(studentProjectToDelete.id)}
+              >
+                {studentActionLoading === studentProjectToDelete.id ? 'Deleting...' : 'Yes, Delete'}
+              </Btn>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── BAN USER CONFIRMATION MODAL ─────────────────────────────────────── */}
+      {userToBan && (
+        <div
+          className="light-theme"
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(15, 23, 42, 0.72)', backdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 1000, padding: '1rem',
+          }}
+          onClick={() => setUserToBan(null)}
+        >
+          <div
+            style={{
+              background: '#ffffff', borderRadius: '16px', maxWidth: '460px', width: '100%',
+              border: '1px solid #e2e8f0', padding: '1.75rem', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)',
+              display: 'flex', flexDirection: 'column', gap: '1rem'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+            </div>
+            <div>
+              <h3 style={{ margin: '0 0 6px', fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
+                Ban {userToBan.full_name || userToBan.username}?
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.9rem', color: '#475569', lineHeight: 1.5 }}>
+                Banning this user will immediately:
+              </p>
+              <ul style={{ margin: '8px 0 0', paddingLeft: '1.2rem', fontSize: '0.85rem', color: '#dc2626', lineHeight: 1.6 }}>
+                <li>Prevent them from contributing any resources or student projects</li>
+                <li>Block them from viewing other members' contributions</li>
+                <li>Hide all their existing contributions from the public site</li>
+              </ul>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <Btn variant="outline" onClick={() => setUserToBan(null)}>Cancel</Btn>
+              <Btn
+                variant="danger"
+                disabled={!!actionLoading}
+                onClick={async () => {
+                  const targetId = userToBan.id;
+                  setUserToBan(null);
+                  await handleUserAction(targetId, 'ban');
+                }}
+              >
+                {actionLoading ? 'Banning...' : 'Yes, Ban User'}
+              </Btn>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── UNBAN USER CONFIRMATION MODAL ───────────────────────────────────── */}
+      {userToUnban && (
+        <div
+          className="light-theme"
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(15, 23, 42, 0.72)', backdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 1000, padding: '1rem',
+          }}
+          onClick={() => setUserToUnban(null)}
+        >
+          <div
+            style={{
+              background: '#ffffff', borderRadius: '16px', maxWidth: '460px', width: '100%',
+              border: '1px solid #e2e8f0', padding: '1.75rem', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)',
+              display: 'flex', flexDirection: 'column', gap: '1rem'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div>
+              <h3 style={{ margin: '0 0 6px', fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
+                Unban {userToUnban.full_name || userToUnban.username}?
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.9rem', color: '#475569', lineHeight: 1.5 }}>
+                This will restore their ability to contribute and view community resources, and unhide their approved resources.
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <Btn variant="outline" onClick={() => setUserToUnban(null)}>Cancel</Btn>
+              <Btn
+                variant="success"
+                disabled={!!actionLoading}
+                onClick={async () => {
+                  const targetId = userToUnban.id;
+                  setUserToUnban(null);
+                  await handleUserAction(targetId, 'unban');
+                }}
+              >
+                {actionLoading ? 'Unbanning...' : 'Confirm Unban'}
+              </Btn>
             </div>
           </div>
         </div>
@@ -2153,7 +3243,7 @@ function EventRow({ m, onEdit, onDelete, onOutcome, onRefresh, isPast, onViewOut
       timeStr = `${h}:${min} ${ampm.toLowerCase()} to ${endH12}:${min} ${endAmpm.toLowerCase()}`;
     }
   }
-  
+
   dateStr = `${dateStr}, ${timeStr}`;
   const monthStr = dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
   const dayStr = dateObj.getDate();
