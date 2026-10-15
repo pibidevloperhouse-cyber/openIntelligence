@@ -48,38 +48,20 @@ const ROADMAP_STEPS = [
   },
   {
     stepNumber: '03',
-    phaseLabel: 'Phase 3: Dec 12',
+    phaseLabel: 'Phase 3: Dec 12 • Grand Finale',
     phasePrefix: 'Phase 3',
-    phaseDate: 'Dec 12',
-    shortTitle: 'Finalist Demo',
-    subtitle: 'Dec 12 Live Round',
-    title: 'Shortlisted Teams Live Evaluation',
+    phaseDate: 'Dec 12 • Grand Finale',
+    shortTitle: 'Finale & Awards',
+    subtitle: 'Live Demos & Prizes',
+    title: 'Grand Finale & Prize Distribution',
     description:
-      'Shortlisted qualifiers compete in an exclusive live demonstration round on December 12 with in-depth jury review and Q&A.',
-    status: 'upcoming',
-    icon: Sparkles,
-    highlights: [
-      'Live Evaluation: December 12',
-      'Shortlisted Live Demos',
-      'Technical Q&A with Jury',
-    ],
-  },
-  {
-    stepNumber: '04',
-    phaseLabel: 'Phase 4: Winners & Awards',
-    phasePrefix: 'Phase 4',
-    phaseDate: 'Winners & Awards',
-    shortTitle: 'Top 3 Awards',
-    subtitle: 'Winners & Prizes',
-    title: 'Top 3 Winners & Prize Distribution',
-    description:
-      'The grand jury evaluates finalist performances to select the Top 3 winners and distribute ₹30,000 cash prizes.',
+      'Shortlisted qualifiers compete in the live demonstration round on December 12. The grand jury evaluates projects and awards ₹30,000 cash prizes to the Top 3 winners on the spot!',
     status: 'upcoming',
     icon: Trophy,
     highlights: [
+      'Live Evaluation: December 12',
       'Top 3 Winners Selection',
-      'Cash Prize Distribution',
-      'PiBi Open Intelligence Publishing',
+      '₹30,000 Cash Prize Awards',
     ],
   },
 ];
@@ -96,16 +78,15 @@ export const JourneySection = () => {
               className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight"
               style={{ fontFamily: 'var(--font-plus-jakarta)' }}
             >
-              4-Stage Journey to the Top 3
+              3-Stage Journey to the Top 3
             </h2>
             <p className="text-slate-600 text-sm sm:text-base max-w-2xl mx-auto">
-              Follow the clear, milestone-driven evaluation track from prototype submission to the live finale and prize distribution.
+              Follow the clear, milestone-driven evaluation track from prototype submission to the live finale and prize distribution on December 12.
             </p>
           </div>
 
-
-          {/* 4 Clean, Aligned Milestone Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* 3 Clean, Aligned Milestone Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
             {ROADMAP_STEPS.map((step, idx) => {
               const isActive = step.status === 'active';
               const StepIcon = step.icon;
