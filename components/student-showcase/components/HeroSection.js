@@ -271,17 +271,48 @@ export const HeroSection = ({
               </h2>
 
               {/* Level 3: h3 */}
-              <h3
-                className="text-[17px] sm:text-3xl lg:text-[40px] font-extrabold tracking-tight leading-[1.25] sm:leading-[1.18]"
-                style={{
-                  fontFamily: 'var(--font-plus-jakarta)',
-                  background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                Get Case Prize Featured on <span className="block">PiBi Open Intelligence.</span>
-              </h3>
+              <div className="relative inline-block text-center lg:text-left">
+                <h3
+                  className="text-[18px] sm:text-3xl lg:text-[40px] font-extrabold tracking-tight leading-[1.25] sm:leading-[1.18]"
+                  style={{
+                    fontFamily: 'var(--font-plus-jakarta)',
+                    background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}
+                >
+                  Top 3 Cash Prizes & Get Featured on{' '}
+                  <span className="block">PiBi Open Intelligence.</span>
+                </h3>
+
+                {/* Hand-drawn double underline in brand blue-to-teal gradient */}
+                <svg
+                  viewBox="0 0 320 12"
+                  className="w-full h-2.5 sm:h-3.5 max-w-sm sm:max-w-md lg:max-w-lg mt-1.5 mx-auto lg:mx-0 block"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <defs>
+                    <linearGradient id="heroLevel3Underline" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#1f6fb2" />
+                      <stop offset="100%" stopColor="#2ec4b6" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M4 4C80 2.2 240 2.5 316 4.8"
+                    stroke="url(#heroLevel3Underline)"
+                    strokeWidth="3.2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M20 9C95 7.2 225 7.5 298 9.2"
+                    stroke="url(#heroLevel3Underline)"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeOpacity="0.85"
+                  />
+                </svg>
+              </div>
             </div>
   
             {/* CTA Buttons */}
