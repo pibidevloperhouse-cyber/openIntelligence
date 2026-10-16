@@ -85,7 +85,7 @@ export const INITIAL_PROJECTS = [
     title: 'AgroSense Edge IoT',
     tagline: 'Hyperlocal Soil Microbiome & Precision Irrigation Mesh Network',
     description:
-      'Solar-powered IoT probe network using embedded impedance spectroscopy and machine learning to forecast plant hydration stress 48 hours prior to visible wilting.',
+      'Solar-powered IoT probe network using embedded impedance spectroscopy and machine learning to forecast plant hydration stress 2 days prior to visible wilting.',
     category: 'IoT & Hardware',
     leadStudent: 'Deepa Muthukumar',
     teamMembers: ['Deepa Muthukumar', 'Gautam V.', 'M. Harish'],
@@ -167,7 +167,7 @@ export const PRIZE_TIERS = [
       '₹15,000 Direct Cash Prize transferred to team',
       'Exclusive Cover Story & Homepage Launch on PiBi Open Intelligence',
       'Official PiBi Open Intelligence Verified Builder Badge',
-      'Winner Trophy & Prestigious Gold Distinction Certificate',
+      'Prestigious Gold Distinction Certificate',
       'Direct 1-on-1 Pitch Session with Tech Investors & VC Scouts',
       'Incubation & Patent Filing Mentorship Support',
     ],
@@ -185,7 +185,7 @@ export const PRIZE_TIERS = [
       '₹10,000 Direct Cash Prize transferred to team',
       'Official Spotlight Showcase on PiBi Open Intelligence Projects Hub',
       'PiBi Open Intelligence Verified Innovator Certificate',
-      'Silver Trophy & Commendation Certificate',
+      'Commendation Certificate',
       'Mentorship Sessions with Silicon Valley & Indian Founders',
       'Fast-track interview invitations at partnering tech startups',
     ],
@@ -203,7 +203,7 @@ export const PRIZE_TIERS = [
       '₹5,000 Direct Cash Prize transferred to team',
       'Featured Project Listing on PiBi Open Intelligence Ecosystem Directory',
       'PiBi Open Intelligence Student Builder Certificate',
-      'Bronze Trophy & Certificate of Achievement',
+      'Certificate of Achievement',
       'Technical Architecture Review with Senior Staff Engineers',
       'Community recognition across 150K+ developers',
     ],
@@ -240,10 +240,10 @@ export const TIMELINE_STEPS = [
 
 export const FAQ_ITEMS = [
   {
-    category: 'Prizes & Money',
-    question: 'How and when will the top 3 cash prize amounts be disbursed?',
+    category: 'Prizes & Awards',
+    question: 'When and how are the top 3 cash prizes awarded?',
     answer:
-      'The cash prizes (₹15,000 for 1st place, ₹10,000 for 2nd place, and ₹5,000 for 3rd place) are disbursed directly to the winning teams via direct bank transfer or UPI within 48 hours of the Grand Finale announcement, along with physical trophies and official certificates.',
+      'The top 3 cash prizes (₹15,000 for 1st place, ₹10,000 for 2nd place, and ₹5,000 for 3rd place) are officially awarded to the winning student teams during the Grand Finale ceremony on December 12, along with official distinction certificates.',
   },
   {
     category: 'PiBi Open Intelligence Feature',
@@ -264,9 +264,9 @@ export const FAQ_ITEMS = [
       'Yes, 100%! All code, hardware schematics, and intellectual property remain entirely owned by the students. PiBi Open Intelligence acts strictly as a publishing spotlight and accelerator to give your project global visibility.',
   },
   {
-    category: 'Submissions',
+    category: 'Submissions & Tech Stack',
     question: 'What do I need to submit to be evaluated for the awards?',
     answer:
-      'You need a working prototype or demo, a public or private GitHub repository, a short description of the problem solved, and optionally a 2-3 minute video demonstration or pitch deck.',
+      'You only need to submit your existing or working college project: a prototype/demo link, code repository, and a brief description. Students use their own development tools and technologies of choice — PiBi Open Intelligence does not require or provide any proprietary tools.',
   },
 ];

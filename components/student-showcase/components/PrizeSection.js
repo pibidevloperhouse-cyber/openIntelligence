@@ -221,7 +221,7 @@ export const PrizeSection = ({
 
           <p className="text-slate-600 text-base sm:text-lg">
             Hard work deserves real recognition. Top 3 student projects win direct cash prizes,
-            official trophies, and are permanently published and featured on{' '}
+            official distinction certificates, and are permanently published and featured on{' '}
             <span className="text-[#1f6fb2] font-semibold">PiBi Open Intelligence</span>.
           </p>
         </div>
@@ -420,7 +420,7 @@ export const PrizeSection = ({
                 Perks for All Top 10 Finalists
               </h4>
               <p className="text-xs sm:text-sm text-white/90 leading-relaxed max-w-2xl">
-                Official Certificate of National Distinction + Free Developer Tooling Licenses + PiBi Open Intelligence Badges.
+                Official Certificate of National Distinction + PiBi Open Intelligence Recognition Badges.
               </p>
             </div>
 

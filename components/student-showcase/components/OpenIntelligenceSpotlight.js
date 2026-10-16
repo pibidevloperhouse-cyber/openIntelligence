@@ -45,18 +45,17 @@ export const OpenIntelligenceSpotlight = ({
             </span>
           </h2>
 
-          <p className="text-slate-600 text-base sm:text-lg">
-            Winners don&apos;t just walk away with cash prizes. Your projects will be officially
-            hosted, published, and featured as flagship innovations on{' '}
-            <strong className="text-[#1f6fb2] font-semibold">PiBi Open Intelligence</strong>{' '}
-            (www.pibiopenintelligence.com), giving you international visibility.
+          <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+            Winning projects will be officially published and featured on{' '}
+            <strong className="text-[#1f6fb2] font-semibold">PiBi Open Intelligence</strong>,
+            giving you global visibility.
           </p>
         </div>
 
         {/* Feature Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          {/* Left: Open Intelligence Platform Preview */}
-          <div className="lg:col-span-7 relative group">
+          {/* Left on Desktop / Bottom on Mobile: Open Intelligence Platform Preview */}
+          <div className="lg:col-span-7 relative group order-2 lg:order-1">
             <div className="relative rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-xl">
               {/* Browser chrome header bar */}
               <div className="px-4 py-3 bg-slate-100 border-b border-slate-200 flex items-center justify-between">

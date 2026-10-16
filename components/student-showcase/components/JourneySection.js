@@ -12,12 +12,12 @@ import {
 const ROADMAP_STEPS = [
   {
     stepNumber: '01',
-    phaseLabel: 'Phase 1: Deadline Nov 14',
+    phaseLabel: 'Phase 1',
     phasePrefix: 'Phase 1',
-    phaseDate: 'Deadline Nov 14',
+    phaseDate: 'Phase 1',
     shortTitle: 'Registration',
     subtitle: 'Deadline Nov 14',
-    title: 'Project Registration & Submissions',
+    title: 'Phase 1 : Project Registration & Submissions - Deadline Nov 14',
     description:
       'Register your team and submit your working AI/ML prototypes, code repository, and demo links before November 14.',
     status: 'active',
@@ -30,12 +30,12 @@ const ROADMAP_STEPS = [
   },
   {
     stepNumber: '02',
-    phaseLabel: 'Phase 2: Nov 30',
+    phaseLabel: 'Phase 2',
     phasePrefix: 'Phase 2',
-    phaseDate: 'Nov 30',
+    phaseDate: 'Phase 2',
     shortTitle: 'Shortlist',
     subtitle: 'Announced Nov 30',
-    title: 'Shortlisted Teams Announcement',
+    title: 'Phase 2 : Shortlisted Teams Announcement - Nov 30',
     description:
       'Evaluation jury reviews submitted code, architecture, and impact metrics to announce the shortlisted teams on November 30.',
     status: 'upcoming',
@@ -50,10 +50,10 @@ const ROADMAP_STEPS = [
     stepNumber: '03',
     phaseLabel: 'Phase 3: Dec 12 • Grand Finale',
     phasePrefix: 'Phase 3',
-    phaseDate: 'Dec 12 • Grand Finale',
+    phaseDate: 'Phase 3: Dec 12 • Grand Finale',
     shortTitle: 'Finale & Awards',
     subtitle: 'Live Demos & Prizes',
-    title: 'Grand Finale & Prize Distribution',
+    title: 'Phase 3 : Grand Finale & Prize Distribution - Dec 12',
     description:
       'Shortlisted qualifiers compete in the live demonstration round on December 12. The grand jury evaluates projects and awards ₹30,000 cash prizes to the Top 3 winners on the spot!',
     status: 'upcoming',
@@ -153,22 +153,11 @@ export const JourneySection = () => {
 
                       {/* Title */}
                       <h4
-                        className="text-lg font-bold text-slate-900 mb-2.5 leading-snug group-hover:text-[#1f6fb2] transition-colors duration-300"
+                        className="text-lg font-bold text-slate-900 mb-3.5 leading-snug group-hover:text-[#1f6fb2] transition-colors duration-300"
                         style={{ fontFamily: 'var(--font-plus-jakarta)' }}
                       >
                         {step.title}
                       </h4>
-
-                      {/* Phase Date Pill - Brand Signature Gradient with subtle hover elevation */}
-                      <div
-                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-white text-xs font-bold font-stylized mb-3.5 shadow-xs shadow-[#1f6fb2]/20 transition-all duration-300 group-hover:shadow-md group-hover:shadow-[#1f6fb2]/30 group-hover:scale-[1.02]"
-                        style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
-                      >
-                        <span className="opacity-90">{step.phasePrefix}:</span>
-                        <span className="font-extrabold tracking-tight">
-                          {step.phaseDate}
-                        </span>
-                      </div>
 
                       {/* Description */}
                       <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
@@ -178,7 +167,7 @@ export const JourneySection = () => {
 
                     {/* Key Highlights Micro-Chips */}
                     <div className="pt-4 mt-auto border-t border-slate-100">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block mb-2.5 font-stylized">
+                      <span className="text-xs font-black uppercase tracking-wider text-slate-700 block mb-2.5 font-stylized">
                         Key Deliverables
                       </span>
                       <div className="space-y-1.5">

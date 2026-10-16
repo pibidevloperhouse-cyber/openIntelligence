@@ -7,6 +7,8 @@ import {
   Sparkles,
   ArrowRight,
   Timer,
+  Clock,
+  Calendar,
 } from 'lucide-react';
 
 // Hand-drawn doodle crown matching reference mockup
@@ -42,6 +44,30 @@ const HandDrawnUnderline = ({ className = 'w-24 h-2' }) => (
       strokeWidth="1.8"
       strokeLinecap="round"
     />
+  </svg>
+);
+
+// Hand-drawn doodle timer / stopwatch matching reference mockup
+const HandDrawnTimer = ({ className = 'w-6 h-6' }) => (
+  <svg viewBox="0 0 32 32" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* Top button & winder */}
+    <path d="M12 3.5H20M16 3.5V6" stroke="#1e293b" strokeWidth="2.2" strokeLinecap="round" />
+    <path d="M23.5 7L26 4.5" stroke="#1e293b" strokeWidth="2" strokeLinecap="round" />
+    {/* Body */}
+    <circle
+      cx="16"
+      cy="18"
+      r="10.5"
+      stroke="#1e293b"
+      strokeWidth="2.2"
+      fill="#FEF08A"
+      fillOpacity="0.45"
+    />
+    {/* Clock hands */}
+    <path d="M16 18V12M16 18L20 20" stroke="#1e293b" strokeWidth="2.2" strokeLinecap="round" />
+    <circle cx="16" cy="18" r="1.5" fill="#1e293b" />
+    {/* Accent sketch rays */}
+    <path d="M28.5 14L30.5 13M3.5 14L1.5 13" stroke="#f59e0b" strokeWidth="1.8" strokeLinecap="round" />
   </svg>
 );
 
@@ -226,11 +252,11 @@ export const HeroSection = ({
           {/* Left Column: Headline & Content */}
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
 
-            {/* Semantic Headings: h1, h2, h3 - Balanced 2-line layout, scaled up prominently */}
-            <div className="space-y-4 sm:space-y-5">
+            {/* Semantic Headings: h1, h2, h3 - Mobile-compact layout while preserving full desktop grandeur */}
+            <div className="space-y-2 sm:space-y-4 lg:space-y-5">
               {/* Level 1: h1 */}
               <h1
-                className="text-4xl sm:text-5xl lg:text-[58px] font-extrabold text-slate-900 tracking-tight leading-[1.1]"
+                className="text-[28px] sm:text-5xl lg:text-[58px] font-extrabold text-slate-900 tracking-tight leading-[1.12] sm:leading-[1.1]"
                 style={{ fontFamily: 'var(--font-plus-jakarta)' }}
               >
                 Don&apos;t Waste Your <span className="block">College Project.</span>
@@ -238,7 +264,7 @@ export const HeroSection = ({
 
               {/* Level 2: h2 */}
               <h2
-                className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-slate-800 tracking-tight leading-[1.14]"
+                className="text-[17px] sm:text-3xl lg:text-[44px] font-bold sm:font-extrabold text-slate-800 tracking-tight leading-[1.25] sm:leading-[1.14]"
                 style={{ fontFamily: 'var(--font-plus-jakarta)' }}
               >
                 Turn your AI/ML project <span className="block">into real opportunities.</span>
@@ -246,7 +272,7 @@ export const HeroSection = ({
 
               {/* Level 3: h3 */}
               <h3
-                className="text-3xl sm:text-4xl lg:text-[40px] font-extrabold tracking-tight leading-[1.18]"
+                className="text-[17px] sm:text-3xl lg:text-[40px] font-extrabold tracking-tight leading-[1.25] sm:leading-[1.18]"
                 style={{
                   fontFamily: 'var(--font-plus-jakarta)',
                   background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
@@ -254,7 +280,7 @@ export const HeroSection = ({
                   WebkitTextFillColor: 'transparent',
                 }}
               >
-                Get Featured on <span className="block">PiBi Open Intelligence.</span>
+                Get Case Prize Featured on <span className="block">PiBi Open Intelligence.</span>
               </h3>
             </div>
   
@@ -361,9 +387,9 @@ export const HeroSection = ({
           </div>
         </div>
 
-        {/* Compact Horizontal Submissions Countdown Banner (Left-Right Split) */}
+        {/* Submissions Countdown Banner styled with Project Awards theme */}
         <div className="mt-8 sm:mt-12 max-w-5xl mx-auto px-2">
-          <div className="relative rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 shadow-md shadow-slate-200/50 p-5 sm:p-6 sm:px-8 overflow-hidden">
+          <div className="relative rounded-2xl sm:rounded-3xl bg-white border border-slate-200/90 shadow-xl shadow-slate-200/50 p-5 sm:p-6 sm:px-8 overflow-hidden">
             {/* Top Accent Gradient Edge */}
             <div
               className="h-1 w-full absolute top-0 left-0"
@@ -371,86 +397,79 @@ export const HeroSection = ({
             />
 
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 sm:gap-8">
-              {/* Left Side: Context & Live Status */}
-              <div className="space-y-1 text-left">
-                <h3
-                  className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight"
-                  style={{ fontFamily: 'var(--font-plus-jakarta)' }}
-                >
-                  Submissions Countdown
-                </h3>
+              {/* Left Side: Doodle Header & Submissions Deadline Info */}
+              <div className="space-y-2 text-left">
+                {/* Header Row: Doodle Timer + Title + HandDrawnUnderline */}
+                <div className="flex items-center gap-2">
+                  <div className="pt-0.5">
+                    <HandDrawnTimer className="w-6 h-6 text-slate-800 -rotate-6" />
+                  </div>
+                  <div>
+                    <h3
+                      className="text-lg sm:text-xl lg:text-2xl font-black text-slate-900 tracking-tight leading-none"
+                      style={{ fontFamily: 'var(--font-plus-jakarta)' }}
+                    >
+                      Submissions Countdown
+                    </h3>
+                    <HandDrawnUnderline className="w-28 sm:w-36 h-2 text-slate-800 mt-1" />
+                  </div>
+                </div>
 
-                <p className="text-xs text-slate-500 max-w-md leading-relaxed">
-                  Deadline: <strong className="text-slate-800 font-bold">November 14, 2026 • 11:59 PM IST</strong>. Submit your working project before the timer expires to qualify for Top 3 evaluations.
+                <p className="text-xs sm:text-[13px] text-slate-500 max-w-md leading-relaxed pt-1">
+                  Deadline: <strong className="text-slate-900 font-bold">November 14, 2026 • 11:59 PM IST</strong>. Submit your working project before the timer expires to qualify for Top 3 evaluations.
                 </p>
               </div>
 
-              {/* Right Side: Compact 4 Time Blocks */}
-              <div className="grid grid-cols-4 gap-2 sm:gap-3 shrink-0 w-full lg:w-auto">
-                {/* Days */}
-                <div className="py-2.5 px-3 sm:py-3 sm:px-4 rounded-xl bg-slate-50 border border-slate-200/90 shadow-2xs text-center min-w-[65px] sm:min-w-[80px] hover:border-[#1f6fb2]/40 transition-all">
-                  <span
-                    className="block text-2xl sm:text-3xl font-black font-mono tracking-tight tabular-nums"
-                    style={{
-                      background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                    }}
-                  >
-                    {String(timeLeft.days).padStart(2, '0')}
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-[#1f6fb2] block mt-0.5 font-stylized">
+              {/* Right Side: 4 Themed Prize-Style Time Cards */}
+              <div className="grid grid-cols-4 gap-2 sm:gap-2.5 shrink-0 w-full lg:w-auto">
+                {/* Days - Sky Blue Theme */}
+                <div className="relative rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-between bg-[#F0F9FF] border border-sky-200/90 shadow-2xs hover:shadow-md hover:border-sky-300 transition-all duration-200 group/day min-w-[65px] sm:min-w-[80px]">
+                  <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-sky-600 transition-transform duration-200 group-hover/day:scale-110" />
+                  <div className="my-1">
+                    <span className="block text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight tabular-nums font-mono leading-tight">
+                      {String(timeLeft.days).padStart(2, '0')}
+                    </span>
+                  </div>
+                  <span className="block text-[10px] sm:text-[11px] font-bold text-sky-900/80 uppercase tracking-wider leading-tight">
                     Days
                   </span>
                 </div>
 
-                {/* Hours */}
-                <div className="py-2.5 px-3 sm:py-3 sm:px-4 rounded-xl bg-slate-50 border border-slate-200/90 shadow-2xs text-center min-w-[65px] sm:min-w-[80px] hover:border-[#1f6fb2]/40 transition-all">
-                  <span
-                    className="block text-2xl sm:text-3xl font-black font-mono tracking-tight tabular-nums"
-                    style={{
-                      background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                    }}
-                  >
-                    {String(timeLeft.hours).padStart(2, '0')}
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-[#1f6fb2] block mt-0.5 font-stylized">
+                {/* Hours - Amber Yellow Theme */}
+                <div className="relative rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-between bg-[#FFFBEB] border border-amber-200/90 shadow-2xs hover:shadow-md hover:border-amber-300 transition-all duration-200 group/hour min-w-[65px] sm:min-w-[80px]">
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 transition-transform duration-200 group-hover/hour:scale-110" />
+                  <div className="my-1">
+                    <span className="block text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight tabular-nums font-mono leading-tight">
+                      {String(timeLeft.hours).padStart(2, '0')}
+                    </span>
+                  </div>
+                  <span className="block text-[10px] sm:text-[11px] font-bold text-amber-900/80 uppercase tracking-wider leading-tight">
                     Hours
                   </span>
                 </div>
 
-                {/* Minutes */}
-                <div className="py-2.5 px-3 sm:py-3 sm:px-4 rounded-xl bg-slate-50 border border-slate-200/90 shadow-2xs text-center min-w-[65px] sm:min-w-[80px] hover:border-[#1f6fb2]/40 transition-all">
-                  <span
-                    className="block text-2xl sm:text-3xl font-black font-mono tracking-tight tabular-nums"
-                    style={{
-                      background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                    }}
-                  >
-                    {String(timeLeft.minutes).padStart(2, '0')}
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-[#1f6fb2] block mt-0.5 font-stylized">
+                {/* Minutes - Emerald Green Theme */}
+                <div className="relative rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-between bg-[#F0FDF4] border border-emerald-200/90 shadow-2xs hover:shadow-md hover:border-emerald-300 transition-all duration-200 group/min min-w-[65px] sm:min-w-[80px]">
+                  <Timer className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 transition-transform duration-200 group-hover/min:scale-110" />
+                  <div className="my-1">
+                    <span className="block text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight tabular-nums font-mono leading-tight">
+                      {String(timeLeft.minutes).padStart(2, '0')}
+                    </span>
+                  </div>
+                  <span className="block text-[10px] sm:text-[11px] font-bold text-emerald-900/80 uppercase tracking-wider leading-tight">
                     Minutes
                   </span>
                 </div>
 
-                {/* Seconds */}
-                <div className="py-2.5 px-3 sm:py-3 sm:px-4 rounded-xl bg-slate-50 border border-slate-200/90 shadow-2xs text-center min-w-[65px] sm:min-w-[80px] hover:border-[#1f6fb2]/40 transition-all">
-                  <span
-                    className="block text-2xl sm:text-3xl font-black font-mono tracking-tight tabular-nums"
-                    style={{
-                      background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                    }}
-                  >
-                    {String(timeLeft.seconds).padStart(2, '0')}
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-[#1f6fb2] block mt-0.5 font-stylized">
+                {/* Seconds - Orange Peach Theme */}
+                <div className="relative rounded-2xl p-2.5 sm:p-3 text-center flex flex-col items-center justify-between bg-[#FFF7ED] border border-orange-200/90 shadow-2xs hover:shadow-md hover:border-orange-300 transition-all duration-200 group/sec min-w-[65px] sm:min-w-[80px]">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 transition-transform duration-200 group-hover/sec:scale-110 animate-pulse" />
+                  <div className="my-1">
+                    <span className="block text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight tabular-nums font-mono leading-tight">
+                      {String(timeLeft.seconds).padStart(2, '0')}
+                    </span>
+                  </div>
+                  <span className="block text-[10px] sm:text-[11px] font-bold text-orange-950/80 uppercase tracking-wider leading-tight">
                     Seconds
                   </span>
                 </div>

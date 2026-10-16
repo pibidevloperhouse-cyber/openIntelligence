@@ -3,7 +3,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import AnimatedFadeIn from './AnimatedFadeIn';
 import Link from 'next/link';
-import { HeartPulse, Leaf, BookOpen, Globe, Accessibility, Building2, Briefcase, TriangleAlert, Bot, Database, Cloud, Cpu, TrendingUp, ShieldCheck } from 'lucide-react';
+import { HeartPulse, Leaf, BookOpen, Globe, Accessibility, Building2, Briefcase, TriangleAlert, Bot, Database, Cloud, Cpu, TrendingUp, ShieldCheck, ArrowLeft, ArrowRight } from 'lucide-react';
 
 function TypewriterOnce({ text, typingSpeed = 75, delay = 500, className = "", style = {} }) {
   const ref = useRef(null);
@@ -177,6 +177,13 @@ export function LearnSection() {
 }
 
 export function ContributeSection() {
+  const scrollContainerRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const isInteractingRef = useRef(false);
+  const resumeTimeoutRef = useRef(null);
+
   const areas = [
     { title: "AI Training Data", desc: "Datasets and evaluation resources that help AI learn better.", image: "/ai.jpeg" },
     { title: "SLM & AI Models", desc: "Small, efficient and domain-focused models for real applications.", image: "/slm.jpeg" },
@@ -185,6 +192,65 @@ export function ContributeSection() {
     { title: "Document Intelligence", desc: "Tools that turn documents and information into something useful.", image: "/doc.jpeg" },
     { title: "Workflow Bots & AI Agents", desc: "Agents and workflows that can understand tasks, use tools and get work done.", image: "/work.jpeg" },
   ];
+
+  const checkScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setCanScrollLeft(scrollLeft > 10);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+
+      const cardWidth = clientWidth * 0.85;
+      const index = Math.round(scrollLeft / (cardWidth + 20));
+      setActiveIndex(Math.min(Math.max(index, 0), areas.length - 1));
+    }
+  };
+
+  const scrollToIndex = (index) => {
+    if (scrollContainerRef.current) {
+      const cardWidth = scrollContainerRef.current.clientWidth * 0.85;
+      scrollContainerRef.current.scrollTo({
+        left: index * (cardWidth + 20),
+        behavior: 'smooth',
+      });
+      setActiveIndex(index);
+    }
+  };
+
+  const handleScroll = (direction) => {
+    isInteractingRef.current = true;
+    clearTimeout(resumeTimeoutRef.current);
+    resumeTimeoutRef.current = setTimeout(() => {
+      isInteractingRef.current = false;
+    }, 4500);
+
+    const nextIndex = direction === 'left'
+      ? (activeIndex === 0 ? areas.length - 1 : activeIndex - 1)
+      : (activeIndex === areas.length - 1 ? 0 : activeIndex + 1);
+
+    scrollToIndex(nextIndex);
+  };
+
+  // Automatic auto-scroll on mobile
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (typeof window !== 'undefined' && window.innerWidth < 768 && !isInteractingRef.current && scrollContainerRef.current) {
+        setActiveIndex((prev) => {
+          const next = (prev + 1) % areas.length;
+          const el = scrollContainerRef.current;
+          if (el) {
+            const cardWidth = el.clientWidth * 0.85;
+            el.scrollTo({
+              left: next * (cardWidth + 20),
+              behavior: 'smooth',
+            });
+          }
+          return next;
+        });
+      }
+    }, 3500);
+
+    return () => clearInterval(timer);
+  }, [areas.length]);
 
   return (
     <section id="contribute" className="py-24 px-4 relative bg-white">
@@ -300,18 +366,103 @@ export function ContributeSection() {
           </div>
         </AnimatedFadeIn>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 text-left">
-          {areas.map((area, idx) => (
-            <AnimatedFadeIn key={idx} delay={idx * 0.1} className="h-full bg-[#3d3d3d] border border-[#4d4d4d] rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:shadow-black/20 hover:-translate-y-2 transition-all duration-300 group flex flex-col">
-              <div className="w-full h-52 overflow-hidden bg-[#2d2d2d]">
-                <img src={area.image} alt={area.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 group-hover:opacity-100" />
+        {/* Mobile Horizontal Carousel with Side Navigation Arrows & Desktop Grid */}
+        <div className="relative mb-16">
+          {/* Mobile Left Navigation Arrow */}
+          <button
+            type="button"
+            onClick={() => handleScroll('left')}
+            aria-label="Previous card"
+            className="md:hidden absolute left-1 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-[#1e1e1e]/90 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-2xl z-30 transition-all active:scale-90 cursor-pointer hover:bg-black"
+          >
+            <ArrowLeft className="w-5 h-5 text-white stroke-[2.2]" />
+          </button>
+
+          {/* Mobile Right Navigation Arrow */}
+          <button
+            type="button"
+            onClick={() => handleScroll('right')}
+            aria-label="Next card"
+            className="md:hidden absolute right-1 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-[#1e1e1e]/90 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-2xl z-30 transition-all active:scale-90 cursor-pointer hover:bg-black"
+          >
+            <ArrowRight className="w-5 h-5 text-white stroke-[2.2]" />
+          </button>
+
+          {/* Scrollable Container on Mobile, Standard Grid on Desktop */}
+          <div
+            ref={scrollContainerRef}
+            onScroll={checkScroll}
+            onTouchStart={() => {
+              isInteractingRef.current = true;
+            }}
+            onTouchEnd={() => {
+              clearTimeout(resumeTimeoutRef.current);
+              resumeTimeoutRef.current = setTimeout(() => {
+                isInteractingRef.current = false;
+              }, 4000);
+            }}
+            onMouseEnter={() => {
+              isInteractingRef.current = true;
+            }}
+            onMouseLeave={() => {
+              isInteractingRef.current = false;
+            }}
+            className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8 overflow-x-auto md:overflow-visible pb-4 pt-1 snap-x snap-mandatory scroll-smooth text-left [&::-webkit-scrollbar]:hidden"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+            }}
+          >
+            {areas.map((area, idx) => (
+              <div
+                key={idx}
+                className="w-[84vw] sm:w-[340px] md:w-auto shrink-0 md:shrink snap-center flex flex-col"
+              >
+                <div className="h-full bg-[#3d3d3d] border border-[#4d4d4d] rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:shadow-black/20 hover:-translate-y-2 transition-all duration-300 group flex flex-col">
+                  <div className="w-full h-52 overflow-hidden bg-[#2d2d2d]">
+                    <img
+                      src={area.image}
+                      alt={area.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90 group-hover:opacity-100"
+                    />
+                  </div>
+                  <div className="p-7 sm:p-8 flex-grow relative flex flex-col justify-between">
+                    <div>
+                      <h3
+                        className="text-xl font-bold text-transparent bg-clip-text mb-3 inline-block"
+                        style={{ backgroundImage: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
+                      >
+                        {area.title}
+                      </h3>
+                      <p className="text-slate-200 leading-relaxed text-sm">{area.desc}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="p-8 flex-grow relative">
-                <h3 className="text-xl font-bold text-transparent bg-clip-text mb-3 inline-block" style={{ backgroundImage: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>{area.title}</h3>
-                <p className="text-slate-200 leading-relaxed text-sm">{area.desc}</p>
-              </div>
-            </AnimatedFadeIn>
-          ))}
+            ))}
+          </div>
+
+          {/* Mobile Pagination Indicator Dots */}
+          <div className="flex md:hidden justify-center items-center gap-1.5 mt-4">
+            {areas.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => {
+                  if (scrollContainerRef.current) {
+                    const cardWidth = scrollContainerRef.current.clientWidth * 0.85;
+                    scrollContainerRef.current.scrollTo({
+                      left: i * (cardWidth + 20),
+                      behavior: 'smooth',
+                    });
+                  }
+                }}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  activeIndex === i ? 'w-6 bg-[#1f6fb2]' : 'w-1.5 bg-slate-300'
+                }`}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
         </div>
 
         <AnimatedFadeIn delay={0.6} className="bg-[#1f6fb2] border border-[#1f6fb2]/30 text-white rounded-[2rem] p-10 md:p-12 text-center shadow-2xl relative overflow-hidden">

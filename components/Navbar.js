@@ -325,7 +325,7 @@ export default function Navbar() {
                 fontSize: '1.15rem',
                 color: '#ffffff'
               }}>
-                OpenIntelligence
+                Open Intelligence
               </span>
             </Link>
           </div>
