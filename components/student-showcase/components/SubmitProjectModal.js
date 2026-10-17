@@ -57,8 +57,7 @@ export const SubmitProjectModal = ({
 
     // 2) Project Information
     projectTitle: '',
-    domain: 'AI & Machine Learning',
-    
+    domain: '',
     problemStatement: '',
     solution: '',
     usp: '',
@@ -176,8 +175,8 @@ export const SubmitProjectModal = ({
         dob: formData.dob,
 
         projectTitle: formData.projectTitle.trim(),
-        domain: formData.domain,
-        category: formData.domain,
+        domain: formData.domain.trim() || 'AI & Machine Learning',
+        category: formData.domain.trim() || 'AI & Machine Learning',
         problemStatement: formData.problemStatement.trim(),
         solution: formData.solution.trim(),
         usp: formData.usp.trim(),
@@ -592,19 +591,26 @@ export const SubmitProjectModal = ({
                       <label className="text-xs font-bold text-slate-700">
                         Domain / Category <span className="text-red-500">*</span>
                       </label>
-                      <select
+                      <input
+                        type="text"
+                        list="domainList"
                         value={formData.domain}
                         onChange={(e) => updateField('domain', e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#2ec4b6] focus:ring-2 focus:ring-[#2ec4b6]/20 transition-all cursor-pointer"
-                      >
-                        <option value="AI & Machine Learning">AI & Machine Learning</option>
-                        <option value="Robotics & GreenTech">Robotics & GreenTech</option>
-                        <option value="Cybersecurity & Web3">Cybersecurity & Web3</option>
-                        <option value="IoT & Hardware">IoT & Hardware</option>
-                        <option value="Healthcare & Assistive">Healthcare & Assistive</option>
-                        <option value="FinTech & NextGen Web">FinTech & NextGen Web</option>
-                        <option value="Cloud, DevOps & Agents">Cloud, DevOps & Agents</option>
-                      </select>
+                        placeholder="e.g. AI & Machine Learning / Web3 / IoT"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#2ec4b6] focus:ring-2 focus:ring-[#2ec4b6]/20 transition-all placeholder:text-slate-400"
+                      />
+                      <datalist id="domainList">
+                        <option value="AI & Machine Learning" />
+                        <option value="Generative AI & LLMs" />
+                        <option value="Robotics & GreenTech" />
+                        <option value="Cybersecurity & Web3" />
+                        <option value="IoT & Hardware" />
+                        <option value="Healthcare & Assistive Tech" />
+                        <option value="FinTech & NextGen Web" />
+                        <option value="Cloud, DevOps & Agents" />
+                        <option value="Mobile App & Cross-Platform" />
+                        <option value="AR / VR & Spatial Computing" />
+                      </datalist>
                     </div>
                   </div>
 

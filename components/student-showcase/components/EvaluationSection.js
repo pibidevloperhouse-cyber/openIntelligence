@@ -117,8 +117,8 @@ const CRITERIA = [
   },
   {
     id: 'demo',
-    percent: 15,
-    weight: '15 Pts',
+    percent: 20,
+    weight: '20 Pts',
     title: 'Working Demo & Docs',
     description:
       'Live functional demonstration, clear setup guide, and architectural documentation.',
@@ -129,7 +129,7 @@ const CRITERIA = [
     iconBg: 'bg-white/95 border-orange-200/90',
     badgeBg: 'bg-orange-100/90 text-orange-950 border-orange-300/80',
     rubric: [
-      { label: 'Working Live Prototype Link', pts: '5 pts' },
+      { label: 'Working Live Prototype Link', pts: '10 pts' },
       { label: 'Comprehensive README & Docs', pts: '5 pts' },
       { label: 'Demo Video / Walkthrough', pts: '5 pts' },
     ],
@@ -137,9 +137,9 @@ const CRITERIA = [
   },
   {
     id: 'voting',
-    percent: 15,
-    weight: '15 Pts',
-    title: 'Public Voting & Shortlist',
+    percent: 10,
+    weight: '10 Pts',
+    title: 'Audience voting system',
     description:
       'Shortlisted projects announced on our website after Nov 30, opening for open public voting and community evaluation.',
     cardBg: 'bg-[#FAF5FF]',
@@ -149,9 +149,7 @@ const CRITERIA = [
     iconBg: 'bg-white/95 border-purple-200/90',
     badgeBg: 'bg-purple-100/90 text-purple-950 border-purple-300/80',
     rubric: [
-      { label: 'Shortlist Announcement (Post Nov 30)', pts: '5 pts' },
-      { label: 'Public Website Voting & Upvotes', pts: '5 pts' },
-      { label: 'Peer Engagement & Community Reach', pts: '5 pts' },
+      { label: 'Audience Vote', pts: '10 pts' },
     ],
     icon: Users,
   },
@@ -235,8 +233,6 @@ export const EvaluationSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3 mb-10 sm:mb-12">
-          
-
           <h2
             className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight"
             style={{ fontFamily: 'var(--font-plus-jakarta)' }}
