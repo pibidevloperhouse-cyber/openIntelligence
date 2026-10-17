@@ -722,4 +722,31 @@ body {
 
 .animate-gentle-pulse {
   animation: gentlePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ── Evaluation Section Auto-Running Marquee ────────────────────── */
+@keyframes evalMarquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.eval-marquee-track {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  width: max-content !important;
+  animation: evalMarquee 45s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+}
+
+.eval-marquee-track.paused,
+.eval-marquee-track:hover {
+  animation-play-state: paused !important;
 }

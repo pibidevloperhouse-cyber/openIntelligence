@@ -2079,12 +2079,22 @@ export default function AdminPage() {
                     const q = studentSearch.toLowerCase();
                     const matchLead = p.lead_student?.toLowerCase().includes(q);
                     const matchInst = p.institution?.toLowerCase().includes(q);
+                    const matchEmail = p.email?.toLowerCase().includes(q);
+                    const matchPhone = p.phone?.toLowerCase().includes(q);
+                    const matchDept = p.dept?.toLowerCase().includes(q);
+                    const matchYear = p.year?.toLowerCase().includes(q);
+                    const matchDob = p.dob?.toLowerCase().includes(q);
+                    const matchProblem = p.problem_statement?.toLowerCase().includes(q);
+                    const matchSolution = p.solution?.toLowerCase().includes(q);
+                    const matchUsp = p.usp?.toLowerCase().includes(q);
+                    const matchOutcome = p.outcome?.toLowerCase().includes(q);
                     const matchTitle = p.title?.toLowerCase().includes(q);
                     const matchTagline = p.tagline?.toLowerCase().includes(q);
+                    const matchPitch = p.pitch?.toLowerCase().includes(q);
                     const matchDesc = p.description?.toLowerCase().includes(q);
                     const matchTags = Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase().includes(q));
                     const matchTeam = Array.isArray(p.team_members) && p.team_members.some(m => m.toLowerCase().includes(q));
-                    return matchLead || matchInst || matchTitle || matchTagline || matchDesc || matchTags || matchTeam;
+                    return matchLead || matchInst || matchEmail || matchPhone || matchDept || matchYear || matchDob || matchProblem || matchSolution || matchUsp || matchOutcome || matchTitle || matchTagline || matchPitch || matchDesc || matchTags || matchTeam;
                   }
                   return true;
                 });
@@ -2153,7 +2163,7 @@ export default function AdminPage() {
                                 color: '#1f6fb2', border: '1px solid rgba(31, 111, 178, 0.2)',
                                 padding: '3px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.2px'
                               }}>
-                                {proj.category || 'AI & ML'}
+                                {proj.domain || proj.category || 'AI & ML'}
                               </span>
 
                               {/* Status Badge */}
@@ -2200,43 +2210,89 @@ export default function AdminPage() {
                             </div>
                           </div>
 
-                          {/* Title & Tagline */}
+                          {/* Title & Pitch / Tagline */}
                           <div>
                             <h3 style={{ margin: '0 0 4px', fontSize: '1.25rem', color: 'var(--text-primary)', fontWeight: 800 }}>
                               {proj.title}
                             </h3>
-                            {proj.tagline && (
+                            {(proj.pitch || proj.tagline) && (
                               <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem', fontStyle: 'italic' }}>
-                                "{proj.tagline}"
+                                "{proj.pitch || proj.tagline}"
                               </p>
                             )}
                           </div>
 
-                          {/* Student Details Grid */}
+                          {/* Student Details Grid (Step 1 info) */}
                           <div style={{
-                            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                            gap: '0.75rem', padding: '0.9rem 1.1rem', background: 'var(--bg-secondary, #f8fafc)',
-                            borderRadius: '10px', border: '1px solid var(--border)'
+                            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                            gap: '0.75rem', padding: '1rem 1.15rem', background: 'var(--bg-secondary, #f8fafc)',
+                            borderRadius: '12px', border: '1px solid var(--border)'
                           }}>
                             <div>
-                              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Lead Student</div>
+                              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Lead Student</div>
                               <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <span>👤</span> {proj.lead_student}
                               </div>
                             </div>
                             <div>
-                              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>College / University</div>
+                              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>College / University</div>
                               <div style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <span>🏛️</span> {proj.institution}
                               </div>
                             </div>
+                            {proj.email && (
+                              <div>
+                                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Email Address</div>
+                                <div style={{ fontSize: '0.88rem', fontWeight: 600, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span>✉️</span>
+                                  <a href={`mailto:${proj.email}`} style={{ color: '#1f6fb2', textDecoration: 'none' }}>
+                                    {proj.email}
+                                  </a>
+                                </div>
+                              </div>
+                            )}
+                            {proj.phone && (
+                              <div>
+                                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Phone Number</div>
+                                <div style={{ fontSize: '0.88rem', fontWeight: 600, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span>📞</span>
+                                  <a href={`tel:${proj.phone}`} style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>
+                                    {proj.phone}
+                                  </a>
+                                </div>
+                              </div>
+                            )}
+                            {proj.dept && (
+                              <div>
+                                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Department</div>
+                                <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span>🎓</span> {proj.dept}
+                                </div>
+                              </div>
+                            )}
+                            {proj.year && (
+                              <div>
+                                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Year of Study</div>
+                                <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span>📚</span> {proj.year}
+                                </div>
+                              </div>
+                            )}
+                            {proj.dob && (
+                              <div>
+                                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Date of Birth (D.O.B)</div>
+                                <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span>📅</span> {proj.dob}
+                                </div>
+                              </div>
+                            )}
                             {Array.isArray(proj.team_members) && proj.team_members.length > 0 && (
                               <div style={{ gridColumn: '1 / -1' }}>
-                                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em', marginBottom: '4px' }}>Team Members</div>
+                                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em', marginBottom: '4px' }}>Team Members</div>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                                   {proj.team_members.map((member, i) => (
                                     <span key={i} style={{ fontSize: '0.78rem', background: '#ffffff', border: '1px solid var(--border)', padding: '2px 8px', borderRadius: '6px', color: 'var(--text-primary)' }}>
-                                      {member}
+                                      👥 {member}
                                     </span>
                                   ))}
                                 </div>
@@ -2244,8 +2300,66 @@ export default function AdminPage() {
                             )}
                           </div>
 
-                          {/* Description excerpt */}
-                          {proj.description && (
+                          {/* Problem & Solution Highlights (Step 2 info) */}
+                          {(proj.problem_statement || proj.solution) && (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.75rem' }}>
+                              {proj.problem_statement && (
+                                <div style={{ padding: '0.85rem 1rem', background: 'rgba(239, 68, 68, 0.04)', borderRadius: '10px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                                  <div style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#dc2626', letterSpacing: '0.04em', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                    <span>🔴</span> Problem Statement
+                                  </div>
+                                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-primary)', lineHeight: 1.55 }}>
+                                    {proj.problem_statement}
+                                  </p>
+                                </div>
+                              )}
+                              {proj.solution && (
+                                <div style={{ padding: '0.85rem 1rem', background: 'rgba(16, 185, 129, 0.04)', borderRadius: '10px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                                  <div style={{ fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#059669', letterSpacing: '0.04em', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                    <span>🟢</span> Proposed Solution
+                                  </div>
+                                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-primary)', lineHeight: 1.55 }}>
+                                    {proj.solution}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* USP & Outcome (Step 2 info) */}
+                          {(proj.usp || proj.outcome) && (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.65rem' }}>
+                              {proj.usp && (
+                                <div style={{ padding: '0.65rem 0.95rem', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '9px', fontSize: '0.82rem' }}>
+                                  <strong style={{ color: '#b45309', display: 'block', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>
+                                    ⚡ Unique Selling Proposition (USP)
+                                  </strong>
+                                  <span style={{ color: '#78350f', lineHeight: 1.45 }}>{proj.usp}</span>
+                                </div>
+                              )}
+                              {proj.outcome && (
+                                <div style={{ padding: '0.65rem 0.95rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '9px', fontSize: '0.82rem' }}>
+                                  <strong style={{ color: '#166534', display: 'block', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>
+                                    🎯 Expected Outcome & Impact
+                                  </strong>
+                                  <span style={{ color: '#14532d', lineHeight: 1.45 }}>{proj.outcome}</span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Technical Architecture Summary */}
+                          {proj.technical_summary && (
+                            <div style={{ padding: '0.7rem 0.95rem', background: '#f8fafc', border: '1px solid var(--border)', borderRadius: '9px', fontSize: '0.82rem' }}>
+                              <strong style={{ color: '#334155', display: 'block', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '3px' }}>
+                                🛠️ Technical Architecture / Stack
+                              </strong>
+                              <span style={{ color: '#475569', lineHeight: 1.5, fontFamily: 'monospace', fontSize: '0.8rem' }}>{proj.technical_summary}</span>
+                            </div>
+                          )}
+
+                          {/* Description excerpt (if not duplicated) */}
+                          {proj.description && !proj.problem_statement && (
                             <p style={{
                               margin: 0, color: 'var(--text-secondary)', fontSize: '0.88rem', lineHeight: 1.6,
                               display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden'
@@ -2267,7 +2381,7 @@ export default function AdminPage() {
 
                           {/* Action Toolbar */}
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border)' }}>
-                            {/* External Links */}
+                            {/* External Deliverable Links (Step 3 info) */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                               {proj.demo_url && (
                                 <a
@@ -2303,12 +2417,46 @@ export default function AdminPage() {
                                   <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                                 </a>
                               )}
+                              {proj.presentation_url && (
+                                <a
+                                  href={proj.presentation_url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  style={{
+                                    display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                    padding: '0.4rem 0.8rem', borderRadius: '7px',
+                                    background: 'rgba(124, 58, 237, 0.08)', color: '#7c3aed',
+                                    border: '1px solid rgba(124, 58, 237, 0.25)', fontSize: '0.78rem',
+                                    fontWeight: 600, textDecoration: 'none'
+                                  }}
+                                >
+                                  <span>📊 Slides</span>
+                                  <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                </a>
+                              )}
+                              {proj.video_url && (
+                                <a
+                                  href={proj.video_url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  style={{
+                                    display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                    padding: '0.4rem 0.8rem', borderRadius: '7px',
+                                    background: 'rgba(220, 38, 38, 0.08)', color: '#dc2626',
+                                    border: '1px solid rgba(220, 38, 38, 0.25)', fontSize: '0.78rem',
+                                    fontWeight: 600, textDecoration: 'none'
+                                  }}
+                                >
+                                  <span>▶ Video</span>
+                                  <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                </a>
+                              )}
                               <Btn
                                 variant="outline"
                                 onClick={() => setViewingStudentProject(proj)}
                                 style={{ padding: '0.4rem 0.8rem', fontSize: '0.78rem' }}
                               >
-                                View Details
+                                View Full Details
                               </Btn>
                             </div>
 
@@ -2614,11 +2762,10 @@ export default function AdminPage() {
               background: '#fafafb'
             }}>
               {/* Tagline / Pitch */}
-              {viewingStudentProject.tagline && (
+              {(viewingStudentProject.pitch || viewingStudentProject.tagline) && (
                 <div style={{
                   padding: '1rem 1.25rem',
                   background: '#ffffff',
-                  borderLeft: '4px solid #1f6fb2',
                   borderRadius: '10px',
                   border: '1px solid #e2e8f0',
                   borderLeftWidth: '4px',
@@ -2626,10 +2773,10 @@ export default function AdminPage() {
                   boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
                 }}>
                   <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: '#64748b', fontWeight: 800, letterSpacing: '0.06em', marginBottom: '4px' }}>
-                    TAGLINE / ONE-LINE PITCH
+                    TAGLINE / ELEVATOR PITCH
                   </div>
                   <div style={{ fontSize: '0.98rem', fontStyle: 'italic', color: '#1e293b', fontWeight: 500, lineHeight: 1.5 }}>
-                    "{viewingStudentProject.tagline}"
+                    "{viewingStudentProject.pitch || viewingStudentProject.tagline}"
                   </div>
                 </div>
               )}
@@ -2647,7 +2794,7 @@ export default function AdminPage() {
               }}>
                 <div>
                   <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
-                    Lead Student
+                    Lead Student Name
                   </div>
                   <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0f172a', marginTop: '3px' }}>
                     {viewingStudentProject.lead_student}
@@ -2662,6 +2809,65 @@ export default function AdminPage() {
                     {viewingStudentProject.institution}
                   </div>
                 </div>
+
+                {viewingStudentProject.email && (
+                  <div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                      Email Address
+                    </div>
+                    <div style={{ fontSize: '0.92rem', fontWeight: 600, color: '#1f6fb2', marginTop: '3px' }}>
+                      <a href={`mailto:${viewingStudentProject.email}`} style={{ color: '#1f6fb2', textDecoration: 'none' }}>
+                        {viewingStudentProject.email}
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                {viewingStudentProject.phone && (
+                  <div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                      Phone Number
+                    </div>
+                    <div style={{ fontSize: '0.92rem', fontWeight: 600, color: '#0f172a', marginTop: '3px' }}>
+                      <a href={`tel:${viewingStudentProject.phone}`} style={{ color: '#0f172a', textDecoration: 'none' }}>
+                        {viewingStudentProject.phone}
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                {viewingStudentProject.dept && (
+                  <div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                      Department
+                    </div>
+                    <div style={{ fontSize: '0.92rem', fontWeight: 600, color: '#0f172a', marginTop: '3px' }}>
+                      {viewingStudentProject.dept}
+                    </div>
+                  </div>
+                )}
+
+                {viewingStudentProject.year && (
+                  <div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                      Year of Study
+                    </div>
+                    <div style={{ fontSize: '0.92rem', fontWeight: 600, color: '#0f172a', marginTop: '3px' }}>
+                      {viewingStudentProject.year}
+                    </div>
+                  </div>
+                )}
+
+                {viewingStudentProject.dob && (
+                  <div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                      Date of Birth (D.O.B)
+                    </div>
+                    <div style={{ fontSize: '0.92rem', fontWeight: 600, color: '#0f172a', marginTop: '3px' }}>
+                      {viewingStudentProject.dob}
+                    </div>
+                  </div>
+                )}
 
                 {Array.isArray(viewingStudentProject.team_members) && viewingStudentProject.team_members.length > 0 && (
                   <div style={{ gridColumn: '1 / -1' }}>
@@ -2710,10 +2916,59 @@ export default function AdminPage() {
                 </div>
               </div>
 
+              {/* Project Problem & Solution Breakdown */}
+              {(viewingStudentProject.problem_statement || viewingStudentProject.solution) && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                  {viewingStudentProject.problem_statement && (
+                    <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                      <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#b91c1c', fontWeight: 800, letterSpacing: '0.05em', marginBottom: '6px' }}>
+                        🔴 Problem Statement
+                      </div>
+                      <div style={{ fontSize: '0.92rem', lineHeight: 1.6, color: '#1e293b', whiteSpace: 'pre-wrap' }}>
+                        {viewingStudentProject.problem_statement}
+                      </div>
+                    </div>
+                  )}
+
+                  {viewingStudentProject.solution && (
+                    <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                      <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#15803d', fontWeight: 800, letterSpacing: '0.05em', marginBottom: '6px' }}>
+                        🟢 Proposed Solution
+                      </div>
+                      <div style={{ fontSize: '0.92rem', lineHeight: 1.6, color: '#1e293b', whiteSpace: 'pre-wrap' }}>
+                        {viewingStudentProject.solution}
+                      </div>
+                    </div>
+                  )}
+
+                  {viewingStudentProject.usp && (
+                    <div style={{ background: '#fffbeb', padding: '1rem 1.25rem', borderRadius: '12px', border: '1px solid #fde68a' }}>
+                      <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#b45309', fontWeight: 800, letterSpacing: '0.05em', marginBottom: '4px' }}>
+                        ⚡ Unique Selling Proposition (USP)
+                      </div>
+                      <div style={{ fontSize: '0.92rem', color: '#78350f', fontWeight: 500 }}>
+                        {viewingStudentProject.usp}
+                      </div>
+                    </div>
+                  )}
+
+                  {viewingStudentProject.outcome && (
+                    <div style={{ background: '#f0fdf4', padding: '1rem 1.25rem', borderRadius: '12px', border: '1px solid #bbf7d0' }}>
+                      <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#166534', fontWeight: 800, letterSpacing: '0.05em', marginBottom: '4px' }}>
+                        🎯 Expected Outcome & Impact
+                      </div>
+                      <div style={{ fontSize: '0.92rem', color: '#14532d', fontWeight: 500 }}>
+                        {viewingStudentProject.outcome}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Description */}
               <div>
                 <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#475569', fontWeight: 800, letterSpacing: '0.05em', marginBottom: '8px' }}>
-                  Project Description & Problem Solved
+                  Project Full Description
                 </div>
                 <div style={{
                   fontSize: '0.94rem',
@@ -2729,6 +2984,27 @@ export default function AdminPage() {
                   {viewingStudentProject.description}
                 </div>
               </div>
+
+              {/* Technical Summary */}
+              {viewingStudentProject.technical_summary && (
+                <div>
+                  <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#475569', fontWeight: 800, letterSpacing: '0.05em', marginBottom: '8px' }}>
+                    Technical Architecture / Summary
+                  </div>
+                  <div style={{
+                    fontSize: '0.92rem',
+                    lineHeight: 1.6,
+                    color: '#0f172a',
+                    background: '#ffffff',
+                    padding: '1rem 1.25rem',
+                    borderRadius: '12px',
+                    border: '1px solid #e2e8f0',
+                    fontFamily: 'monospace'
+                  }}>
+                    {viewingStudentProject.technical_summary}
+                  </div>
+                </div>
+              )}
 
               {/* Tech Stack Tags */}
               {Array.isArray(viewingStudentProject.tags) && viewingStudentProject.tags.length > 0 && (
@@ -2762,7 +3038,7 @@ export default function AdminPage() {
                     target="_blank"
                     rel="noreferrer"
                     style={{
-                      flex: '1 1 220px',
+                      flex: '1 1 200px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -2780,17 +3056,76 @@ export default function AdminPage() {
                     onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
                     onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
                   >
-                    <span>🌐 Open Live Demo / Video Pitch</span>
+                    <span>🌐 Live Prototype / Demo</span>
                     <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                   </a>
                 )}
+
+                {viewingStudentProject.video_url && (
+                  <a
+                    href={viewingStudentProject.video_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      flex: '1 1 180px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '0.8rem 1.25rem',
+                      borderRadius: '10px',
+                      background: '#dc2626',
+                      color: '#ffffff',
+                      textDecoration: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.88rem',
+                      boxShadow: '0 4px 12px rgba(220, 38, 38, 0.25)',
+                      transition: 'transform 0.15s'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                  >
+                    <span>▶ Video Walkthrough</span>
+                    <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                  </a>
+                )}
+
+                {viewingStudentProject.presentation_url && (
+                  <a
+                    href={viewingStudentProject.presentation_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      flex: '1 1 180px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '0.8rem 1.25rem',
+                      borderRadius: '10px',
+                      background: '#7c3aed',
+                      color: '#ffffff',
+                      textDecoration: 'none',
+                      fontWeight: 700,
+                      fontSize: '0.88rem',
+                      boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
+                      transition: 'transform 0.15s'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                  >
+                    <span>📊 Presentation Slides</span>
+                    <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                  </a>
+                )}
+
                 {viewingStudentProject.github_url && (
                   <a
                     href={viewingStudentProject.github_url}
                     target="_blank"
                     rel="noreferrer"
                     style={{
-                      flex: '1 1 200px',
+                      flex: '1 1 180px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',

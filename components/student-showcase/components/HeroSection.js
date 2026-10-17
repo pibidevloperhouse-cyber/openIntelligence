@@ -227,9 +227,11 @@ export const HeroSection = ({
     };
   };
 
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft);
+  const [hasMounted, setHasMounted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, isClosed: false });
 
   useEffect(() => {
+    setHasMounted(true);
     setTimeLeft(calculateTimeLeft());
 
     const timer = setInterval(() => {

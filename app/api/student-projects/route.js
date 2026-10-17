@@ -38,45 +38,125 @@ export async function POST(request) {
 
     const body = await request.json();
     const {
-      title,
-      category,
-      tagline,
+      // Step 1: Personal Information
+      name,
       leadStudent,
+      email,
+      phone,
+      phoneNo,
+      college,
       institution,
-      teamMembers,
-      description,
+      dept,
+      year,
+      dob,
+
+      // Step 2: Project Information
+      projectTitle,
+      title,
+      domain,
+      category,
+      problemStatement,
+      solution,
+      usp,
+      outcome,
+
+      // Step 3: Working Demo
+      githubLink,
       githubUrl,
+      presentation,
+      presentationUrl,
+      video,
+      videoUrl,
+      technicalSummary,
+      pitch,
+      tagline,
       demoUrl,
+      teamMembers,
       tags,
     } = body;
 
-    if (!title || !leadStudent || !institution || !description || !demoUrl) {
-      return NextResponse.json(
-        { error: 'Missing required fields. Title, Lead Student, Institution, Description, and Live Demo URL are required.' },
-        { status: 400 }
-      );
+    const finalName = (name || leadStudent || '').trim();
+    const finalCollege = (college || institution || '').trim();
+    const finalEmail = (email || '').trim();
+    const finalPhone = (phone || phoneNo || '').trim();
+    const finalTitle = (projectTitle || title || '').trim();
+    const finalDomain = (domain || category || 'AI & ML').trim();
+    const finalProblem = (problemStatement || '').trim();
+    const finalSolution = (solution || '').trim();
+    const finalUsp = (usp || '').trim();
+    const finalOutcome = (outcome || '').trim();
+    const finalGithub = (githubLink || githubUrl || '').trim();
+    const finalPresentation = (presentation || presentationUrl || '').trim();
+    const finalVideo = (video || videoUrl || '').trim();
+    const finalTechSummary = (technicalSummary || '').trim();
+    const finalPitch = (pitch || tagline || '').trim();
+    const finalDemoUrl = (finalVideo || demoUrl || finalPresentation || finalGithub || '').trim();
+
+    if (!finalName) {
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+    }
+    if (!finalEmail) {
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    }
+    if (!finalPhone) {
+      return NextResponse.json({ error: 'Phone number is required' }, { status: 400 });
+    }
+    if (!finalCollege) {
+      return NextResponse.json({ error: 'College / University is required' }, { status: 400 });
+    }
+    if (!finalTitle) {
+      return NextResponse.json({ error: 'Project Title is required' }, { status: 400 });
+    }
+    if (!finalProblem) {
+      return NextResponse.json({ error: 'Problem Statement is required' }, { status: 400 });
+    }
+    if (!finalSolution) {
+      return NextResponse.json({ error: 'Solution is required' }, { status: 400 });
     }
 
-    const membersArray = Array.isArray(teamMembers)
+    const membersArray = Array.isArray(teamMembers) && teamMembers.length > 0
       ? teamMembers.map((m) => String(m).trim()).filter(Boolean)
-      : [leadStudent.trim()];
+      : [finalName];
 
-    const tagsArray = Array.isArray(tags)
+    const tagsArray = Array.isArray(tags) && tags.length > 0
       ? tags.map((t) => String(t).trim()).filter(Boolean)
-      : [category || 'AI & ML', 'Prototype'];
+      : [finalDomain, '2026 Candidate', 'Prototype'];
+
+    const fullDescription = [
+      finalProblem ? `### Problem Statement\n${finalProblem}` : '',
+      finalSolution ? `### Proposed Solution\n${finalSolution}` : '',
+      finalUsp ? `### Unique Selling Proposition (USP)\n${finalUsp}` : '',
+      finalOutcome ? `### Expected Outcome\n${finalOutcome}` : '',
+      finalTechSummary ? `### Technical Summary\n${finalTechSummary}` : '',
+    ].filter(Boolean).join('\n\n');
 
     const insertPayload = {
-      title: title.trim(),
-      category: category || 'AI & ML',
-      tagline: tagline ? tagline.trim() : null,
-      lead_student: leadStudent.trim(),
-      institution: institution.trim(),
+      title: finalTitle,
+      category: finalDomain,
+      domain: finalDomain,
+      tagline: finalPitch || (finalUsp ? `USP: ${finalUsp.slice(0, 100)}` : null),
+      lead_student: finalName,
+      institution: finalCollege,
+      email: finalEmail,
+      phone: finalPhone,
+      dept: (dept || '').trim() || null,
+      year: (year || '').trim() || null,
+      dob: (dob || '').trim() || null,
+      problem_statement: finalProblem || null,
+      solution: finalSolution || null,
+      usp: finalUsp || null,
+      outcome: finalOutcome || null,
+      technical_summary: finalTechSummary || null,
+      pitch: finalPitch || null,
+      github_url: finalGithub || null,
+      presentation_url: finalPresentation || null,
+      video_url: finalVideo || null,
+      demo_url: finalDemoUrl || 'https://pibiopenintelligence.org',
       team_members: membersArray,
-      description: description.trim(),
-      github_url: githubUrl ? githubUrl.trim() : null,
-      demo_url: demoUrl.trim(),
+      description: fullDescription || 'Student innovation project for 2026 National Showcase',
       tags: tagsArray,
       status: 'PENDING',
+      raw_data: body,
     };
 
     const { data, error } = await supabaseAdmin
