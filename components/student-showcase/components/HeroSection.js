@@ -281,7 +281,7 @@ export const HeroSection = ({
                     WebkitTextFillColor: 'transparent',
                   }}
                 >
-                  Top 3 Cash Prizes & Get Featured on{' '}
+                  Get Cash Prizes & Featured on{' '}
                   <span className="block">PiBi Open Intelligence.</span>
                 </h3>
 
