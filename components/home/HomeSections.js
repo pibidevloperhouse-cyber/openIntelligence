@@ -183,6 +183,18 @@ export function ContributeSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const isInteractingRef = useRef(false);
   const resumeTimeoutRef = useRef(null);
+  const [isTop10Active, setIsTop10Active] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/student-projects/settings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && typeof data.isTop10Active === 'boolean') {
+          setIsTop10Active(data.isTop10Active);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const areas = [
     { title: "AI Training Data", desc: "Datasets and evaluation resources that help AI learn better.", image: "/ai.jpeg" },
@@ -319,50 +331,107 @@ export function ContributeSection() {
                   box-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
                 }
               }
+              @keyframes top10SuperPulse {
+                0%, 100% {
+                  box-shadow: 0 0 20px rgba(245, 158, 11, 0.5), 0 0 35px rgba(225, 29, 72, 0.4);
+                  border-color: rgba(251, 191, 36, 0.7);
+                  transform: scale(1);
+                }
+                50% {
+                  box-shadow: 0 0 35px rgba(245, 158, 11, 0.95), 0 0 65px rgba(244, 63, 94, 0.8), 0 0 90px rgba(251, 191, 36, 0.5);
+                  border-color: #ffffff;
+                  transform: scale(1.03);
+                }
+              }
               @keyframes arrowNudgeAnim {
                 0%, 100% { transform: translateX(0); }
                 50% { transform: translateX(5px); }
               }
             `}</style>
-            <Link
-              href="/students"
-              className="inline-flex items-center gap-3.5 px-8 py-4 rounded-full text-white font-extrabold text-base transition-all duration-300 cursor-pointer"
-              style={{
-                background: 'linear-gradient(115deg, #1f6fb2 0%, #0ea5e9 30%, #2ec4b6 70%, #10b981 100%)',
-                backgroundSize: '200% 200%',
-                border: '1.5px solid rgba(56, 189, 248, 0.85)',
-                animation: 'studentSuperPulse 2s ease-in-out infinite, studentGradShimmer 4s ease infinite',
-              }}
-            >
-              {/* Vibrant Live Blinking Radar Dot */}
-              <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, flexShrink: 0 }}>
-                <span style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: '#4ade80', animation: 'liveBeaconWave1 1.6s cubic-bezier(0, 0, 0.2, 1) infinite' }} />
-                <span style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: '#38bdf8', animation: 'liveBeaconWave2 1.6s cubic-bezier(0, 0, 0.2, 1) infinite 0.5s' }} />
-                <span style={{ position: 'relative', width: 10, height: 10, borderRadius: '50%', background: 'radial-gradient(circle, #ffffff 35%, #22c55e 80%)', animation: 'liveCoreFlash 1.2s ease-in-out infinite' }} />
-              </span>
-
-              <span className="tracking-tight text-white drop-shadow-sm">🎓 Student AI Innovation & Contributions</span>
-
-              <span
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link
+                href="/students"
+                className="inline-flex items-center gap-3.5 px-7 py-3.5 md:px-8 md:py-4 rounded-full text-white font-extrabold text-sm md:text-base transition-all duration-300 cursor-pointer shadow-lg hover:scale-[1.02]"
                 style={{
-                  fontSize: '0.65rem',
-                  fontWeight: 900,
-                  letterSpacing: '0.06em',
-                  padding: '2px 7px',
-                  borderRadius: '9999px',
-                  background: 'rgba(255, 255, 255, 0.25)',
-                  backdropFilter: 'blur(4px)',
-                  border: '1px solid rgba(255, 255, 255, 0.7)',
-                  color: '#ffffff',
-                  animation: 'badgeGlowPulse 1.4s infinite ease-in-out',
-                  lineHeight: 1.2,
+                  background: 'linear-gradient(115deg, #1f6fb2 0%, #0ea5e9 30%, #2ec4b6 70%, #10b981 100%)',
+                  backgroundSize: '200% 200%',
+                  border: '1.5px solid rgba(56, 189, 248, 0.85)',
+                  animation: 'studentSuperPulse 2s ease-in-out infinite, studentGradShimmer 4s ease infinite',
                 }}
               >
-                NEW
-              </span>
+                {/* Vibrant Live Blinking Radar Dot */}
+                <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, flexShrink: 0 }}>
+                  <span style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: '#4ade80', animation: 'liveBeaconWave1 1.6s cubic-bezier(0, 0, 0.2, 1) infinite' }} />
+                  <span style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: '#38bdf8', animation: 'liveBeaconWave2 1.6s cubic-bezier(0, 0, 0.2, 1) infinite 0.5s' }} />
+                  <span style={{ position: 'relative', width: 10, height: 10, borderRadius: '50%', background: 'radial-gradient(circle, #ffffff 35%, #22c55e 80%)', animation: 'liveCoreFlash 1.2s ease-in-out infinite' }} />
+                </span>
 
-              <span style={{ animation: 'arrowNudgeAnim 1.5s infinite ease-in-out', display: 'inline-block' }} className="text-lg leading-none font-bold">&rarr;</span>
-            </Link>
+                <span className="tracking-tight text-white drop-shadow-sm">🎓 Student AI Innovation & Contributions</span>
+
+                <span
+                  style={{
+                    fontSize: '0.65rem',
+                    fontWeight: 900,
+                    letterSpacing: '0.06em',
+                    padding: '2px 7px',
+                    borderRadius: '9999px',
+                    background: 'rgba(255, 255, 255, 0.25)',
+                    backdropFilter: 'blur(4px)',
+                    border: '1px solid rgba(255, 255, 255, 0.7)',
+                    color: '#ffffff',
+                    animation: 'badgeGlowPulse 1.4s infinite ease-in-out',
+                    lineHeight: 1.2,
+                  }}
+                >
+                  NEW
+                </span>
+
+                <span style={{ animation: 'arrowNudgeAnim 1.5s infinite ease-in-out', display: 'inline-block' }} className="text-lg leading-none font-bold">&rarr;</span>
+              </Link>
+
+              {/* Top 10 Student Projects Button (Controlled via Admin ON / OFF Switch) */}
+              {isTop10Active && (
+                <Link
+                  href="/top-10"
+                  className="inline-flex items-center gap-3.5 px-7 py-3.5 md:px-8 md:py-4 rounded-full text-white font-extrabold text-sm md:text-base transition-all duration-300 cursor-pointer shadow-lg hover:scale-[1.02]"
+                  style={{
+                    background: 'linear-gradient(115deg, #d97706 0%, #ea580c 35%, #e11d48 70%, #9333ea 100%)',
+                    backgroundSize: '200% 200%',
+                    border: '1.5px solid rgba(251, 191, 36, 0.9)',
+                    animation: 'top10SuperPulse 2s ease-in-out infinite, studentGradShimmer 4s ease infinite',
+                  }}
+                >
+                  {/* Glowing Golden Trophy Beacon */}
+                  <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, flexShrink: 0 }}>
+                    <span style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: '#fbbf24', animation: 'liveBeaconWave1 1.6s cubic-bezier(0, 0, 0.2, 1) infinite' }} />
+                    <span style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: '#f43f5e', animation: 'liveBeaconWave2 1.6s cubic-bezier(0, 0, 0.2, 1) infinite 0.5s' }} />
+                    <span style={{ position: 'relative', width: 10, height: 10, borderRadius: '50%', background: 'radial-gradient(circle, #ffffff 35%, #f59e0b 80%)', animation: 'liveCoreFlash 1.2s ease-in-out infinite' }} />
+                  </span>
+
+                  <span className="tracking-tight text-white drop-shadow-sm">🏆 Top 10 Student Projects</span>
+
+                  <span
+                    style={{
+                      fontSize: '0.65rem',
+                      fontWeight: 900,
+                      letterSpacing: '0.06em',
+                      padding: '2px 7px',
+                      borderRadius: '9999px',
+                      background: 'rgba(255, 255, 255, 0.25)',
+                      backdropFilter: 'blur(4px)',
+                      border: '1px solid rgba(255, 255, 255, 0.7)',
+                      color: '#ffffff',
+                      animation: 'badgeGlowPulse 1.4s infinite ease-in-out',
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    VOTE NOW
+                  </span>
+
+                  <span style={{ animation: 'arrowNudgeAnim 1.5s infinite ease-in-out', display: 'inline-block' }} className="text-lg leading-none font-bold">&rarr;</span>
+                </Link>
+              )}
+            </div>
           </div>
         </AnimatedFadeIn>
 

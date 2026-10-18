@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import {
   Trophy,
@@ -208,10 +208,14 @@ export const HeroSection = ({
   onOpenSubmitModal,
   currency,
 }) => {
-  const calculateTimeLeft = () => {
+  const [deadlineString, setDeadlineString] = useState('2026-11-14T23:59:59+05:30');
+
+  const calculateTimeLeft = (dl = deadlineString) => {
     const now = Date.now();
-    // Target: November 14, 2026 23:59:59 IST (Night 12:00 Midnight)
-    const targetDate = new Date('2026-11-14T23:59:59+05:30').getTime();
+    let targetDate = new Date(dl).getTime();
+    if (isNaN(targetDate)) {
+      targetDate = new Date('2026-11-14T23:59:59+05:30').getTime();
+    }
     const difference = targetDate - now;
 
     if (difference <= 0) {
@@ -230,16 +234,51 @@ export const HeroSection = ({
   const [hasMounted, setHasMounted] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, isClosed: false });
 
+  // Fetch deadline dynamically from settings API
+  useEffect(() => {
+    fetch('/api/student-projects/settings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.countdownDeadline) {
+          setDeadlineString(data.countdownDeadline);
+          setTimeLeft(calculateTimeLeft(data.countdownDeadline));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     setHasMounted(true);
-    setTimeLeft(calculateTimeLeft());
+    setTimeLeft(calculateTimeLeft(deadlineString));
 
     const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
+      setTimeLeft(calculateTimeLeft(deadlineString));
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [deadlineString]);
+
+  const formattedDeadline = useMemo(() => {
+    try {
+      const dt = new Date(deadlineString);
+      if (isNaN(dt.getTime())) return 'November 14, 2026 • 11:59 PM IST';
+      return (
+        dt.toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric',
+        }) +
+        ' • ' +
+        dt.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true,
+        })
+      );
+    } catch {
+      return 'November 14, 2026 • 11:59 PM IST';
+    }
+  }, [deadlineString]);
 
   return (
     <section className="relative pt-12 pb-8 sm:pb-10 md:pt-16 md:pb-12 overflow-hidden bg-gradient-to-b from-white via-slate-50/60 to-white">
@@ -449,7 +488,7 @@ export const HeroSection = ({
                 </div>
 
                 <p className="text-xs sm:text-[13px] text-slate-500 max-w-md leading-relaxed pt-1">
-                  Deadline: <strong className="text-slate-900 font-bold">November 14, 2026 • 11:59 PM IST</strong>. Submit your working project before the timer expires to qualify for Top 3 evaluations.
+                  Deadline: <strong className="text-slate-900 font-bold">{formattedDeadline}</strong>. Submit your working project before the timer expires to qualify for Top 3 evaluations.
                 </p>
               </div>
 

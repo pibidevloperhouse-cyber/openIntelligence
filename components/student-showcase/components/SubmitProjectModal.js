@@ -75,6 +75,24 @@ export const SubmitProjectModal = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  // Registration lock state
+  const [isRegistrationClosed, setIsRegistrationClosed] = useState(false);
+  const [showClosedNotification, setShowClosedNotification] = useState(false);
+
+  // Fetch registration settings on modal open
+  useEffect(() => {
+    if (isOpen) {
+      fetch('/api/student-projects/settings')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && typeof data.isRegistrationClosed === 'boolean') {
+            setIsRegistrationClosed(data.isRegistrationClosed);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isOpen]);
+
   // Lock body scroll and handle Escape key
   useEffect(() => {
     if (isOpen) {
@@ -119,6 +137,13 @@ export const SubmitProjectModal = ({
   };
 
   const handleNext = () => {
+    // Check if registration is closed
+    if (isRegistrationClosed) {
+      setShowClosedNotification(true);
+      setError('Registration is Closed! Submissions for National Student Innovation Showcase 2026 are currently closed.');
+      return;
+    }
+
     if (currentStep === 1) {
       const err = validateStep1();
       if (err) {
@@ -145,6 +170,13 @@ export const SubmitProjectModal = ({
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
+
+    // Check if registration is closed
+    if (isRegistrationClosed) {
+      setShowClosedNotification(true);
+      setError('Registration is Closed! Submissions for National Student Innovation Showcase 2026 are currently closed.');
+      return;
+    }
 
     // Final checks
     const s1Err = validateStep1();
@@ -428,6 +460,16 @@ export const SubmitProjectModal = ({
             </div>
           ) : (
             <div>
+              {isRegistrationClosed && (
+                <div className="mb-4 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center justify-between gap-3 shadow-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🚫</span>
+                    <span>Notice: Student project registrations are currently <strong>CLOSED</strong>.</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full bg-rose-200/80 text-rose-900 font-extrabold text-[10px] uppercase">Closed</span>
+                </div>
+              )}
+
               {error && (
                 <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200/90 text-red-700 text-xs font-medium flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
@@ -809,6 +851,44 @@ export const SubmitProjectModal = ({
           )}
         </div>
       </div>
+
+      {/* ── REGISTRATION CLOSED NOTIFICATION POPUP ────────────────────────── */}
+      {showClosedNotification && (
+        <div
+          className="fixed inset-0 z-[1200] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md"
+          onClick={() => setShowClosedNotification(false)}
+        >
+          <div
+            className="bg-white rounded-3xl max-w-md w-full p-7 text-center shadow-2xl border border-rose-200 relative animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-16 h-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
+              🚫
+            </div>
+            <span className="inline-block px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-rose-100 text-rose-700 mb-2">
+              Registration Closed
+            </span>
+            <h3 className="text-xl font-black text-slate-900 mb-2">
+              Registration Is Currently Closed
+            </h3>
+            <p className="text-sm text-slate-600 leading-relaxed mb-6">
+              New project registrations for the <strong>National Student Innovation Showcase 2026</strong> are currently closed by the administrator. Submissions are temporarily paused.
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowClosedNotification(false);
+                  onClose();
+                }}
+                className="px-6 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-all cursor-pointer shadow-lg"
+              >
+                Understood / Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

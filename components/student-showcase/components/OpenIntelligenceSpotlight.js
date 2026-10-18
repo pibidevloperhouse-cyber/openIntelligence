@@ -20,6 +20,18 @@ export const OpenIntelligenceSpotlight = ({
 }) => {
   const [activeTab, setActiveTab] = useState('publishing');
 
+  const tabImages = {
+    publishing: '/1111.jpeg',
+    reach: '/2222.jpeg',
+    career: '/3333.jpeg',
+  };
+
+  const tabUrls = {
+    publishing: 'www.pibiopenintelligence.com/showcase/winners-2026',
+    reach: 'www.pibiopenintelligence.com/showcase/global-reach',
+    career: 'www.pibiopenintelligence.com/showcase/vc-and-careers',
+  };
+
   return (
     <section
       id="open-intelligence"
@@ -66,7 +78,7 @@ export const OpenIntelligenceSpotlight = ({
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-stylized text-slate-600">
                   <span className="text-[#1f6fb2]">https://</span>
-                  <span>www.pibiopenintelligence.com/showcase/winners-2026</span>
+                  <span>{tabUrls[activeTab] || tabUrls.publishing}</span>
                 </div>
                 <div className="text-[11px] font-stylized text-[#0e8579] flex items-center gap-1 font-semibold">
                   <span className="w-2 h-2 rounded-full bg-[#2ec4b6] animate-gentle-pulse" />
@@ -77,11 +89,13 @@ export const OpenIntelligenceSpotlight = ({
               {/* The Platform Screenshot */}
               <div className="relative aspect-[16/10] w-full bg-slate-50">
                 <Image
-                  src="/images/open_intelligence_demo.jpg"
-                  alt="PiBi Open Intelligence Student Showcase Platform"
+                  key={activeTab}
+                  src={tabImages[activeTab] || '/1111.jpeg'}
+                  alt={`PiBi Open Intelligence Student Showcase Platform - ${activeTab}`}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                  className="object-cover"
+                  className="object-cover transition-opacity duration-300"
+                  priority
                 />
               </div>
 

@@ -272,7 +272,192 @@ export default function AdminPage() {
   const [studentCategoryFilter, setStudentCategoryFilter] = useState('ALL');
   const [viewingStudentProject, setViewingStudentProject] = useState(null);
   const [studentProjectToDelete, setStudentProjectToDelete] = useState(null);
+  const [studentProjectToTop10, setStudentProjectToTop10] = useState(null);
   const [studentActionLoading, setStudentActionLoading] = useState('');
+
+  // Student Registration Lock (ON = Closed, OFF = Open)
+  const [isRegistrationClosed, setIsRegistrationClosed] = useState(false);
+  const [togglingRegistration, setTogglingRegistration] = useState(false);
+
+  // Top 10 Showcase Button Visibility on Home Page (ON = Visible, OFF = Hidden)
+  const [isTop10Active, setIsTop10Active] = useState(false);
+  const [togglingTop10, setTogglingTop10] = useState(false);
+
+  // Student Countdown Timer Deadline
+  const [countdownDeadline, setCountdownDeadline] = useState('2026-11-14T23:59:59+05:30');
+  const [deadlineInput, setDeadlineInput] = useState('2026-11-14T23:59');
+  const [showDeadlineModal, setShowDeadlineModal] = useState(false);
+  const [savingDeadline, setSavingDeadline] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/student-projects/settings')
+      .then(r => r.json())
+      .then(d => {
+        if (d && typeof d.isRegistrationClosed === 'boolean') {
+          setIsRegistrationClosed(d.isRegistrationClosed);
+        }
+        if (d && typeof d.isTop10Active === 'boolean') {
+          setIsTop10Active(d.isTop10Active);
+        }
+        if (d && d.countdownDeadline) {
+          setCountdownDeadline(d.countdownDeadline);
+          try {
+            const dt = new Date(d.countdownDeadline);
+            if (!isNaN(dt.getTime())) {
+              const pad = (n) => String(n).padStart(2, '0');
+              const localIso = `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+              setDeadlineInput(localIso);
+            }
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleToggleRegistrationStatus = async () => {
+    const nextVal = !isRegistrationClosed;
+    setTogglingRegistration(true);
+    try {
+      const res = await fetch('/api/student-projects/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isRegistrationClosed: nextVal }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update registration status');
+
+      setIsRegistrationClosed(nextVal);
+      showToast(nextVal ? '🔴 Student registration is now CLOSED. Submissions are locked.' : '🟢 Student registration is now OPEN.', 'success');
+    } catch (err) {
+      showToast(err.message, 'error');
+    } finally {
+      setTogglingRegistration(false);
+    }
+  };
+
+  const handleToggleTop10Status = async () => {
+    const nextVal = !isTop10Active;
+    setTogglingTop10(true);
+    try {
+      const res = await fetch('/api/student-projects/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isTop10Active: nextVal }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update Top 10 button setting');
+
+      setIsTop10Active(nextVal);
+      showToast(
+        nextVal
+          ? '🏆 Top 10 Showcase button is now ON and VISIBLE on the Home page!'
+          : 'Top 10 Showcase button is now OFF and HIDDEN from the Home page.',
+        'success'
+      );
+    } catch (err) {
+      showToast(err.message, 'error');
+    } finally {
+      setTogglingTop10(false);
+    }
+  };
+
+  const handleSaveCountdownDeadline = async (val) => {
+    const rawVal = val || deadlineInput;
+    if (!rawVal) return;
+    setSavingDeadline(true);
+    try {
+      const dt = new Date(rawVal);
+      const toSave = isNaN(dt.getTime()) ? rawVal : dt.toISOString();
+
+      const res = await fetch('/api/student-projects/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ countdownDeadline: toSave }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update countdown deadline');
+
+      setCountdownDeadline(toSave);
+      setShowDeadlineModal(false);
+      showToast('⏱️ Live countdown deadline updated successfully!', 'success');
+    } catch (err) {
+      showToast(err.message, 'error');
+    } finally {
+      setSavingDeadline(false);
+    }
+  };
+
+  // Project Voters Modal State & Handlers
+  const [viewingVotersProject, setViewingVotersProject] = useState(null);
+  const [projectVotersList, setProjectVotersList] = useState([]);
+  const [loadingVoters, setLoadingVoters] = useState(false);
+  const [voterSearchQuery, setVoterSearchQuery] = useState('');
+  const [deletingVoteId, setDeletingVoteId] = useState('');
+
+  const handleOpenProjectVoters = async (project) => {
+    setViewingVotersProject(project);
+    setLoadingVoters(true);
+    setVoterSearchQuery('');
+    try {
+      const res = await fetch(`/api/admin/student-projects/votes?projectId=${project.id}`);
+      const data = await res.json();
+      if (data && Array.isArray(data.voters)) {
+        setProjectVotersList(data.voters);
+      } else {
+        setProjectVotersList([]);
+      }
+    } catch (err) {
+      console.error('Failed to load project voters:', err);
+      showToast('Failed to load voters for this project', 'error');
+      setProjectVotersList([]);
+    } finally {
+      setLoadingVoters(false);
+    }
+  };
+
+  const handleDeleteVote = async (voteId) => {
+    if (!confirm('Are you sure you want to remove this vote?')) return;
+    setDeletingVoteId(voteId);
+    try {
+      const res = await fetch('/api/admin/student-projects/votes', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ voteId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete vote');
+
+      setProjectVotersList(prev => prev.filter(v => v.id !== voteId));
+      setStudentRegistrations(prev =>
+        prev.map(p => p.id === viewingVotersProject?.id ? { ...p, votes_count: data.newCount } : p)
+      );
+      showToast('Vote removed successfully', 'success');
+    } catch (err) {
+      showToast(err.message, 'error');
+    } finally {
+      setDeletingVoteId('');
+    }
+  };
+
+  const handleExportVotersCSV = () => {
+    if (!projectVotersList.length) return;
+    const header = ['#', 'Voter Name', 'Voter Email', 'IP Address', 'Date & Time Voted'];
+    const rows = projectVotersList.map((v, i) => [
+      i + 1,
+      `"${v.voter_name || ''}"`,
+      `"${v.voter_email || ''}"`,
+      `"${v.ip_address || ''}"`,
+      `"${new Date(v.created_at).toLocaleString('en-IN')}"`,
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [header.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `${(viewingVotersProject?.title || 'project').replace(/[^a-z0-9]/gi, '_')}_voters.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const handleUpdateStudentStatus = async (id, newStatus) => {
     setStudentActionLoading(id);
@@ -292,6 +477,39 @@ export default function AdminPage() {
         setViewingStudentProject(prev => ({ ...prev, status: newStatus }));
       }
       showToast(`Status updated to ${newStatus}`, 'success');
+    } catch (err) {
+      showToast(err.message, 'error');
+    } finally {
+      setStudentActionLoading('');
+    }
+  };
+
+  const handleToggleTop10 = (proj) => {
+    setStudentProjectToTop10(proj);
+  };
+
+  const handleConfirmToggleTop10 = async () => {
+    if (!studentProjectToTop10) return;
+    const proj = studentProjectToTop10;
+    const nextVal = !proj.is_top_10;
+    setStudentActionLoading(proj.id);
+    try {
+      const res = await fetch('/api/admin/student-projects', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: proj.id, is_top_10: nextVal }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update Top 10 status');
+
+      setStudentRegistrations(prev =>
+        prev.map(p => (p.id === proj.id ? { ...p, is_top_10: nextVal, status: nextVal ? 'APPROVED' : p.status } : p))
+      );
+      if (viewingStudentProject?.id === proj.id) {
+        setViewingStudentProject(prev => ({ ...prev, is_top_10: nextVal, status: nextVal ? 'APPROVED' : prev.status }));
+      }
+      showToast(nextVal ? '⭐ Project featured in Top 10 Finalists!' : 'Project removed from Top 10', 'success');
+      setStudentProjectToTop10(null);
     } catch (err) {
       showToast(err.message, 'error');
     } finally {
@@ -1932,7 +2150,225 @@ export default function AdminPage() {
                     Student projects & registrations submitted for the National Innovation Showcase 2026.
                   </p>
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                  {/* ON / OFF Toggle for Registration Closed */}
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '0.35rem 0.75rem',
+                    borderRadius: '8px',
+                    background: isRegistrationClosed ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+                    border: isRegistrationClosed ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(16, 185, 129, 0.3)',
+                  }}>
+                    <span style={{
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      color: isRegistrationClosed ? '#dc2626' : '#059669',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px'
+                    }}>
+                      <span>{isRegistrationClosed ? '🔒' : '🔓'}</span>
+                      <span>{isRegistrationClosed ? 'Registration Closed' : 'Registration Open'}</span>
+                    </span>
+
+                    {/* The Toggle Switch button */}
+                    <button
+                      type="button"
+                      disabled={togglingRegistration}
+                      onClick={handleToggleRegistrationStatus}
+                      style={{
+                        position: 'relative',
+                        width: '48px',
+                        height: '24px',
+                        borderRadius: '12px',
+                        background: isRegistrationClosed ? 'linear-gradient(135deg, #ef4444, #dc2626)' : '#94a3b8',
+                        border: 'none',
+                        cursor: togglingRegistration ? 'wait' : 'pointer',
+                        transition: 'all 0.25s ease',
+                        padding: '2px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        boxShadow: isRegistrationClosed ? '0 0 10px rgba(239, 68, 68, 0.5)' : 'none',
+                      }}
+                      title={isRegistrationClosed ? 'Click to turn OFF (Reopen Registration)' : 'Click to turn ON (Close Registration)'}
+                    >
+                      <span
+                        style={{
+                          width: '20px',
+                          height: '20px',
+                          borderRadius: '50%',
+                          background: '#ffffff',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.25)',
+                          transform: isRegistrationClosed ? 'translateX(24px)' : 'translateX(0px)',
+                          transition: 'transform 0.25s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '8px',
+                          fontWeight: 900,
+                          color: isRegistrationClosed ? '#dc2626' : '#64748b',
+                        }}
+                      >
+                        {isRegistrationClosed ? 'ON' : 'OFF'}
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* ON / OFF Toggle for Top 10 Showcase Button Visibility on Home Page */}
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '0.35rem 0.75rem',
+                    borderRadius: '8px',
+                    background: isTop10Active ? 'rgba(245, 158, 11, 0.12)' : 'rgba(100, 116, 139, 0.1)',
+                    border: isTop10Active ? '1px solid rgba(245, 158, 11, 0.45)' : '1px solid rgba(100, 116, 139, 0.25)',
+                  }}>
+                    <span style={{
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      color: isTop10Active ? '#b45309' : '#64748b',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px'
+                    }}>
+                      <span>🏆</span>
+                      <span>{isTop10Active ? 'Top 10 Button: ON' : 'Top 10 Button: OFF'}</span>
+                    </span>
+
+                    {/* The Toggle Switch button */}
+                    <button
+                      type="button"
+                      disabled={togglingTop10}
+                      onClick={handleToggleTop10Status}
+                      style={{
+                        position: 'relative',
+                        width: '48px',
+                        height: '24px',
+                        borderRadius: '12px',
+                        background: isTop10Active ? 'linear-gradient(135deg, #f59e0b, #ea580c)' : '#94a3b8',
+                        border: 'none',
+                        cursor: togglingTop10 ? 'wait' : 'pointer',
+                        transition: 'all 0.25s ease',
+                        padding: '2px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        boxShadow: isTop10Active ? '0 0 10px rgba(245, 158, 11, 0.6)' : 'none',
+                      }}
+                      title={isTop10Active ? 'Click to turn OFF (Hide Top 10 Button from Home Page)' : 'Click to turn ON (Show Top 10 Button on Home Page)'}
+                    >
+                      <span
+                        style={{
+                          width: '20px',
+                          height: '20px',
+                          borderRadius: '50%',
+                          background: '#ffffff',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.25)',
+                          transform: isTop10Active ? 'translateX(24px)' : 'translateX(0px)',
+                          transition: 'transform 0.25s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '8px',
+                          fontWeight: 900,
+                          color: isTop10Active ? '#ea580c' : '#64748b',
+                        }}
+                      >
+                        {isTop10Active ? 'ON' : 'OFF'}
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Countdown Deadline Date Setting Button */}
+                  <button
+                    type="button"
+                    onClick={() => setShowDeadlineModal(true)}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '7px',
+                      padding: '0.45rem 0.85rem',
+                      borderRadius: '8px',
+                      background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(46, 196, 182, 0.12))',
+                      color: '#0284c7',
+                      border: '1px solid rgba(14, 165, 233, 0.35)',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                    }}
+                    title="Change live countdown timer deadline date"
+                  >
+                    <span>⏱️</span>
+                    <span style={{ color: '#64748b', fontWeight: 600 }}>Countdown:</span>
+                    <span style={{ color: '#0369a1', fontWeight: 800 }}>
+                      {(() => {
+                        try {
+                          const d = new Date(countdownDeadline);
+                          if (isNaN(d.getTime())) return '14 Nov 2026';
+                          return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                        } catch {
+                          return '14 Nov 2026';
+                        }
+                      })()}
+                    </span>
+                    <span style={{ background: '#0284c7', color: '#fff', fontSize: '9px', fontWeight: 800, padding: '1px 5px', borderRadius: '4px', textTransform: 'uppercase' }}>
+                      Edit
+                    </span>
+                  </button>
+
+                  {/* All Public Voters Master Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleOpenProjectVoters({ id: '', title: 'All Contest Projects', lead_student: 'Public Voters Master Log', institution: 'PiBi Open Intelligence Showcase' })}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '0.45rem 0.85rem',
+                      borderRadius: '8px',
+                      background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(234, 88, 12, 0.12))',
+                      color: '#b45309',
+                      border: '1px solid rgba(245, 158, 11, 0.35)',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                    }}
+                    title="View master audit of all voters across all projects"
+                  >
+                    <span>👥</span>
+                    <span>All Public Voters</span>
+                    <span style={{
+                      background: '#f59e0b',
+                      color: '#ffffff',
+                      fontSize: '0.7rem',
+                      fontWeight: 900,
+                      padding: '1px 6px',
+                      borderRadius: '10px'
+                    }}>
+                      {studentRegistrations.reduce((acc, s) => acc + (s.votes_count || 0), 0)}
+                    </span>
+                  </button>
+
+                  <a
+                    href="/top-10"
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '6px',
+                      padding: '0.5rem 0.9rem', borderRadius: '8px',
+                      background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.15))',
+                      color: '#d97706',
+                      border: '1px solid rgba(245, 158, 11, 0.4)', fontSize: '0.8rem',
+                      fontWeight: 700, textDecoration: 'none', transition: 'all 0.2s',
+                    }}
+                  >
+                    <span>🏆 View Public Top 10 Showcase</span>
+                    <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                  </a>
                   <a
                     href="/students"
                     target="_blank"
@@ -1990,6 +2426,17 @@ export default function AdminPage() {
                     {studentRegistrations.filter(s => s.status === 'REJECTED').length}
                   </div>
                 </div>
+                <div style={{ background: '#ffffff', border: '1px solid rgba(245,158,11,0.35)', borderRadius: '12px', padding: '1rem', boxShadow: '0 2px 4px rgba(245,158,11,0.08)' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#d97706', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span>⭐</span> Top 10 Finalists
+                  </div>
+                  <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#b45309', marginTop: '4px', fontFamily: 'var(--font-display)' }}>
+                    {studentRegistrations.filter(s => s.is_top_10).length}
+                    <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#d97706', marginLeft: '6px' }}>
+                      ({studentRegistrations.reduce((acc, s) => acc + (s.votes_count || 0), 0)} votes)
+                    </span>
+                  </div>
+                </div>
               </div>
 
               {/* Filters and Search Bar */}
@@ -2026,6 +2473,7 @@ export default function AdminPage() {
                     { key: 'PENDING', label: 'Pending' },
                     { key: 'APPROVED', label: 'Approved' },
                     { key: 'REJECTED', label: 'Rejected' },
+                    { key: 'TOP_10', label: '⭐ Top 10' },
                   ].map(tab => (
                     <button
                       key={tab.key}
@@ -2069,7 +2517,9 @@ export default function AdminPage() {
               {/* Submissions List */}
               {(() => {
                 const filtered = studentRegistrations.filter(p => {
-                  if (studentStatusFilter !== 'ALL' && (p.status || 'PENDING') !== studentStatusFilter) {
+                  if (studentStatusFilter === 'TOP_10') {
+                    if (!p.is_top_10) return false;
+                  } else if (studentStatusFilter !== 'ALL' && (p.status || 'PENDING') !== studentStatusFilter) {
                     return false;
                   }
                   if (studentCategoryFilter !== 'ALL' && p.category !== studentCategoryFilter) {
@@ -2198,6 +2648,16 @@ export default function AdminPage() {
                                 }}>
                                   <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                                   Rejected
+                                </span>
+                              )}
+                              {proj.is_top_10 && (
+                                <span style={{
+                                  background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(251, 191, 36, 0.25))',
+                                  color: '#b45309', border: '1px solid rgba(245, 158, 11, 0.4)',
+                                  padding: '3px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800,
+                                  display: 'inline-flex', alignItems: 'center', gap: '5px'
+                                }}>
+                                  <span>⭐</span> Top 10 Finalist ({proj.votes_count || 0} votes)
                                 </span>
                               )}
                             </div>
@@ -2458,6 +2918,40 @@ export default function AdminPage() {
                               >
                                 View Full Details
                               </Btn>
+
+                              {/* Separate button for each project to view voters */}
+                              <button
+                                type="button"
+                                onClick={() => handleOpenProjectVoters(proj)}
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '6px',
+                                  padding: '0.4rem 0.85rem',
+                                  borderRadius: '7px',
+                                  background: (proj.votes_count || 0) > 0 ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(234, 88, 12, 0.15))' : '#f8fafc',
+                                  color: (proj.votes_count || 0) > 0 ? '#b45309' : '#475569',
+                                  border: (proj.votes_count || 0) > 0 ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid var(--border)',
+                                  fontSize: '0.78rem',
+                                  fontWeight: 700,
+                                  cursor: 'pointer',
+                                  transition: 'all 0.15s',
+                                }}
+                                title={`View list of voters who voted for ${proj.title}`}
+                              >
+                                <span>🗳️</span>
+                                <span>Voters</span>
+                                <span style={{
+                                  background: (proj.votes_count || 0) > 0 ? '#f59e0b' : '#94a3b8',
+                                  color: '#ffffff',
+                                  fontSize: '0.68rem',
+                                  fontWeight: 900,
+                                  padding: '1px 6px',
+                                  borderRadius: '10px'
+                                }}>
+                                  {proj.votes_count || 0}
+                                </span>
+                              </button>
                             </div>
 
                             {/* Status Change Buttons */}
@@ -2492,6 +2986,45 @@ export default function AdminPage() {
                                   Pending
                                 </Btn>
                               )}
+                              {/* Top 10 Button */}
+                              <button
+                                type="button"
+                                disabled={studentActionLoading === proj.id}
+                                onClick={() => setStudentProjectToTop10(proj)}
+                                style={{
+                                  padding: '0.4rem 0.85rem',
+                                  borderRadius: '8px',
+                                  fontSize: '0.8rem',
+                                  fontWeight: 700,
+                                  cursor: 'pointer',
+                                  transition: 'all 0.2s ease',
+                                  border: proj.is_top_10 ? '1px solid #f59e0b' : '1px solid rgba(245, 158, 11, 0.4)',
+                                  background: proj.is_top_10
+                                    ? 'linear-gradient(135deg, #f59e0b, #d97706)'
+                                    : 'rgba(245, 158, 11, 0.12)',
+                                  color: proj.is_top_10 ? '#ffffff' : '#d97706',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '5px',
+                                  boxShadow: proj.is_top_10 ? '0 2px 8px rgba(245, 158, 11, 0.35)' : 'none',
+                                }}
+                                onMouseEnter={e => {
+                                  if (!proj.is_top_10) {
+                                    e.currentTarget.style.background = 'rgba(245, 158, 11, 0.2)';
+                                    e.currentTarget.style.borderColor = '#f59e0b';
+                                  }
+                                }}
+                                onMouseLeave={e => {
+                                  if (!proj.is_top_10) {
+                                    e.currentTarget.style.background = 'rgba(245, 158, 11, 0.12)';
+                                    e.currentTarget.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+                                  }
+                                }}
+                                title={proj.is_top_10 ? 'Project is in Top 10 (Click to change)' : 'Click to feature in Top 10'}
+                              >
+                                <span>⭐</span>
+                                <span>{proj.is_top_10 ? 'Top 10 ✓' : 'Top 10'}</span>
+                              </button>
                               <button
                                 onClick={() => setStudentProjectToDelete(proj)}
                                 title="Delete submission"
@@ -2715,6 +3248,19 @@ export default function AdminPage() {
                   }}>
                     ● {viewingStudentProject.status || 'PENDING'}
                   </span>
+                  {viewingStudentProject.is_top_10 && (
+                    <span style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      padding: '2px 9px',
+                      borderRadius: '12px',
+                      background: '#fef3c7',
+                      color: '#b45309',
+                      border: '1px solid #fde68a'
+                    }}>
+                      ⭐ Top 10 Finalist ({viewingStudentProject.votes_count || 0} votes)
+                    </span>
+                  )}
                 </div>
                 <h2 style={{
                   margin: 0,
@@ -3234,6 +3780,49 @@ export default function AdminPage() {
                 >
                   ⏳ Set Pending
                 </button>
+                <button
+                  type="button"
+                  style={{
+                    background: viewingStudentProject.is_top_10 ? 'linear-gradient(135deg, #f59e0b, #d97706)' : '#ffffff',
+                    color: viewingStudentProject.is_top_10 ? '#ffffff' : '#b45309',
+                    border: '1px solid #f59e0b',
+                    borderRadius: '8px',
+                    padding: '0.6rem 1.1rem',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    cursor: studentActionLoading === viewingStudentProject.id ? 'wait' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: viewingStudentProject.is_top_10 ? '0 2px 6px rgba(245, 158, 11, 0.3)' : 'none'
+                  }}
+                  disabled={studentActionLoading === viewingStudentProject.id}
+                  onClick={() => handleToggleTop10(viewingStudentProject)}
+                >
+                  <span>⭐</span>
+                  {viewingStudentProject.is_top_10 ? 'In Top 10 (Remove)' : 'Mark as Top 10'}
+                </button>
+
+                <button
+                  type="button"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(234, 88, 12, 0.15))',
+                    color: '#b45309',
+                    border: '1px solid rgba(245, 158, 11, 0.4)',
+                    borderRadius: '8px',
+                    padding: '0.6rem 1.1rem',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                  onClick={() => handleOpenProjectVoters(viewingStudentProject)}
+                >
+                  <span>🗳️</span>
+                  <span>View Voters ({viewingStudentProject.votes_count || 0})</span>
+                </button>
               </div>
 
               <button
@@ -3300,6 +3889,659 @@ export default function AdminPage() {
               >
                 {studentActionLoading === studentProjectToDelete.id ? 'Deleting...' : 'Yes, Delete'}
               </Btn>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── TOP 10 CONFIRMATION MODAL ─────────────────────────────────────── */}
+      {studentProjectToTop10 && (
+        <div
+          className="light-theme"
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(15, 23, 42, 0.72)', backdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 1050, padding: '1rem',
+          }}
+          onClick={() => !studentActionLoading && setStudentProjectToTop10(null)}
+        >
+          <div
+            style={{
+              background: '#ffffff', borderRadius: '20px', maxWidth: '480px', width: '100%',
+              border: '1px solid #e2e8f0', padding: '1.85rem', boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.35)',
+              display: 'flex', flexDirection: 'column', gap: '1.25rem'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{
+                width: '52px', height: '52px', borderRadius: '16px',
+                background: studentProjectToTop10.is_top_10 ? 'rgba(239, 68, 68, 0.12)' : 'rgba(245, 158, 11, 0.15)',
+                color: studentProjectToTop10.is_top_10 ? '#ef4444' : '#d97706',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '1.75rem', flexShrink: 0
+              }}>
+                {studentProjectToTop10.is_top_10 ? '⚠️' : '🏆'}
+              </div>
+              <div>
+                <h3 style={{ margin: '0 0 4px', fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
+                  {studentProjectToTop10.is_top_10 ? 'Remove from Top 10?' : 'Add to Top 10 Finalists?'}
+                </h3>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1f6fb2', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Public Choice Awards 2026
+                </span>
+              </div>
+            </div>
+
+            <div style={{ background: '#f8fafc', padding: '1rem 1.15rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '1.05rem', marginBottom: '4px' }}>
+                {studentProjectToTop10.title}
+              </div>
+              <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                👤 <strong>{studentProjectToTop10.lead_student}</strong> • 🏛️ {studentProjectToTop10.institution}
+              </div>
+              {studentProjectToTop10.votes_count > 0 && (
+                <div style={{ fontSize: '0.82rem', color: '#d97706', fontWeight: 700, marginTop: '6px' }}>
+                  🗳️ Current Votes: {studentProjectToTop10.votes_count}
+                </div>
+              )}
+            </div>
+
+            <p style={{ margin: 0, fontSize: '0.88rem', color: '#475569', lineHeight: 1.55 }}>
+              {studentProjectToTop10.is_top_10
+                ? 'Are you sure you want to remove this project from the official Top 10 showcase? It will no longer be visible on the public voting page.'
+                : 'Are you sure you want to feature this project in the Top 10? It will be published immediately on the public voting page at /top-10 for the community to vote on!'}
+            </p>
+
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <button
+                type="button"
+                disabled={studentActionLoading === studentProjectToTop10.id}
+                onClick={() => setStudentProjectToTop10(null)}
+                style={{
+                  padding: '0.6rem 1.25rem',
+                  borderRadius: '10px',
+                  fontSize: '0.88rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  background: '#f1f5f9',
+                  color: '#475569',
+                  border: '1px solid #cbd5e1',
+                  transition: 'all 0.15s'
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                disabled={studentActionLoading === studentProjectToTop10.id}
+                onClick={handleConfirmToggleTop10}
+                style={{
+                  padding: '0.6rem 1.4rem',
+                  borderRadius: '10px',
+                  fontSize: '0.88rem',
+                  fontWeight: 800,
+                  cursor: studentActionLoading === studentProjectToTop10.id ? 'wait' : 'pointer',
+                  background: studentProjectToTop10.is_top_10
+                    ? 'linear-gradient(135deg, #ef4444, #dc2626)'
+                    : 'linear-gradient(135deg, #f59e0b, #d97706)',
+                  color: '#ffffff',
+                  border: 'none',
+                  boxShadow: studentProjectToTop10.is_top_10
+                    ? '0 4px 12px rgba(239, 68, 68, 0.3)'
+                    : '0 4px 12px rgba(245, 158, 11, 0.35)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                {studentActionLoading === studentProjectToTop10.id ? (
+                  <span>Saving...</span>
+                ) : studentProjectToTop10.is_top_10 ? (
+                  <span>OK, Remove</span>
+                ) : (
+                  <span>OK, Add to Top 10 ⭐</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── COUNTDOWN DEADLINE CONFIGURATION MODAL ───────────────────────── */}
+      {showDeadlineModal && (
+        <div
+          className="light-theme"
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(15, 23, 42, 0.72)', backdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 1000, padding: '1rem',
+          }}
+          onClick={() => setShowDeadlineModal(false)}
+        >
+          <div
+            style={{
+              background: '#ffffff', borderRadius: '20px', maxWidth: '480px', width: '100%',
+              border: '1px solid #e2e8f0', padding: '1.75rem', boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.35)',
+              display: 'flex', flexDirection: 'column', gap: '1.25rem'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '46px', height: '46px', borderRadius: '12px',
+                background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(46, 196, 182, 0.2))',
+                color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '1.5rem', border: '1px solid rgba(14, 165, 233, 0.3)'
+              }}>
+                ⏱️
+              </div>
+              <div style={{ flex: 1 }}>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
+                  Set Countdown Deadline
+                </h3>
+                <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                  Configure the target deadline running on the student portal countdown clock.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowDeadlineModal(false)}
+                style={{
+                  background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.25rem',
+                  cursor: 'pointer', padding: '4px', borderRadius: '6px'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Current Active Date Banner */}
+            <div style={{
+              background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px',
+              padding: '0.85rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+            }}>
+              <div>
+                <div style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
+                  Currently Running Deadline
+                </div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', marginTop: '2px' }}>
+                  {(() => {
+                    try {
+                      const d = new Date(countdownDeadline);
+                      if (isNaN(d.getTime())) return 'Nov 14, 2026, 11:59 PM';
+                      return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+                    } catch {
+                      return 'Nov 14, 2026, 11:59 PM';
+                    }
+                  })()}
+                </div>
+              </div>
+              <span style={{
+                background: '#dcfce7', color: '#15803d', border: '1px solid #bbf7d0',
+                padding: '3px 8px', borderRadius: '6px', fontSize: '0.72rem', fontWeight: 800
+              }}>
+                ● LIVE
+              </span>
+            </div>
+
+            {/* Date Time Picker Input */}
+            <div>
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>
+                📅 Choose New Deadline Date & Time:
+              </label>
+              <input
+                type="datetime-local"
+                value={deadlineInput}
+                onChange={e => setDeadlineInput(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '10px',
+                  border: '1.5px solid #cbd5e1',
+                  fontSize: '0.95rem',
+                  fontWeight: 600,
+                  color: '#0f172a',
+                  background: '#ffffff',
+                  outline: 'none',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+
+            {/* Quick Preset Buttons */}
+            <div>
+              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '6px' }}>
+                ⚡ Quick Presets:
+              </div>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {[
+                  { label: '+3 Days', days: 3 },
+                  { label: '+7 Days (1 Wk)', days: 7 },
+                  { label: '+14 Days (2 Wks)', days: 14 },
+                  { label: '+30 Days (1 Mo)', days: 30 },
+                ].map(p => (
+                  <button
+                    key={p.label}
+                    type="button"
+                    onClick={() => {
+                      const d = new Date();
+                      d.setDate(d.getDate() + p.days);
+                      d.setHours(23, 59, 0, 0);
+                      const pad = (n) => String(n).padStart(2, '0');
+                      const localIso = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+                      setDeadlineInput(localIso);
+                    }}
+                    style={{
+                      padding: '0.35rem 0.7rem',
+                      borderRadius: '6px',
+                      background: '#f1f5f9',
+                      border: '1px solid #e2e8f0',
+                      color: '#475569',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#e2e8f0'; e.currentTarget.style.color = '#0f172a'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setDeadlineInput('2026-11-14T23:59')}
+                  style={{
+                    padding: '0.35rem 0.7rem',
+                    borderRadius: '6px',
+                    background: 'rgba(31, 111, 178, 0.08)',
+                    border: '1px solid rgba(31, 111, 178, 0.25)',
+                    color: '#1f6fb2',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  Nov 14, 2026 (Original)
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Action Buttons */}
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid #f1f5f9' }}>
+              <button
+                type="button"
+                onClick={() => setShowDeadlineModal(false)}
+                style={{
+                  padding: '0.65rem 1.25rem',
+                  borderRadius: '10px',
+                  background: '#f1f5f9',
+                  color: '#475569',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '0.88rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                disabled={savingDeadline || !deadlineInput}
+                onClick={() => handleSaveCountdownDeadline(deadlineInput)}
+                style={{
+                  padding: '0.65rem 1.5rem',
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #0284c7, #0ea5e9)',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontSize: '0.88rem',
+                  fontWeight: 800,
+                  cursor: savingDeadline ? 'wait' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  boxShadow: '0 4px 14px rgba(2, 132, 199, 0.35)',
+                  opacity: savingDeadline ? 0.7 : 1,
+                }}
+              >
+                {savingDeadline ? (
+                  <>
+                    <div style={{ width: '14px', height: '14px', border: '2px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                    <span>Saving Date...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>💾 Save & Update Live Countdown</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── PROJECT VOTERS AUDIT MODAL ────────────────────────────────────── */}
+      {viewingVotersProject && (
+        <div
+          className="light-theme"
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 1000, padding: '1rem',
+          }}
+          onClick={() => setViewingVotersProject(null)}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '20px',
+              maxWidth: '780px',
+              width: '100%',
+              maxHeight: '90vh',
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 25px 60px -15px rgba(15, 23, 42, 0.35)',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div style={{
+              padding: '1.25rem 1.75rem',
+              borderBottom: '1px solid #e2e8f0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1rem',
+              background: '#ffffff',
+              flexShrink: 0
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '44px', height: '44px', borderRadius: '12px',
+                  background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(234, 88, 12, 0.15))',
+                  color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '1.4rem', border: '1px solid rgba(245, 158, 11, 0.3)'
+                }}>
+                  🗳️
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>
+                      {viewingVotersProject.title}
+                    </h3>
+                    <span style={{
+                      background: 'rgba(245, 158, 11, 0.12)',
+                      color: '#b45309',
+                      border: '1px solid rgba(245, 158, 11, 0.35)',
+                      padding: '2px 8px',
+                      borderRadius: '12px',
+                      fontSize: '0.72rem',
+                      fontWeight: 800
+                    }}>
+                      {projectVotersList.length} Total Votes
+                    </span>
+                  </div>
+                  <p style={{ margin: '3px 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                    👤 {viewingVotersProject.lead_student} • 🏛️ {viewingVotersProject.institution}
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {projectVotersList.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleExportVotersCSV}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      padding: '0.45rem 0.85rem',
+                      borderRadius: '8px',
+                      background: '#f8fafc',
+                      color: '#0f172a',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s'
+                    }}
+                    title="Export voters list as CSV"
+                  >
+                    <span>📥 Export CSV</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setViewingVotersProject(null)}
+                  style={{
+                    background: '#f1f5f9', border: 'none', color: '#64748b',
+                    width: '32px', height: '32px', borderRadius: '50%',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', fontSize: '1rem', fontWeight: 700
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* Filter / Search Bar inside Voters Modal */}
+            <div style={{
+              padding: '0.85rem 1.75rem',
+              background: '#f8fafc',
+              borderBottom: '1px solid #e2e8f0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1rem',
+              flexShrink: 0
+            }}>
+              <div style={{ position: 'relative', flex: 1, maxWidth: '360px' }}>
+                <input
+                  type="text"
+                  placeholder="Search voter by name or email..."
+                  value={voterSearchQuery}
+                  onChange={e => setVoterSearchQuery(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.45rem 0.85rem 0.45rem 2rem',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.82rem',
+                    color: '#0f172a',
+                    background: '#ffffff',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+                <span style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', fontSize: '0.8rem', color: '#94a3b8' }}>
+                  🔍
+                </span>
+                {voterSearchQuery && (
+                  <button
+                    onClick={() => setVoterSearchQuery('')}
+                    style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '0.75rem' }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>
+                Showing {
+                  projectVotersList.filter(v => {
+                    if (!voterSearchQuery.trim()) return true;
+                    const q = voterSearchQuery.toLowerCase();
+                    return v.voter_name?.toLowerCase().includes(q) || v.voter_email?.toLowerCase().includes(q);
+                  }).length
+                } of {projectVotersList.length} votes
+              </div>
+            </div>
+
+            {/* Voters List Body */}
+            <div style={{ padding: '1.25rem 1.75rem', overflowY: 'auto', flex: 1 }}>
+              {loadingVoters ? (
+                <div style={{ textAlign: 'center', padding: '3rem 0', color: '#64748b' }}>
+                  <div style={{ width: '28px', height: '28px', border: '3px solid #0284c7', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+                  <p style={{ fontSize: '0.88rem', margin: 0 }}>Loading verified voters...</p>
+                </div>
+              ) : (() => {
+                const filteredVoters = projectVotersList.filter(v => {
+                  if (!voterSearchQuery.trim()) return true;
+                  const q = voterSearchQuery.toLowerCase();
+                  return v.voter_name?.toLowerCase().includes(q) || v.voter_email?.toLowerCase().includes(q);
+                });
+
+                if (filteredVoters.length === 0) {
+                  return (
+                    <div style={{ textAlign: 'center', padding: '3.5rem 1.5rem', background: '#f8fafc', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
+                      <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>📭</div>
+                      <h4 style={{ margin: '0 0 4px', fontSize: '1rem', fontWeight: 700, color: '#334155' }}>
+                        {projectVotersList.length === 0 ? 'No Public Votes Yet' : 'No Matching Voters Found'}
+                      </h4>
+                      <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748b', maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto' }}>
+                        {projectVotersList.length === 0
+                          ? 'When students and community members vote for this project on /top-10, their name, verified email address, and timestamp will be audited here in real-time.'
+                          : 'Try clearing your search query to see all voters.'}
+                      </p>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                    {filteredVoters.map((voter, vIdx) => (
+                      <div
+                        key={voter.id || vIdx}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          flexWrap: 'wrap',
+                          gap: '0.75rem',
+                          padding: '0.85rem 1rem',
+                          background: '#ffffff',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '12px',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+                          transition: 'all 0.15s'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: '220px' }}>
+                          <div style={{
+                            width: '32px', height: '32px', borderRadius: '50%',
+                            background: 'linear-gradient(135deg, #0284c7, #2ec4b6)',
+                            color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '0.78rem', fontWeight: 800, flexShrink: 0
+                          }}>
+                            {voter.voter_name ? voter.voter_name.charAt(0).toUpperCase() : 'V'}
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#0f172a' }}>
+                              {voter.voter_name || 'Anonymous Voter'}
+                            </div>
+                            <div style={{ fontSize: '0.78rem', color: '#1f6fb2', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '1px' }}>
+                              <span>✉️</span>
+                              <a href={`mailto:${voter.voter_email}`} style={{ color: '#1f6fb2', textDecoration: 'none' }}>
+                                {voter.voter_email}
+                              </a>
+                            </div>
+                            {voter.project_title && !viewingVotersProject.id && (
+                              <div style={{ fontSize: '0.72rem', color: '#b45309', fontWeight: 700, marginTop: '2px' }}>
+                                🏆 Voted for: <strong>{voter.project_title}</strong>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                          {voter.ip_address && (
+                            <div style={{
+                              fontSize: '0.72rem', color: '#64748b', background: '#f1f5f9',
+                              padding: '2px 8px', borderRadius: '6px', fontFamily: 'monospace'
+                            }}>
+                              🌐 {voter.ip_address}
+                            </div>
+                          )}
+
+                          <div style={{ fontSize: '0.78rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <span>🕒</span>
+                            <span>
+                              {voter.created_at ? new Date(voter.created_at).toLocaleString('en-IN', {
+                                day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                              }) : 'Just now'}
+                            </span>
+                          </div>
+
+                          <button
+                            type="button"
+                            disabled={deletingVoteId === voter.id}
+                            onClick={() => handleDeleteVote(voter.id)}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: '#ef4444',
+                              cursor: deletingVoteId === voter.id ? 'wait' : 'pointer',
+                              padding: '4px 6px',
+                              borderRadius: '6px',
+                              fontSize: '0.8rem',
+                              opacity: deletingVoteId === voter.id ? 0.5 : 1
+                            }}
+                            title="Delete this vote"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{
+              padding: '1rem 1.75rem',
+              borderTop: '1px solid #e2e8f0',
+              background: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexShrink: 0
+            }}>
+              <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                🔒 All votes are verified with single-email duplicate enforcement.
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setViewingVotersProject(null)}
+                style={{
+                  padding: '0.55rem 1.25rem',
+                  borderRadius: '10px',
+                  background: '#f1f5f9',
+                  color: '#475569',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

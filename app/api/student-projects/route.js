@@ -36,6 +36,20 @@ export async function POST(request) {
       );
     }
 
+    // Check if student registration is closed
+    const { data: settingRow } = await supabaseAdmin
+      .from('app_settings')
+      .select('value')
+      .eq('key', 'student_registration_closed')
+      .maybeSingle();
+
+    if (settingRow && settingRow.value === true) {
+      return NextResponse.json(
+        { error: 'Registration is currently closed! New student submissions are not being accepted at this time.' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const {
       // Step 1: Personal Information

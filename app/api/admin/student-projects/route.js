@@ -34,15 +34,29 @@ export async function GET() {
   }
 }
 
-// PATCH /api/admin/student-projects — update submission status (APPROVED, REJECTED, PENDING)
+// PATCH /api/admin/student-projects — update submission status (APPROVED, REJECTED, PENDING) or toggle is_top_10
 export async function PATCH(request) {
   if (!(await isAdmin())) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   try {
-    const { id, status, action } = await request.json();
+    const { id, status, action, is_top_10, top_10_rank } = await request.json();
 
     if (!id) {
       return NextResponse.json({ error: 'Submission ID is required' }, { status: 400 });
+    }
+
+    const updates = {};
+
+    if (is_top_10 !== undefined) {
+      updates.is_top_10 = Boolean(is_top_10);
+      // If marking as Top 10, ensure status is APPROVED so public sees it
+      if (updates.is_top_10) {
+        updates.status = 'APPROVED';
+      }
+    }
+
+    if (top_10_rank !== undefined) {
+      updates.top_10_rank = Number(top_10_rank);
     }
 
     let finalStatus = status;
@@ -52,16 +66,22 @@ export async function PATCH(request) {
         reject: 'REJECTED',
         pending: 'PENDING',
       };
-      finalStatus = map[action.toLowerCase()];
+      if (map[action.toLowerCase()]) {
+        finalStatus = map[action.toLowerCase()];
+      }
     }
 
-    if (!finalStatus) {
-      return NextResponse.json({ error: 'Invalid status or action' }, { status: 400 });
+    if (finalStatus) {
+      updates.status = finalStatus.toUpperCase();
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return NextResponse.json({ error: 'No fields provided to update' }, { status: 400 });
     }
 
     const { data, error } = await supabaseAdmin
       .from('student_project_submissions')
-      .update({ status: finalStatus.toUpperCase() })
+      .update(updates)
       .eq('id', id)
       .select()
       .single();
