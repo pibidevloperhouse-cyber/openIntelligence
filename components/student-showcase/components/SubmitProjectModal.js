@@ -24,6 +24,9 @@ import {
   PlayCircle,
   Cpu,
   Flame,
+  Users,
+  UserPlus,
+  Plus,
 } from 'lucide-react';
 
 const GithubIcon = ({ className = 'w-3.5 h-3.5' }) => (
@@ -54,6 +57,7 @@ export const SubmitProjectModal = ({
     dept: '',
     year: 'Final Year (4th)',
     dob: '',
+    teamMembers: [],
 
     // 2) Project Information
     projectTitle: '',
@@ -74,6 +78,47 @@ export const SubmitProjectModal = ({
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  // Team Member input state & handlers
+  const [newMemberName, setNewMemberName] = useState('');
+
+  const handleAddMember = () => {
+    const raw = newMemberName.trim();
+    if (!raw) return;
+
+    const namesToAdd = raw
+      .split(',')
+      .map((n) => n.trim())
+      .filter((n) => n.length > 0);
+
+    setFormData((prev) => {
+      const existing = new Set((prev.teamMembers || []).map((m) => m.toLowerCase()));
+      const leadName = (prev.name || '').trim().toLowerCase();
+
+      const newUnique = namesToAdd.filter(
+        (n) => !existing.has(n.toLowerCase()) && n.toLowerCase() !== leadName
+      );
+
+      if ((prev.teamMembers || []).length + newUnique.length > 5) {
+        setError('Maximum 5 co-members allowed per project.');
+        return prev;
+      }
+
+      return {
+        ...prev,
+        teamMembers: [...(prev.teamMembers || []), ...newUnique],
+      };
+    });
+
+    setNewMemberName('');
+  };
+
+  const handleRemoveMember = (idxToRemove) => {
+    setFormData((prev) => ({
+      ...prev,
+      teamMembers: (prev.teamMembers || []).filter((_, idx) => idx !== idxToRemove),
+    }));
+  };
 
   // Registration lock state
   const [isRegistrationClosed, setIsRegistrationClosed] = useState(false);
@@ -197,6 +242,11 @@ export const SubmitProjectModal = ({
     setIsSubmitting(true);
 
     try {
+      const coMembers = Array.isArray(formData.teamMembers) ? formData.teamMembers : [];
+      const allTeamMembers = formData.name.trim()
+        ? [formData.name.trim(), ...coMembers]
+        : coMembers;
+
       const payload = {
         name: formData.name.trim(),
         email: formData.email.trim(),
@@ -205,6 +255,7 @@ export const SubmitProjectModal = ({
         dept: formData.dept.trim(),
         year: formData.year,
         dob: formData.dob,
+        teamMembers: allTeamMembers,
 
         projectTitle: formData.projectTitle.trim(),
         domain: formData.domain.trim() || 'AI & Machine Learning',
@@ -279,6 +330,7 @@ export const SubmitProjectModal = ({
           dept: '',
           year: 'Final Year (4th)',
           dob: '',
+          teamMembers: [],
           projectTitle: '',
           domain: 'AI & Machine Learning',
           problemStatement: '',
@@ -597,6 +649,83 @@ export const SubmitProjectModal = ({
                         onChange={(e) => updateField('dob', e.target.value)}
                         className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#2ec4b6] focus:ring-2 focus:ring-[#2ec4b6]/20 transition-all"
                       />
+                    </div>
+                  </div>
+
+                  {/* Team Members Section */}
+                  <div className="pt-2 border-t border-slate-100 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                        <Users className="w-3.5 h-3.5 text-[#1f6fb2]" />
+                        <span>Team Members <span className="text-slate-400 font-normal text-[11px]">(Optional • Max 5 co-members)</span></span>
+                      </label>
+                      {formData.teamMembers?.length > 0 && (
+                        <span className="text-[11px] font-semibold text-[#1f6fb2] bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200/60">
+                          {formData.teamMembers.length + 1} Total Members
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-[11px] text-slate-500 leading-normal">
+                      Working as a team? Add your co-members' names below. The Full Name above is registered as Team Lead.
+                    </p>
+
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <UserPlus className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="text"
+                          value={newMemberName}
+                          onChange={(e) => setNewMemberName(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleAddMember();
+                            }
+                          }}
+                          placeholder="Enter team member name (or comma-separated) and click Add"
+                          className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#2ec4b6] focus:ring-2 focus:ring-[#2ec4b6]/20 transition-all placeholder:text-slate-400"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleAddMember}
+                        className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#1f6fb2] to-[#2ec4b6] hover:opacity-95 text-white font-bold text-xs flex items-center gap-1.5 transition-all shrink-0 cursor-pointer shadow-sm hover:scale-[1.02] active:scale-95"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Member</span>
+                      </button>
+                    </div>
+
+                    {/* Member Badges / Chips */}
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {/* Team Lead Pill */}
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs font-semibold">
+                        <span className="w-2 h-2 rounded-full bg-[#1f6fb2]" />
+                        <span>{formData.name.trim() || 'You'}</span>
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#1f6fb2]/10 text-[#1f6fb2]">
+                          Lead
+                        </span>
+                      </div>
+
+                      {/* Added Co-Members */}
+                      {formData.teamMembers?.map((member, idx) => (
+                        <div
+                          key={idx}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-900 text-xs font-semibold animate-in fade-in zoom-in-95 duration-150"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                          <span>{member}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveMember(idx)}
+                            className="w-4 h-4 rounded-full hover:bg-emerald-200/70 flex items-center justify-center text-emerald-700 hover:text-emerald-950 transition-colors cursor-pointer ml-1"
+                            title={`Remove ${member}`}
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>

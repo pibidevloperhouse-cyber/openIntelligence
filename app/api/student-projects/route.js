@@ -128,9 +128,18 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Solution is required' }, { status: 400 });
     }
 
-    const membersArray = Array.isArray(teamMembers) && teamMembers.length > 0
-      ? teamMembers.map((m) => String(m).trim()).filter(Boolean)
-      : [finalName];
+    let membersArray = [];
+    if (Array.isArray(teamMembers) && teamMembers.length > 0) {
+      membersArray = teamMembers.map((m) => String(m).trim()).filter(Boolean);
+    } else if (typeof teamMembers === 'string' && teamMembers.trim()) {
+      membersArray = teamMembers.split(',').map((m) => m.trim()).filter(Boolean);
+    }
+    if (finalName && !membersArray.includes(finalName)) {
+      membersArray = [finalName, ...membersArray];
+    }
+    if (membersArray.length === 0 && finalName) {
+      membersArray = [finalName];
+    }
 
     const tagsArray = Array.isArray(tags) && tags.length > 0
       ? tags.map((t) => String(t).trim()).filter(Boolean)
