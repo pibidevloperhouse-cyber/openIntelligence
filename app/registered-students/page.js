@@ -138,7 +138,7 @@ export default function RegisteredStudentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col selection:bg-[#7c3aed]/20 selection:text-[#6d28d9]">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col selection:bg-[#2ec4b6]/20 selection:text-[#1f6fb2]">
       <main className="flex-1 pt-8 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         {/* Breadcrumb Navigation */}
         {/* <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-4">
@@ -150,12 +150,11 @@ export default function RegisteredStudentsPage() {
         </div> */}
 
         {/* ─── HERO HEADER BANNER ────────────────────────────────────────── */}
-        {/* ─── HERO HEADER BANNER ────────────────────────────────────────── */}
         <div className="relative bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 mb-8 overflow-hidden">
-          {/* Top Royal Purple / Indigo Gradient Stripe */}
+          {/* Top Brand Blue & Cyan Gradient Stripe */}
           <div
             className="absolute top-0 left-0 right-0 h-1.5"
-            style={{ background: 'linear-gradient(115deg, #4f46e5 0%, #7c3aed 45%, #9333ea 75%, #06b6d4 100%)' }}
+            style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
           />
 
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -198,7 +197,7 @@ export default function RegisteredStudentsPage() {
         {/* ─── LOADING STATE ────────────────────────────────────────────── */}
         {loading && (
           <div className="py-24 text-center">
-            <div className="w-12 h-12 border-4 border-purple-500/20 border-t-[#7c3aed] rounded-full animate-spin mx-auto mb-4" />
+            <div className="w-12 h-12 border-4 border-sky-500/20 border-t-[#1f6fb2] rounded-full animate-spin mx-auto mb-4" />
             <p className="text-slate-500 font-semibold text-sm">Loading registered student innovators...</p>
           </div>
         )}
@@ -206,7 +205,7 @@ export default function RegisteredStudentsPage() {
         {/* ─── EMPTY STATE ──────────────────────────────────────────────── */}
         {!loading && filteredProjects.length === 0 && (
           <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-slate-200 shadow-sm max-w-lg mx-auto">
-            <div className="w-16 h-16 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-3xl mx-auto mb-4">
+            <div className="w-16 h-16 rounded-full bg-sky-50 text-[#1f6fb2] flex items-center justify-center text-3xl mx-auto mb-4">
               👥
             </div>
             <h3 className="text-lg font-bold text-slate-800 mb-1">No Registrations Yet</h3>
@@ -215,7 +214,8 @@ export default function RegisteredStudentsPage() {
             </p>
             <Link
               href="/students"
-              className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs transition-all cursor-pointer inline-block"
+              className="px-5 py-2.5 rounded-xl text-white font-bold text-xs transition-all cursor-pointer inline-block shadow-md hover:opacity-95"
+              style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
             >
               Register Your Project Now
             </Link>
@@ -232,7 +232,7 @@ export default function RegisteredStudentsPage() {
               return (
                 <div
                   key={project.id || idx}
-                  className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden group hover:border-purple-300"
+                  className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-lg transition-all duration-200 flex flex-col justify-between overflow-hidden group hover:border-[#1f6fb2]/40"
                 >
                   {/* Card Header Top Gradient */}
                   <div className="p-5 pb-3">
@@ -247,9 +247,9 @@ export default function RegisteredStudentsPage() {
                             whiteSpace: 'nowrap',
                             fontSize: '10px',
                             fontWeight: 700,
-                            backgroundColor: '#faf5ff',
-                            color: '#7e22ce',
-                            border: '1px solid rgba(216, 180, 254, 0.7)',
+                            backgroundColor: '#f0f9ff',
+                            color: '#1f6fb2',
+                            border: '1px solid rgba(31, 111, 178, 0.25)',
                             borderRadius: '6px',
                             padding: '2px 8px',
                           }}
@@ -262,9 +262,9 @@ export default function RegisteredStudentsPage() {
                             style={{
                               fontSize: '9px',
                               fontWeight: 800,
-                              backgroundColor: '#f3e8ff',
-                              color: '#6b21a8',
-                              border: '1px solid #e9d5ff',
+                              backgroundColor: '#e0f2fe',
+                              color: '#0369a1',
+                              border: '1px solid rgba(31, 111, 178, 0.25)',
                               borderRadius: '4px',
                               padding: '2px 5px',
                               flexShrink: 0,
@@ -297,20 +297,23 @@ export default function RegisteredStudentsPage() {
                     </div>
 
                     {/* Project Title */}
-                    <h3 className="font-extrabold text-slate-900 text-base group-hover:text-purple-700 transition-colors leading-snug line-clamp-2">
+                    <h3 className="font-extrabold text-slate-900 text-base group-hover:text-[#1f6fb2] transition-colors leading-snug line-clamp-2">
                       {project.title}
                     </h3>
 
                     {/* Lead Student & College */}
                     <div className="mt-3 space-y-1.5 pt-3 border-t border-slate-100">
                       <div className="flex items-center gap-1.5">
-                        <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-[#4f46e5] to-[#7c3aed] text-white flex items-center justify-center text-[10px] font-bold">
+                        <div
+                          className="w-5 h-5 rounded-full text-white flex items-center justify-center text-[10px] font-bold shadow-2xs"
+                          style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
+                        >
                           {(project.lead_student || 'S')[0].toUpperCase()}
                         </div>
                         <span className="font-bold text-slate-900 text-xs">
                           {formatName(project.lead_student)}
                         </span>
-                        <span className="text-[9px] font-extrabold text-purple-700 bg-purple-50 px-1.5 py-0.2 rounded border border-purple-200/60">
+                        <span className="text-[9px] font-extrabold text-[#1f6fb2] bg-sky-50 px-1.5 py-0.2 rounded border border-sky-200/70">
                           Lead
                         </span>
                       </div>
@@ -321,7 +324,7 @@ export default function RegisteredStudentsPage() {
                         </svg>
                         <span className="truncate">{formatInstitution(project.institution)}</span>
                         {(project.city || project.state) && (
-                          <span className="text-purple-700 font-semibold shrink-0">• {project.city || project.state}</span>
+                          <span className="text-[#1f6fb2] font-semibold shrink-0">• {project.city || project.state}</span>
                         )}
                       </div>
 
@@ -349,13 +352,13 @@ export default function RegisteredStudentsPage() {
                                 key={mIdx}
                                 className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium border ${
                                   isLead
-                                    ? 'bg-purple-50 text-purple-800 border-purple-200'
+                                    ? 'bg-sky-50 text-[#1f6fb2] border-sky-200 font-bold'
                                     : 'bg-slate-50 text-slate-700 border-slate-200'
                                 }`}
                               >
-                                <span className={`w-1.5 h-1.5 rounded-full ${isLead ? 'bg-purple-500' : 'bg-emerald-500'}`} />
+                                <span className={`w-1.5 h-1.5 rounded-full ${isLead ? 'bg-[#1f6fb2]' : 'bg-emerald-500'}`} />
                                 <span>{member}</span>
-                                {isLead && <span className="text-[8px] font-bold text-purple-600">(Lead)</span>}
+                                {isLead && <span className="text-[8px] font-bold text-[#1f6fb2]">(Lead)</span>}
                               </span>
                             );
                           })}
@@ -390,7 +393,7 @@ export default function RegisteredStudentsPage() {
                     <button
                       type="button"
                       onClick={() => setInspectProject(project)}
-                      className="px-3.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200/80 font-bold text-xs transition-all cursor-pointer flex items-center gap-1 hover:scale-105 active:scale-95"
+                      className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#1f6fb2]/10 to-[#2ec4b6]/15 hover:from-[#1f6fb2]/20 hover:to-[#2ec4b6]/25 text-[#1f6fb2] border border-[#1f6fb2]/30 font-bold text-xs transition-all cursor-pointer flex items-center gap-1 hover:scale-105 active:scale-95 shadow-2xs"
                     >
                       <span>Inspect Dossier</span>
                       <span>→</span>
@@ -426,10 +429,10 @@ export default function RegisteredStudentsPage() {
                           {idx + 1}
                         </td>
                         <td className="py-4 px-5">
-                          <div className="font-extrabold text-slate-900 text-sm group-hover:text-purple-700 transition-colors">
+                          <div className="font-extrabold text-slate-900 text-sm group-hover:text-[#1f6fb2] transition-colors">
                             {project.title}
                           </div>
-                          <div className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200/70 mt-1">
+                          <div className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-50 text-[#1f6fb2] border border-sky-200/70 mt-1">
                             {project.domain || project.category || 'AI & ML'}
                           </div>
                         </td>
@@ -462,7 +465,7 @@ export default function RegisteredStudentsPage() {
                           <button
                             type="button"
                             onClick={() => setInspectProject(project)}
-                            className="px-3 py-1.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200/80 font-bold text-xs transition-all cursor-pointer hover:scale-105 active:scale-95"
+                            className="px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-[#1f6fb2] border border-sky-200/80 font-bold text-xs transition-all cursor-pointer hover:scale-105 active:scale-95"
                           >
                             Inspect
                           </button>
@@ -478,250 +481,300 @@ export default function RegisteredStudentsPage() {
       </main>
 
       {/* ─── FULL PROJECT DOSSIER MODAL ─────────────────────────────────── */}
-      {inspectProject && (
-        <div
-          className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-hidden"
-          onClick={() => setInspectProject(null)}
-        >
+      {inspectProject && (() => {
+        const rawDomain = inspectProject.domain || inspectProject.category || 'AI & Machine Learning';
+        const domainList = rawDomain.split(',').map((d) => d.trim()).filter(Boolean);
+        const primaryDomain = domainList[0] || rawDomain;
+        const extraDomainsCount = domainList.length > 1 ? domainList.length - 1 : 0;
+
+        return (
           <div
-            className="bg-white rounded-3xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden my-auto max-h-[90vh] flex flex-col relative"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-[99999] flex items-center justify-center p-2.5 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-hidden"
+            onClick={() => setInspectProject(null)}
           >
-            {/* Modal Header: Video Player or Top Hero Stripe */}
-            {getYouTubeEmbedUrl(inspectProject.video_url) ? (
-              <div className="relative aspect-video max-h-[300px] w-full bg-slate-950 shrink-0 sticky top-0 z-30">
-                <iframe
-                  src={getYouTubeEmbedUrl(inspectProject.video_url)}
-                  title={`${inspectProject.title} Demo Video`}
-                  className="w-full h-full border-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-                <button
-                  type="button"
-                  onClick={() => setInspectProject(null)}
-                  className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-white flex items-center justify-center transition-all cursor-pointer z-40 border border-white/20 shadow-md"
-                  aria-label="Close"
-                >
-                  ✕
-                </button>
-              </div>
-            ) : isDirectVideoFile(inspectProject.video_url) ? (
-              <div className="relative aspect-video max-h-[300px] w-full bg-black shrink-0 sticky top-0 z-30 flex items-center justify-center">
-                <video
-                  src={inspectProject.video_url}
-                  controls
-                  playsInline
-                  className="w-full h-full max-h-[300px] object-contain"
-                />
-                <button
-                  type="button"
-                  onClick={() => setInspectProject(null)}
-                  className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-white flex items-center justify-center transition-all cursor-pointer z-40 border border-white/20 shadow-md"
-                  aria-label="Close"
-                >
-                  ✕
-                </button>
-              </div>
-            ) : (
-              <div
-                className="p-6 text-white shrink-0 sticky top-0 z-30 shadow-md"
-                style={{ background: 'linear-gradient(115deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%)' }}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-white/20 text-white backdrop-blur-md border border-white/30 tracking-wide">
-                    {inspectProject.domain || inspectProject.category || 'AI & Machine Learning'}
-                  </span>
+            <div
+              className="bg-white rounded-2xl sm:rounded-3xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden my-auto max-h-[92vh] sm:max-h-[90vh] flex flex-col relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header: Video Player or Top Hero Stripe */}
+              {getYouTubeEmbedUrl(inspectProject.video_url) ? (
+                <div className="relative aspect-video max-h-[300px] w-full bg-slate-950 shrink-0 sticky top-0 z-30">
+                  <iframe
+                    src={getYouTubeEmbedUrl(inspectProject.video_url)}
+                    title={`${inspectProject.title} Demo Video`}
+                    className="w-full h-full border-0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
                   <button
                     type="button"
                     onClick={() => setInspectProject(null)}
-                    className="w-8 h-8 rounded-lg bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-sm font-bold transition-all cursor-pointer border border-white/30"
+                    className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-white flex items-center justify-center transition-all cursor-pointer z-40 border border-white/20 shadow-md"
                     aria-label="Close"
                   >
                     ✕
                   </button>
                 </div>
+              ) : isDirectVideoFile(inspectProject.video_url) ? (
+                <div className="relative aspect-video max-h-[300px] w-full bg-black shrink-0 sticky top-0 z-30 flex items-center justify-center">
+                  <video
+                    src={inspectProject.video_url}
+                    controls
+                    playsInline
+                    className="w-full h-full max-h-[300px] object-contain"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setInspectProject(null)}
+                    className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-white flex items-center justify-center transition-all cursor-pointer z-40 border border-white/20 shadow-md"
+                    aria-label="Close"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className="p-4 sm:p-6 text-white shrink-0 sticky top-0 z-30 shadow-md"
+                  style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
+                >
+                  <div className="flex items-start justify-between gap-3 mb-2.5">
+                    <div className="flex flex-wrap items-center gap-1.5 min-w-0 flex-1">
+                      <span
+                        className="inline-block max-w-[190px] xs:max-w-[240px] sm:max-w-md truncate px-2.5 py-1 rounded-lg text-[10px] sm:text-[11px] font-bold bg-white/20 text-white backdrop-blur-md border border-white/30 tracking-wide leading-tight"
+                        title={rawDomain}
+                      >
+                        {primaryDomain}
+                      </span>
+                      {extraDomainsCount > 0 && (
+                        <span
+                          className="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-black bg-white/25 text-white border border-white/40 shrink-0 leading-tight"
+                          title={domainList.slice(1).join(', ')}
+                        >
+                          +{extraDomainsCount} More
+                        </span>
+                      )}
+                    </div>
 
-                <h2 className="text-xl sm:text-2xl font-black text-white leading-snug">
-                  {inspectProject.title}
-                </h2>
-
-                <p className="text-xs text-purple-100 mt-1 flex items-center gap-1.5 font-medium">
-                  <span>Lead: {formatName(inspectProject.lead_student)}</span>
-                  <span>•</span>
-                  <span>{formatInstitution(inspectProject.institution)}</span>
-                </p>
-              </div>
-            )}
-
-            {/* Modal Body */}
-            <div className="p-6 overflow-y-auto space-y-5 flex-1 text-slate-700">
-              {/* If Video was shown above, show title here */}
-              {getYouTubeEmbedUrl(inspectProject.video_url) && (
-                <div>
-                  <div className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200/70 mb-2">
-                    {inspectProject.domain || inspectProject.category || 'AI & ML'}
+                    <button
+                      type="button"
+                      onClick={() => setInspectProject(null)}
+                      className="w-8 h-8 rounded-xl bg-white/20 hover:bg-white/30 active:scale-95 text-white flex items-center justify-center text-sm font-bold transition-all cursor-pointer border border-white/30 shrink-0 shadow-xs"
+                      aria-label="Close"
+                    >
+                      ✕
+                    </button>
                   </div>
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-snug">
+
+                  <h2 className="text-lg sm:text-2xl font-black text-white leading-snug break-words">
                     {inspectProject.title}
                   </h2>
-                  <p className="text-xs text-slate-500 mt-1 font-medium">
-                    Lead: {formatName(inspectProject.lead_student)} • {formatInstitution(inspectProject.institution)}
+
+                  <p className="text-xs text-sky-100 mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 font-medium leading-relaxed">
+                    <span className="font-bold text-white">Lead: {formatName(inspectProject.lead_student)}</span>
+                    <span className="text-sky-200/60">•</span>
+                    <span className="text-sky-100">{formatInstitution(inspectProject.institution)}</span>
                   </p>
                 </div>
               )}
 
-              {/* Team Members Roster Card */}
-              <div className="p-4 rounded-2xl bg-purple-50/60 border border-purple-200/80">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-purple-800 mb-2 flex items-center gap-1.5">
-                  <span>👥 Team Members & Innovators</span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-purple-200 text-purple-950 text-xs font-bold shadow-2xs">
-                    <span className="w-2 h-2 rounded-full bg-purple-600" />
-                    <span>{formatName(inspectProject.lead_student)}</span>
-                    <span className="text-[9px] font-extrabold text-purple-700 bg-purple-100 px-1.5 py-0.2 rounded">Team Lead</span>
+              {/* Modal Body */}
+              <div className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 flex-1 text-slate-700">
+                {/* If multiple domains exist, show all domain tags nicely in body */}
+                {domainList.length > 1 && (
+                  <div className="flex flex-wrap items-center gap-1.5 pb-0.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1">
+                      Domains:
+                    </span>
+                    {domainList.map((dom, dIdx) => (
+                      <span
+                        key={dIdx}
+                        className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-50 text-[#1f6fb2] border border-sky-200/70"
+                      >
+                        {dom}
+                      </span>
+                    ))}
                   </div>
+                )}
 
-                  {Array.isArray(inspectProject.team_members) &&
-                    inspectProject.team_members
-                      .filter((m) => m?.toLowerCase() !== (inspectProject.lead_student || '').toLowerCase())
-                      .map((member, idx) => (
-                        <div
-                          key={idx}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-800 text-xs font-medium shadow-2xs"
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                          <span>{member}</span>
+                {/* If Video was shown above, show title here */}
+                {getYouTubeEmbedUrl(inspectProject.video_url) && (
+                  <div>
+                    <div className="flex flex-wrap items-center gap-1.5 mb-2">
+                      <span className="inline-block max-w-[200px] sm:max-w-md truncate px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-sky-50 text-[#1f6fb2] border border-sky-200/70">
+                        {primaryDomain}
+                      </span>
+                      {extraDomainsCount > 0 && (
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-black bg-sky-100 text-[#1f6fb2] border border-sky-200 shrink-0">
+                          +{extraDomainsCount} More
+                        </span>
+                      )}
+                    </div>
+                    <h2 className="text-lg sm:text-2xl font-black text-slate-900 leading-snug break-words">
+                      {inspectProject.title}
+                    </h2>
+                    <p className="text-xs text-slate-500 mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 font-medium">
+                      <span className="font-bold text-slate-800">Lead: {formatName(inspectProject.lead_student)}</span>
+                      <span className="text-slate-300">•</span>
+                      <span>{formatInstitution(inspectProject.institution)}</span>
+                    </p>
+                  </div>
+                )}
+
+                {/* Team Members Roster Card */}
+                <div className="p-4 rounded-2xl bg-gradient-to-r from-[#1f6fb2]/5 to-[#2ec4b6]/5 border border-[#1f6fb2]/20">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#1f6fb2] mb-2 flex items-center gap-1.5">
+                    <span>👥 Team Members & Innovators</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#1f6fb2]/30 text-slate-900 text-xs font-bold shadow-2xs">
+                      <span className="w-2 h-2 rounded-full bg-[#1f6fb2]" />
+                      <span>{formatName(inspectProject.lead_student)}</span>
+                      <span className="text-[9px] font-extrabold text-[#1f6fb2] bg-sky-100 border border-sky-200/60 px-1.5 py-0.2 rounded">Team Lead</span>
+                    </div>
+
+                    {Array.isArray(inspectProject.team_members) &&
+                      inspectProject.team_members
+                        .filter((m) => m?.toLowerCase() !== (inspectProject.lead_student || '').toLowerCase())
+                        .map((member, idx) => (
+                          <div
+                            key={idx}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-800 text-xs font-medium shadow-2xs"
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            <span>{member}</span>
+                          </div>
+                        ))}
+                  </div>
+                </div>
+
+                {/* Institution Details */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs">
+                  <div>
+                    <div className="text-[10px] font-bold uppercase text-slate-400">College / University</div>
+                    <div className="font-bold text-slate-800 mt-0.5">{formatInstitution(inspectProject.institution)}</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-bold uppercase text-slate-400">City / District (Location)</div>
+                    <div className="font-extrabold text-[#1f6fb2] mt-0.5">{inspectProject.city || inspectProject.state || 'Tamil Nadu'}</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-bold uppercase text-slate-400">Department & Year</div>
+                    <div className="font-bold text-slate-800 mt-0.5">
+                      {[inspectProject.dept, inspectProject.year].filter(Boolean).join(' • ') || 'Engineering Candidate'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Problem Statement */}
+                {inspectProject.problem_statement && (
+                  <div className="space-y-1.5">
+                    <h4 className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-700 border border-amber-500/30 font-black text-xs uppercase tracking-wider shadow-2xs">
+                      <span>⚠️</span>
+                      <span>Problem Statement</span>
+                    </h4>
+                    <div className="p-3.5 rounded-xl bg-amber-50/20 border border-amber-200/70 text-xs text-slate-700 leading-relaxed font-medium">
+                      {inspectProject.problem_statement}
+                    </div>
+                  </div>
+                )}
+
+                {/* Proposed Solution */}
+                {inspectProject.solution && (
+                  <div className="space-y-1.5">
+                    <h4 className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-700 border border-emerald-500/30 font-black text-xs uppercase tracking-wider shadow-2xs">
+                      <span>💡</span>
+                      <span>Proposed Solution Architecture</span>
+                    </h4>
+                    <div className="p-3.5 rounded-xl bg-emerald-50/20 border border-emerald-200/70 text-xs text-slate-700 leading-relaxed font-medium">
+                      {inspectProject.solution}
+                    </div>
+                  </div>
+                )}
+
+                {/* USP & Outcome */}
+                {(inspectProject.usp || inspectProject.outcome) && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    {inspectProject.usp && (
+                      <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/80">
+                        <div className="text-[10px] font-bold uppercase text-amber-800">Competitive USP</div>
+                        <div className="text-xs font-semibold text-amber-950 mt-1 leading-relaxed">
+                          {inspectProject.usp}
                         </div>
-                      ))}
-                </div>
-              </div>
-
-              {/* Institution Details */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs">
-                <div>
-                  <div className="text-[10px] font-bold uppercase text-slate-400">College / University</div>
-                  <div className="font-bold text-slate-800 mt-0.5">{formatInstitution(inspectProject.institution)}</div>
-                </div>
-                <div>
-                  <div className="text-[10px] font-bold uppercase text-slate-400">City / District (Location)</div>
-                  <div className="font-bold text-purple-700 mt-0.5">{inspectProject.city || inspectProject.state || 'Tamil Nadu'}</div>
-                </div>
-                <div>
-                  <div className="text-[10px] font-bold uppercase text-slate-400">Department & Year</div>
-                  <div className="font-bold text-slate-800 mt-0.5">
-                    {[inspectProject.dept, inspectProject.year].filter(Boolean).join(' • ') || 'Engineering Candidate'}
-                  </div>
-                </div>
-              </div>
-
-              {/* Problem Statement */}
-              {inspectProject.problem_statement && (
-                <div className="space-y-1.5">
-                  <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                    <span>⚠️ Problem Statement</span>
-                  </h4>
-                  <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 text-xs text-slate-700 leading-relaxed font-medium">
-                    {inspectProject.problem_statement}
-                  </div>
-                </div>
-              )}
-
-              {/* Proposed Solution */}
-              {inspectProject.solution && (
-                <div className="space-y-1.5">
-                  <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                    <span>💡 Proposed Solution Architecture</span>
-                  </h4>
-                  <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 text-xs text-slate-700 leading-relaxed font-medium">
-                    {inspectProject.solution}
-                  </div>
-                </div>
-              )}
-
-              {/* USP & Outcome */}
-              {(inspectProject.usp || inspectProject.outcome) && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  {inspectProject.usp && (
-                    <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/80">
-                      <div className="text-[10px] font-bold uppercase text-amber-800">Competitive USP</div>
-                      <div className="text-xs font-semibold text-amber-950 mt-1 leading-relaxed">
-                        {inspectProject.usp}
                       </div>
+                    )}
+
+                    {inspectProject.outcome && (
+                      <div className="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80">
+                        <div className="text-[10px] font-bold uppercase text-emerald-800">Expected Outcome</div>
+                        <div className="text-xs font-semibold text-emerald-950 mt-1 leading-relaxed">
+                          {inspectProject.outcome}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Technical Summary */}
+                {inspectProject.technical_summary && (
+                  <div className="space-y-1.5">
+                    <h4 className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-500/10 text-sky-700 border border-sky-500/30 font-black text-xs uppercase tracking-wider shadow-2xs">
+                      <span>🛠️</span>
+                      <span>Tech Stack & Implementation</span>
+                    </h4>
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 text-xs font-mono text-slate-700 leading-relaxed">
+                      {inspectProject.technical_summary}
                     </div>
+                  </div>
+                )}
+
+                {/* External Links */}
+                <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2.5 sm:gap-3">
+                  {inspectProject.github_url && (
+                    <a
+                      href={inspectProject.github_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-all"
+                    >
+                      <span>View GitHub Code</span>
+                    </a>
                   )}
 
-                  {inspectProject.outcome && (
-                    <div className="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80">
-                      <div className="text-[10px] font-bold uppercase text-emerald-800">Expected Outcome</div>
-                      <div className="text-xs font-semibold text-emerald-950 mt-1 leading-relaxed">
-                        {inspectProject.outcome}
-                      </div>
-                    </div>
+                  {inspectProject.presentation_url && (
+                    <a
+                      href={inspectProject.presentation_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-50 text-[#1f6fb2] border border-sky-200 font-bold text-xs hover:bg-sky-100 transition-all"
+                    >
+                      <span>Slide Deck</span>
+                    </a>
                   )}
+
+                  {inspectProject.demo_url && (
+                    <a
+                      href={inspectProject.demo_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-all"
+                    >
+                      <span>Live Prototype ↗</span>
+                    </a>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => handleCopyShareLink(inspectProject.id)}
+                    className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all w-full sm:w-auto text-center justify-center sm:ml-auto"
+                  >
+                    {copiedId === inspectProject.id ? '✓ Link Copied' : 'Share Project'}
+                  </button>
                 </div>
-              )}
-
-              {/* Technical Summary */}
-              {inspectProject.technical_summary && (
-                <div className="space-y-1.5">
-                  <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                    🛠️ Tech Stack & Implementation
-                  </h4>
-                  <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 text-xs font-mono text-slate-700 leading-relaxed">
-                    {inspectProject.technical_summary}
-                  </div>
-                </div>
-              )}
-
-              {/* External Links */}
-              <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-3">
-                {inspectProject.github_url && (
-                  <a
-                    href={inspectProject.github_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-all"
-                  >
-                    <span>View GitHub Code</span>
-                  </a>
-                )}
-
-                {inspectProject.presentation_url && (
-                  <a
-                    href={inspectProject.presentation_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-50 text-[#1f6fb2] border border-sky-200 font-bold text-xs hover:bg-sky-100 transition-all"
-                  >
-                    <span>Slide Deck</span>
-                  </a>
-                )}
-
-                {inspectProject.demo_url && (
-                  <a
-                    href={inspectProject.demo_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-all"
-                  >
-                    <span>Live Prototype ↗</span>
-                  </a>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() => handleCopyShareLink(inspectProject.id)}
-                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all ml-auto"
-                >
-                  {copiedId === inspectProject.id ? '✓ Link Copied' : 'Share Project'}
-                </button>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
