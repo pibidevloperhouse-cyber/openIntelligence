@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import { SubmitProjectModal } from '@/components/student-showcase/components/SubmitProjectModal';
 
 // Helper to format names with capital letters
 function formatName(name) {
@@ -70,9 +71,20 @@ export default function RegisteredStudentsPage() {
   // Modal State
   const [inspectProject, setInspectProject] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
   // Top 10 button toggle state controlled via Admin panel
   const [isTop10Active, setIsTop10Active] = useState(false);
+
+  // Check URL query param or hash for ?submit=true
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('submit') === 'true' || window.location.hash === '#submit') {
+        setIsSubmitModalOpen(true);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     fetch('/api/student-projects/settings')
@@ -170,13 +182,14 @@ export default function RegisteredStudentsPage() {
 
             {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-3">
-              <Link
-                href="/students"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl text-white font-bold text-xs sm:text-sm shadow-md transition-all hover:opacity-90 active:scale-95"
+              <button
+                type="button"
+                onClick={() => setIsSubmitModalOpen(true)}
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl text-white font-bold text-xs sm:text-sm shadow-md transition-all hover:opacity-95 hover:scale-[1.02] active:scale-95 cursor-pointer"
                 style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
               >
                 <span>➕ Submit Your Project</span>
-              </Link>
+              </button>
 
               {isTop10Active && (
                 <Link
@@ -212,13 +225,14 @@ export default function RegisteredStudentsPage() {
             <p className="text-xs text-slate-500 mb-6 leading-relaxed">
               No student projects have been submitted yet. Be the first innovator to register!
             </p>
-            <Link
-              href="/students"
-              className="px-5 py-2.5 rounded-xl text-white font-bold text-xs transition-all cursor-pointer inline-block shadow-md hover:opacity-95"
+            <button
+              type="button"
+              onClick={() => setIsSubmitModalOpen(true)}
+              className="px-5 py-2.5 rounded-xl text-white font-bold text-xs transition-all cursor-pointer inline-block shadow-md hover:opacity-95 active:scale-95"
               style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
             >
               Register Your Project Now
-            </Link>
+            </button>
           </div>
         )}
 
@@ -416,7 +430,7 @@ export default function RegisteredStudentsPage() {
                     <th className="py-4 px-5">PROJECT & DOMAIN</th>
                     <th className="py-4 px-5">INNOVATOR & TEAM</th>
                     <th className="py-4 px-5">INSTITUTION</th>
-                    <th className="py-4 px-5">USP / HIGHLIGHT</th>
+                    <th className="py-4 px-5">UVP / HIGHLIGHT</th>
                     <th className="py-4 px-5 text-center w-40">ACTION</th>
                   </tr>
                 </thead>
@@ -696,7 +710,7 @@ export default function RegisteredStudentsPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     {inspectProject.usp && (
                       <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/80">
-                        <div className="text-[10px] font-bold uppercase text-amber-800">Competitive USP</div>
+                        <div className="text-[10px] font-bold uppercase text-amber-800">Competitive UVP</div>
                         <div className="text-xs font-semibold text-amber-950 mt-1 leading-relaxed">
                           {inspectProject.usp}
                         </div>
@@ -775,6 +789,16 @@ export default function RegisteredStudentsPage() {
           </div>
         );
       })()}
+
+      {/* ─── DIRECT SUBMIT PROJECT MODAL ────────────────────────────────── */}
+      <SubmitProjectModal
+        isOpen={isSubmitModalOpen}
+        onClose={() => setIsSubmitModalOpen(false)}
+        onSubmitSuccess={() => {
+          setIsSubmitModalOpen(false);
+          fetchRegistered();
+        }}
+      />
     </div>
   );
 }

@@ -2828,7 +2828,7 @@ export default function AdminPage() {
                               {proj.usp && (
                                 <div style={{ padding: '0.65rem 0.95rem', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '9px', fontSize: '0.82rem' }}>
                                   <strong style={{ color: '#b45309', display: 'block', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>
-                                    ⚡ Unique Selling Proposition (USP)
+                                    ⚡ Unique Value Proposition (UVP)
                                   </strong>
                                   <span style={{ color: '#78350f', lineHeight: 1.45 }}>{proj.usp}</span>
                                 </div>
@@ -3537,7 +3537,7 @@ export default function AdminPage() {
                   {viewingStudentProject.usp && (
                     <div style={{ background: '#fffbeb', padding: '1rem 1.25rem', borderRadius: '12px', border: '1px solid #fde68a' }}>
                       <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#b45309', fontWeight: 800, letterSpacing: '0.05em', marginBottom: '4px' }}>
-                        ⚡ Unique Selling Proposition (USP)
+                        ⚡ Unique Value Proposition (UVP)
                       </div>
                       <div style={{ fontSize: '0.92rem', color: '#78350f', fontWeight: 500 }}>
                         {viewingStudentProject.usp}

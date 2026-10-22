@@ -166,9 +166,9 @@ export const PRIZE_TIERS = [
     perks: [
       '₹15,000 Direct Cash Prize transferred to team',
       'Exclusive Cover Story & Homepage Launch on PiBi Open Intelligence',
-      'Official PiBi Open Intelligence Verified Builder Badge',
+      
       'Prestigious Gold Distinction Certificate',
-      'Direct 1-on-1 Pitch Session with Tech Investors & VC Scouts',
+      'Community recognition across 150K+ developers',
       'Incubation & Patent Filing Mentorship Support',
     ],
     highlight: 'Featured Globally on PiBi Open Intelligence',
@@ -185,8 +185,8 @@ export const PRIZE_TIERS = [
       '₹10,000 Direct Cash Prize transferred to team',
       'Official Spotlight Showcase on PiBi Open Intelligence Projects Hub',
       'PiBi Open Intelligence Verified Innovator Certificate',
-      'Commendation Certificate',
-      'Mentorship Sessions with Silicon Valley & Indian Founders',
+      
+      
       'Fast-track interview invitations at partnering tech startups',
     ],
     highlight: 'Spotlight on PiBi Open Intelligence',
@@ -203,9 +203,9 @@ export const PRIZE_TIERS = [
       '₹5,000 Direct Cash Prize transferred to team',
       'Featured Project Listing on PiBi Open Intelligence Ecosystem Directory',
       'PiBi Open Intelligence Student Builder Certificate',
-      'Certificate of Achievement',
+      
       'Technical Architecture Review with Senior Staff Engineers',
-      'Community recognition across 150K+ developers',
+      
     ],
     highlight: 'Listed on PiBi Open Intelligence',
   },

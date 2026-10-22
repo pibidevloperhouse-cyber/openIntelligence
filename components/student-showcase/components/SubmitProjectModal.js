@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import {
   X,
@@ -48,6 +48,8 @@ export const SubmitProjectModal = ({
 }) => {
   // Step state: 1, 2, or 3
   const [currentStep, setCurrentStep] = useState(1);
+  const contentBodyRef = useRef(null);
+  const modalScrollRef = useRef(null);
 
   // Form State covering all requested fields
   const [formData, setFormData] = useState({
@@ -245,6 +247,16 @@ export const SubmitProjectModal = ({
         .catch(() => {});
     }
   }, [isOpen]);
+
+  // Reset modal scroll to top whenever step changes or modal opens
+  useEffect(() => {
+    if (contentBodyRef.current) {
+      contentBodyRef.current.scrollTop = 0;
+    }
+    if (modalScrollRef.current) {
+      modalScrollRef.current.scrollTop = 0;
+    }
+  }, [currentStep, isOpen]);
 
   // Lock body scroll and handle Escape key
   useEffect(() => {
@@ -498,7 +510,10 @@ export const SubmitProjectModal = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div
+      ref={modalScrollRef}
+      className="fixed inset-0 z-[1000] flex items-center justify-center p-3 sm:p-5 overflow-y-auto"
+    >
       {/* Backdrop */}
       <div
         onClick={onClose}
@@ -623,7 +638,10 @@ export const SubmitProjectModal = ({
         )}
 
         {/* Content Body */}
-        <div className="p-4 sm:p-6 md:p-7 overflow-y-auto space-y-4 modal-scroll flex-1">
+        <div
+          ref={contentBodyRef}
+          className="p-4 sm:p-6 md:p-7 overflow-y-auto space-y-4 modal-scroll flex-1"
+        >
           {submitted ? (
             <div className="text-center py-10 sm:py-12 space-y-4">
               <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center mx-auto shadow-xl animate-bounce">
@@ -975,7 +993,7 @@ export const SubmitProjectModal = ({
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                         <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
-                        <span>USP (Unique Selling Proposition)</span>
+                        <span>UVP (Unique Value Proposition)</span>
                       </label>
                       <input
                         type="text"

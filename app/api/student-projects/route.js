@@ -165,7 +165,7 @@ export async function POST(request) {
     const fullDescription = [
       finalProblem ? `### Problem Statement\n${finalProblem}` : '',
       finalSolution ? `### Proposed Solution\n${finalSolution}` : '',
-      finalUsp ? `### Unique Selling Proposition (USP)\n${finalUsp}` : '',
+      finalUsp ? `### Unique Value Proposition (UVP)\n${finalUsp}` : '',
       finalOutcome ? `### Expected Outcome\n${finalOutcome}` : '',
       finalTechSummary ? `### Technical Summary\n${finalTechSummary}` : '',
     ].filter(Boolean).join('\n\n');
@@ -174,7 +174,7 @@ export async function POST(request) {
       title: finalTitle,
       category: finalDomain,
       domain: finalDomain,
-      tagline: finalPitch || (finalUsp ? `USP: ${finalUsp.slice(0, 100)}` : null),
+      tagline: finalPitch || (finalUsp ? `UVP: ${finalUsp.slice(0, 100)}` : null),
       lead_student: finalName,
       institution: finalCollege,
       city: finalCity,

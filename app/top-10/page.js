@@ -392,7 +392,7 @@ export default function Top10ShowcasePage() {
                     <th className="py-4 px-4 sm:px-6 text-center w-20">S NO</th>
                     <th className="py-4 px-4 sm:px-6">PROJECT & DOMAIN</th>
                     <th className="py-4 px-4 sm:px-6">INSTITUTION & LEAD</th>
-                    <th className="py-4 px-4 sm:px-6">KEY COMPETITIVE USP</th>
+                    <th className="py-4 px-4 sm:px-6">KEY COMPETITIVE UVP</th>
                     <th className="py-4 px-4 sm:px-6 text-center w-52">
                       <div className="flex items-center justify-center text-center">ACTIONS</div>
                     </th>
@@ -902,7 +902,7 @@ export default function Top10ShowcasePage() {
                     <div className="flex items-center gap-2 mb-2">
                       <span className="w-2 h-2 rounded-full bg-amber-500"></span>
                       <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                        Competitive Edge (USP)
+                        Competitive Edge (UVP)
                       </span>
                     </div>
                     <p className="text-xs sm:text-sm text-slate-800 font-semibold leading-relaxed">
