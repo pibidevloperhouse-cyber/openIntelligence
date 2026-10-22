@@ -107,6 +107,43 @@ export async function DELETE(request) {
       return NextResponse.json({ error: 'Submission ID is required' }, { status: 400 });
     }
 
+    // 1. Fetch submission details first to find any files stored in Supabase Storage
+    const { data: project } = await supabaseAdmin
+      .from('student_project_submissions')
+      .select('id, video_url, presentation_url, demo_url')
+      .eq('id', id)
+      .single();
+
+    if (project) {
+      const urlsToCheck = [project.video_url, project.presentation_url, project.demo_url].filter(Boolean);
+      const filesToDelete = [];
+
+      for (const url of urlsToCheck) {
+        // Check if URL is from Supabase storage bucket 'events'
+        // Format: .../storage/v1/object/public/events/<filename>
+        const bucketMarker = '/storage/v1/object/public/events/';
+        const markerIdx = url.indexOf(bucketMarker);
+        if (markerIdx !== -1) {
+          const rawFilename = url.substring(markerIdx + bucketMarker.length).split('?')[0];
+          const decoded = decodeURIComponent(rawFilename);
+          if (decoded) filesToDelete.push(decoded);
+        }
+      }
+
+      if (filesToDelete.length > 0) {
+        console.log(`[Admin DELETE] Deleting ${filesToDelete.length} file(s) from Supabase Storage 'events' bucket:`, filesToDelete);
+        const { error: delStorageErr } = await supabaseAdmin
+          .storage
+          .from('events')
+          .remove(filesToDelete);
+
+        if (delStorageErr) {
+          console.error('[Admin DELETE] Error removing files from storage:', delStorageErr);
+        }
+      }
+    }
+
+    // 2. Delete from database
     const { error } = await supabaseAdmin
       .from('student_project_submissions')
       .delete()
@@ -116,7 +153,7 @@ export async function DELETE(request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, message: 'Deleted successfully' });
+    return NextResponse.json({ success: true, message: 'Deleted successfully from database and Supabase storage' });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

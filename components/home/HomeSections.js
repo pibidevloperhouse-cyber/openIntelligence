@@ -441,6 +441,41 @@ export function ContributeSection() {
 
                 <span style={{ animation: 'arrowNudgeAnim 1.5s infinite ease-in-out', display: 'inline-block' }} className="text-lg leading-none font-bold">&rarr;</span>
               </Link>
+
+              {/* Public Top 10 Showcase Button (Only visible when isTop10Active is ON in Admin!) */}
+              {isTop10Active && (
+                <Link
+                  href="/top-10"
+                  className="inline-flex items-center gap-3.5 px-7 py-3.5 md:px-8 md:py-4 rounded-full text-white font-extrabold text-sm md:text-base transition-all duration-300 cursor-pointer shadow-lg hover:scale-[1.02]"
+                  style={{
+                    background: 'linear-gradient(115deg, #f59e0b 0%, #ea580c 45%, #e11d48 100%)',
+                    backgroundSize: '200% 200%',
+                    border: '1.5px solid rgba(251, 191, 36, 0.9)',
+                    animation: 'top10SuperPulse 2s ease-in-out infinite, studentGradShimmer 4s ease infinite',
+                    boxShadow: '0 0 25px rgba(245, 158, 11, 0.6)',
+                  }}
+                >
+                  <span className="tracking-tight text-white drop-shadow-sm">🏆 Top 10 Leaderboard</span>
+                  <span
+                    style={{
+                      fontSize: '0.65rem',
+                      fontWeight: 900,
+                      letterSpacing: '0.06em',
+                      padding: '2px 7px',
+                      borderRadius: '9999px',
+                      background: 'rgba(255, 255, 255, 0.25)',
+                      backdropFilter: 'blur(4px)',
+                      border: '1px solid rgba(255, 255, 255, 0.7)',
+                      color: '#ffffff',
+                      animation: 'badgeGlowPulse 1.4s infinite ease-in-out',
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    VOTE NOW
+                  </span>
+                  <span style={{ animation: 'arrowNudgeAnim 1.5s infinite ease-in-out', display: 'inline-block' }} className="text-lg leading-none font-bold">&rarr;</span>
+                </Link>
+              )}
             </div>
           </div>
         </AnimatedFadeIn>

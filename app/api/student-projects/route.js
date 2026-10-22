@@ -109,6 +109,8 @@ export async function POST(request) {
     const rawDemo = (body.liveDemo || body.liveDemoUrl || demoUrl || '').trim();
     const finalDemoUrl = (rawDemo && rawDemo !== finalPresentation && rawDemo !== finalVideo && rawDemo !== finalGithub && rawDemo !== 'https://pibiopenintelligence.org') ? rawDemo : null;
 
+    const finalCity = (body.city || body.district || body.location || body.state || '').trim();
+
     if (!finalName) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
     }
@@ -117,6 +119,9 @@ export async function POST(request) {
     }
     if (!finalPhone) {
       return NextResponse.json({ error: 'Phone number is required' }, { status: 400 });
+    }
+    if (!finalCity) {
+      return NextResponse.json({ error: 'City / District is required (e.g. Madurai, Chennai)' }, { status: 400 });
     }
     if (!finalCollege) {
       return NextResponse.json({ error: 'College / University is required' }, { status: 400 });
@@ -172,6 +177,8 @@ export async function POST(request) {
       tagline: finalPitch || (finalUsp ? `USP: ${finalUsp.slice(0, 100)}` : null),
       lead_student: finalName,
       institution: finalCollege,
+      city: finalCity,
+      state: finalCity,
       email: finalEmail,
       phone: finalPhone,
       dept: (dept || '').trim() || null,

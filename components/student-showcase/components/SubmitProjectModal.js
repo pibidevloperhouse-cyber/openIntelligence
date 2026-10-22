@@ -28,6 +28,7 @@ import {
   UserPlus,
   Plus,
   Globe,
+  MapPin,
 } from 'lucide-react';
 
 const GithubIcon = ({ className = 'w-3.5 h-3.5' }) => (
@@ -54,6 +55,7 @@ export const SubmitProjectModal = ({
     name: '',
     email: '',
     phone: '',
+    city: '',
     college: '',
     dept: '',
     year: 'Final Year (4th)',
@@ -275,6 +277,9 @@ export const SubmitProjectModal = ({
     if (!formData.phone.trim() || formData.phone.trim().length < 8) {
       return 'Please enter a valid phone number.';
     }
+    if (!formData.city.trim()) {
+      return 'Please enter your City / District (e.g. Madurai, Chennai).';
+    }
     if (!formData.college.trim()) return 'Please enter your college or university name.';
     return '';
   };
@@ -378,6 +383,8 @@ export const SubmitProjectModal = ({
         name: formData.name.trim(),
         email: formData.email.trim(),
         phone: formData.phone.trim(),
+        city: formData.city.trim(),
+        state: formData.city.trim(),
         college: formData.college.trim(),
         dept: formData.dept.trim(),
         year: formData.year,
@@ -703,7 +710,7 @@ export const SubmitProjectModal = ({
                     </div>
                   </div>
 
-                  {/* Phone No & College */}
+                  {/* Phone No & City / District (Mandatory) */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
@@ -721,6 +728,23 @@ export const SubmitProjectModal = ({
 
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                        <span>City / District (Location) <span className="text-red-500">*</span></span>
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.city}
+                        onChange={(e) => updateField('city', e.target.value)}
+                        placeholder="e.g. Madurai / Chennai / Coimbatore"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#2ec4b6] focus:ring-2 focus:ring-[#2ec4b6]/20 transition-all placeholder:text-slate-400"
+                      />
+                    </div>
+                  </div>
+
+                  {/* College / University & Department */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                         <Building2 className="w-3.5 h-3.5 text-slate-400" />
                         <span>College / University <span className="text-red-500">*</span></span>
                       </label>
@@ -732,10 +756,7 @@ export const SubmitProjectModal = ({
                         className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#2ec4b6] focus:ring-2 focus:ring-[#2ec4b6]/20 transition-all placeholder:text-slate-400"
                       />
                     </div>
-                  </div>
 
-                  {/* Dept, Year & D.O.B */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                         <GraduationCap className="w-3.5 h-3.5 text-slate-400" />
@@ -749,7 +770,10 @@ export const SubmitProjectModal = ({
                         className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#2ec4b6] focus:ring-2 focus:ring-[#2ec4b6]/20 transition-all placeholder:text-slate-400"
                       />
                     </div>
+                  </div>
 
+                  {/* Year of Study & D.O.B */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div className="space-y-1.5">
                       <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                         <Layers className="w-3.5 h-3.5 text-slate-400" />

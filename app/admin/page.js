@@ -2687,65 +2687,98 @@ export default function AdminPage() {
 
                           {/* Student Details Grid (Step 1 info) */}
                           <div style={{
-                            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                            gap: '0.75rem', padding: '1rem 1.15rem', background: 'var(--bg-secondary, #f8fafc)',
+                            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+                            gap: '0.85rem 1.15rem', padding: '1rem 1.15rem', background: 'var(--bg-secondary, #f8fafc)',
                             borderRadius: '12px', border: '1px solid var(--border)'
                           }}>
-                            <div>
+                            <div style={{ minWidth: 0, overflow: 'hidden' }}>
                               <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Lead Student</div>
-                              <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <span>👤</span> {proj.lead_student}
+                              <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                <span>👤</span>
+                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{proj.lead_student}</span>
                               </div>
                             </div>
-                            <div>
+
+                            <div style={{ minWidth: 0, overflow: 'hidden' }}>
                               <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>College / University</div>
-                              <div style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <span>🏛️</span> {proj.institution}
+                              <div style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={proj.institution}>
+                                <span>🏛️</span>
+                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{proj.institution}</span>
                               </div>
                             </div>
+
+                            {(proj.city || proj.state) && (
+                              <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                                <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>City / District</div>
+                                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#4f46e5', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                  <span>📍</span>
+                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{proj.city || proj.state}</span>
+                                </div>
+                              </div>
+                            )}
+
                             {proj.email && (
-                              <div>
+                              <div style={{ minWidth: 0, overflow: 'hidden' }}>
                                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Email Address</div>
-                                <div style={{ fontSize: '0.88rem', fontWeight: 600, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <span>✉️</span>
-                                  <a href={`mailto:${proj.email}`} style={{ color: '#1f6fb2', textDecoration: 'none' }}>
+                                <div style={{ fontSize: '0.88rem', fontWeight: 600, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, overflow: 'hidden' }}>
+                                  <span style={{ flexShrink: 0 }}>✉️</span>
+                                  <a
+                                    href={`mailto:${proj.email}`}
+                                    style={{
+                                      color: '#1f6fb2',
+                                      textDecoration: 'none',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      whiteSpace: 'nowrap',
+                                      display: 'inline-block',
+                                      maxWidth: '100%',
+                                    }}
+                                    title={proj.email}
+                                  >
                                     {proj.email}
                                   </a>
                                 </div>
                               </div>
                             )}
+
                             {proj.phone && (
-                              <div>
+                              <div style={{ minWidth: 0, overflow: 'hidden' }}>
                                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Phone Number</div>
-                                <div style={{ fontSize: '0.88rem', fontWeight: 600, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <span>📞</span>
-                                  <a href={`tel:${proj.phone}`} style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>
+                                <div style={{ fontSize: '0.88rem', fontWeight: 600, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, whiteSpace: 'nowrap' }}>
+                                  <span style={{ flexShrink: 0 }}>📞</span>
+                                  <a href={`tel:${proj.phone}`} style={{ color: 'var(--text-primary)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
                                     {proj.phone}
                                   </a>
                                 </div>
                               </div>
                             )}
+
                             {proj.dept && (
-                              <div>
+                              <div style={{ minWidth: 0, overflow: 'hidden' }}>
                                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Department</div>
-                                <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <span>🎓</span> {proj.dept}
+                                <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                  <span>🎓</span>
+                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{proj.dept}</span>
                                 </div>
                               </div>
                             )}
+
                             {proj.year && (
-                              <div>
+                              <div style={{ minWidth: 0, overflow: 'hidden' }}>
                                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Year of Study</div>
-                                <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <span>📚</span> {proj.year}
+                                <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                  <span>📚</span>
+                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{proj.year}</span>
                                 </div>
                               </div>
                             )}
+
                             {proj.dob && (
-                              <div>
+                              <div style={{ minWidth: 0, overflow: 'hidden' }}>
                                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Date of Birth (D.O.B)</div>
-                                <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <span>📅</span> {proj.dob}
+                                <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                  <span>📅</span>
+                                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{proj.dob}</span>
                                 </div>
                               </div>
                             )}
@@ -3381,6 +3414,17 @@ export default function AdminPage() {
                       <a href={`tel:${viewingStudentProject.phone}`} style={{ color: '#0f172a', textDecoration: 'none' }}>
                         {viewingStudentProject.phone}
                       </a>
+                    </div>
+                  </div>
+                )}
+
+                {(viewingStudentProject.city || viewingStudentProject.state) && (
+                  <div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                      City / District
+                    </div>
+                    <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#4f46e5', marginTop: '3px' }}>
+                      {viewingStudentProject.city || viewingStudentProject.state}
                     </div>
                   </div>
                 )}

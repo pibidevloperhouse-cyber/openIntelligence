@@ -39,6 +39,18 @@ function getYouTubeEmbedUrl(url) {
   return null;
 }
 
+// Helper to detect direct video file uploaded to Supabase or other storage
+function isDirectVideoFile(url) {
+  if (!url) return false;
+  const clean = url.split('?')[0].toLowerCase();
+  return (
+    clean.endsWith('.mp4') ||
+    clean.endsWith('.webm') ||
+    clean.endsWith('.mov') ||
+    url.includes('/storage/v1/object/public/')
+  );
+}
+
 export default function RegisteredStudentsPage() {
   const [projects, setProjects] = useState([]);
   const [stats, setStats] = useState({
@@ -58,6 +70,20 @@ export default function RegisteredStudentsPage() {
   // Modal State
   const [inspectProject, setInspectProject] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
+
+  // Top 10 button toggle state controlled via Admin panel
+  const [isTop10Active, setIsTop10Active] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/student-projects/settings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && typeof data.isTop10Active === 'boolean') {
+          setIsTop10Active(data.isTop10Active);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Fetch registered student projects
   const fetchRegistered = async () => {
@@ -153,12 +179,18 @@ export default function RegisteredStudentsPage() {
                 <span>➕ Submit Your Project</span>
               </Link>
 
-              <Link
-                href="/top-10"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm transition-all shadow-xs active:scale-95"
-              >
-                <span>🏆 Top 10 Leaderboard</span>
-              </Link>
+              {isTop10Active && (
+                <Link
+                  href="/top-10"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl text-white font-extrabold text-xs sm:text-sm transition-all shadow-md active:scale-95 hover:opacity-95 hover:scale-[1.02] cursor-pointer animate-in fade-in"
+                  style={{
+                    background: 'linear-gradient(135deg, #f59e0b, #ea580c)',
+                    boxShadow: '0 4px 14px rgba(245, 158, 11, 0.4)',
+                  }}
+                >
+                  <span>🏆 Top 10 Leaderboard</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -204,12 +236,56 @@ export default function RegisteredStudentsPage() {
                 >
                   {/* Card Header Top Gradient */}
                   <div className="p-5 pb-3">
-                    <div className="flex items-center justify-between gap-2 mb-2.5">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200/70">
-                        {domain}
-                      </span>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, flex: 1, overflow: 'hidden' }}>
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            maxWidth: '170px',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            fontSize: '10px',
+                            fontWeight: 700,
+                            backgroundColor: '#faf5ff',
+                            color: '#7e22ce',
+                            border: '1px solid rgba(216, 180, 254, 0.7)',
+                            borderRadius: '6px',
+                            padding: '2px 8px',
+                          }}
+                          title={domain}
+                        >
+                          {domain.split(',')[0]?.trim() || domain}
+                        </span>
+                        {domain.includes(',') && (
+                          <span
+                            style={{
+                              fontSize: '9px',
+                              fontWeight: 800,
+                              backgroundColor: '#f3e8ff',
+                              color: '#6b21a8',
+                              border: '1px solid #e9d5ff',
+                              borderRadius: '4px',
+                              padding: '2px 5px',
+                              flexShrink: 0,
+                            }}
+                            title={domain}
+                          >
+                            +{domain.split(',').length - 1}
+                          </span>
+                        )}
+                      </div>
 
-                      <span className="text-[10px] font-semibold text-slate-400">
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          color: '#94a3b8',
+                          whiteSpace: 'nowrap',
+                          flexShrink: 0,
+                          marginLeft: 'auto',
+                        }}
+                      >
                         {project.created_at
                           ? new Date(project.created_at).toLocaleDateString('en-US', {
                               month: 'short',
@@ -244,6 +320,9 @@ export default function RegisteredStudentsPage() {
                           <path d="M3 21h18M3 7v14M21 7v14M6 11h2M6 15h2M16 11h2M16 15h2M10 21V7l4-3v17" />
                         </svg>
                         <span className="truncate">{formatInstitution(project.institution)}</span>
+                        {(project.city || project.state) && (
+                          <span className="text-purple-700 font-semibold shrink-0">• {project.city || project.state}</span>
+                        )}
                       </div>
 
                       {(project.dept || project.year) && (
@@ -305,16 +384,6 @@ export default function RegisteredStudentsPage() {
                             <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
                           </svg>
                         </a>
-                      )}
-                      {project.video_url && (
-                        <button
-                          type="button"
-                          onClick={() => setInspectProject(project)}
-                          className="p-1.5 rounded-lg bg-red-50 border border-red-200/80 hover:bg-red-100 text-red-600 transition-colors"
-                          title="Watch Demonstration Video"
-                        >
-                          ▶️
-                        </button>
                       )}
                     </div>
 
@@ -437,6 +506,23 @@ export default function RegisteredStudentsPage() {
                   ✕
                 </button>
               </div>
+            ) : isDirectVideoFile(inspectProject.video_url) ? (
+              <div className="relative aspect-video max-h-[300px] w-full bg-black shrink-0 sticky top-0 z-30 flex items-center justify-center">
+                <video
+                  src={inspectProject.video_url}
+                  controls
+                  playsInline
+                  className="w-full h-full max-h-[300px] object-contain"
+                />
+                <button
+                  type="button"
+                  onClick={() => setInspectProject(null)}
+                  className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-white flex items-center justify-center transition-all cursor-pointer z-40 border border-white/20 shadow-md"
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+              </div>
             ) : (
               <div
                 className="p-6 text-white shrink-0 sticky top-0 z-30 shadow-md"
@@ -513,10 +599,14 @@ export default function RegisteredStudentsPage() {
               </div>
 
               {/* Institution Details */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs">
                 <div>
                   <div className="text-[10px] font-bold uppercase text-slate-400">College / University</div>
                   <div className="font-bold text-slate-800 mt-0.5">{formatInstitution(inspectProject.institution)}</div>
+                </div>
+                <div>
+                  <div className="text-[10px] font-bold uppercase text-slate-400">City / District (Location)</div>
+                  <div className="font-bold text-purple-700 mt-0.5">{inspectProject.city || inspectProject.state || 'Tamil Nadu'}</div>
                 </div>
                 <div>
                   <div className="text-[10px] font-bold uppercase text-slate-400">Department & Year</div>

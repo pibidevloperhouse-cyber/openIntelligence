@@ -1,6 +1,7 @@
 import { Inter, Space_Grotesk, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import ConditionalLayout from '@/components/ConditionalLayout';
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -82,6 +83,8 @@ const jsonLd = {
 };
 
 export default function RootLayout({ children }) {
+  const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-B67E60DPH6';
+
   return (
     <html
       lang="en"
@@ -97,6 +100,7 @@ export default function RootLayout({ children }) {
       <body>
         <ConditionalLayout>{children}</ConditionalLayout>
         <ScrollToTop />
+        {gaMeasurementId && <GoogleAnalytics gaId={gaMeasurementId} />}
       </body>
     </html>
   );

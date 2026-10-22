@@ -14,6 +14,8 @@ export async function GET() {
         tagline,
         lead_student,
         institution,
+        city,
+        state,
         dept,
         year,
         problem_statement,
