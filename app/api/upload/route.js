@@ -10,6 +10,16 @@ export async function POST(request) {
       return NextResponse.json({ success: false, error: 'No file uploaded' }, { status: 400 });
     }
 
+    // Determine target bucket: explicit parameter or inferred by mime/type
+    let targetBucket = data.get('bucket');
+    if (!targetBucket) {
+      const isStudentAsset = 
+        file.type.includes('pdf') || 
+        file.type.includes('video') || 
+        /\.(pdf|mp4|webm|mov|mkv)$/i.test(file.name);
+      targetBucket = isStudentAsset ? 'student-projects' : 'events';
+    }
+
     // Create unique filename
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const filename = uniqueSuffix + '-' + file.name.replace(/[^a-zA-Z0-9.]/g, '');
@@ -17,7 +27,7 @@ export async function POST(request) {
     // Upload to Supabase Storage
     let { data: uploadData, error } = await supabaseAdmin
       .storage
-      .from('events') // We use an 'events' bucket
+      .from(targetBucket)
       .upload(filename, file, {
         contentType: file.type,
         upsert: false
@@ -25,24 +35,28 @@ export async function POST(request) {
 
     // Fallback: If bucket doesn't exist, try creating it
     if (error && error.message.includes('bucket') && error.message.includes('not found')) {
-      await supabaseAdmin.storage.createBucket('events', { public: true });
-      const retry = await supabaseAdmin.storage.from('events').upload(filename, file, { contentType: file.type, upsert: false });
+      await supabaseAdmin.storage.createBucket(targetBucket, { public: true });
+      const retry = await supabaseAdmin.storage.from(targetBucket).upload(filename, file, { contentType: file.type, upsert: false });
       error = retry.error;
       uploadData = retry.data;
     }
 
     if (error) {
-      console.error('Supabase upload error:', error);
+      console.error(`Supabase upload error to '${targetBucket}':`, error);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
     // Get public URL
     const { data: publicUrlData } = supabaseAdmin
       .storage
-      .from('events')
+      .from(targetBucket)
       .getPublicUrl(filename);
 
-    return NextResponse.json({ success: true, url: publicUrlData.publicUrl });
+    return NextResponse.json({ 
+      success: true, 
+      url: publicUrlData.publicUrl,
+      bucket: targetBucket 
+    });
   } catch (error) {
     console.error('Error uploading file:', error);
     return NextResponse.json({ success: false, error: 'Upload failed' }, { status: 500 });

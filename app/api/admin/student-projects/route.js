@@ -116,29 +116,46 @@ export async function DELETE(request) {
 
     if (project) {
       const urlsToCheck = [project.video_url, project.presentation_url, project.demo_url].filter(Boolean);
-      const filesToDelete = [];
+      const studentFilesToDelete = [];
+      const eventFilesToDelete = [];
 
       for (const url of urlsToCheck) {
-        // Check if URL is from Supabase storage bucket 'events'
-        // Format: .../storage/v1/object/public/events/<filename>
-        const bucketMarker = '/storage/v1/object/public/events/';
-        const markerIdx = url.indexOf(bucketMarker);
-        if (markerIdx !== -1) {
-          const rawFilename = url.substring(markerIdx + bucketMarker.length).split('?')[0];
+        // Check if URL is from Supabase storage bucket 'student-projects' or 'events'
+        const studentMarker = '/storage/v1/object/public/student-projects/';
+        const eventsMarker = '/storage/v1/object/public/events/';
+
+        if (url.includes(studentMarker)) {
+          const rawFilename = url.substring(url.indexOf(studentMarker) + studentMarker.length).split('?')[0];
           const decoded = decodeURIComponent(rawFilename);
-          if (decoded) filesToDelete.push(decoded);
+          if (decoded) studentFilesToDelete.push(decoded);
+        } else if (url.includes(eventsMarker)) {
+          const rawFilename = url.substring(url.indexOf(eventsMarker) + eventsMarker.length).split('?')[0];
+          const decoded = decodeURIComponent(rawFilename);
+          if (decoded) eventFilesToDelete.push(decoded);
         }
       }
 
-      if (filesToDelete.length > 0) {
-        console.log(`[Admin DELETE] Deleting ${filesToDelete.length} file(s) from Supabase Storage 'events' bucket:`, filesToDelete);
-        const { error: delStorageErr } = await supabaseAdmin
+      if (studentFilesToDelete.length > 0) {
+        console.log(`[Admin DELETE] Deleting ${studentFilesToDelete.length} file(s) from 'student-projects' bucket:`, studentFilesToDelete);
+        const { error: delStudentErr } = await supabaseAdmin
+          .storage
+          .from('student-projects')
+          .remove(studentFilesToDelete);
+
+        if (delStudentErr) {
+          console.error('[Admin DELETE] Error removing files from student-projects storage:', delStudentErr);
+        }
+      }
+
+      if (eventFilesToDelete.length > 0) {
+        console.log(`[Admin DELETE] Deleting ${eventFilesToDelete.length} file(s) from 'events' bucket:`, eventFilesToDelete);
+        const { error: delEventsErr } = await supabaseAdmin
           .storage
           .from('events')
-          .remove(filesToDelete);
+          .remove(eventFilesToDelete);
 
-        if (delStorageErr) {
-          console.error('[Admin DELETE] Error removing files from storage:', delStorageErr);
+        if (delEventsErr) {
+          console.error('[Admin DELETE] Error removing files from events storage:', delEventsErr);
         }
       }
     }

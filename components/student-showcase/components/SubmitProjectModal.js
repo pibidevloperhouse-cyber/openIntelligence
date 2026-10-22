@@ -164,6 +164,7 @@ export const SubmitProjectModal = ({
     try {
       const data = new FormData();
       data.append('file', file);
+      data.append('bucket', 'student-projects');
 
       const res = await fetch('/api/upload', {
         method: 'POST',
@@ -211,6 +212,7 @@ export const SubmitProjectModal = ({
     try {
       const data = new FormData();
       data.append('file', file);
+      data.append('bucket', 'student-projects');
 
       const res = await fetch('/api/upload', {
         method: 'POST',
