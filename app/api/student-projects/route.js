@@ -104,7 +104,10 @@ export async function POST(request) {
     const finalVideo = (video || videoUrl || '').trim();
     const finalTechSummary = (technicalSummary || '').trim();
     const finalPitch = (pitch || tagline || '').trim();
-    const finalDemoUrl = (finalVideo || demoUrl || finalPresentation || finalGithub || '').trim();
+    
+    // Clean demo_url: only keep if explicitly provided and not a duplicate of slides/video/github
+    const rawDemo = (body.liveDemo || body.liveDemoUrl || demoUrl || '').trim();
+    const finalDemoUrl = (rawDemo && rawDemo !== finalPresentation && rawDemo !== finalVideo && rawDemo !== finalGithub && rawDemo !== 'https://pibiopenintelligence.org') ? rawDemo : null;
 
     if (!finalName) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
@@ -126,6 +129,15 @@ export async function POST(request) {
     }
     if (!finalSolution) {
       return NextResponse.json({ error: 'Solution is required' }, { status: 400 });
+    }
+    if (!finalGithub) {
+      return NextResponse.json({ error: 'Project GitHub Repository link is required' }, { status: 400 });
+    }
+    if (!finalPresentation) {
+      return NextResponse.json({ error: 'Presentation / Slides (link or PDF upload) is required' }, { status: 400 });
+    }
+    if (!finalVideo) {
+      return NextResponse.json({ error: 'Project Explanation Video (link or video upload) is required' }, { status: 400 });
     }
 
     let membersArray = [];
@@ -174,7 +186,7 @@ export async function POST(request) {
       github_url: finalGithub || null,
       presentation_url: finalPresentation || null,
       video_url: finalVideo || null,
-      demo_url: finalDemoUrl || 'https://pibiopenintelligence.org',
+      demo_url: finalDemoUrl,
       team_members: membersArray,
       description: fullDescription || 'Student innovation project for 2026 National Showcase',
       tags: tagsArray,

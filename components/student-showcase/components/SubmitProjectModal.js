@@ -27,6 +27,7 @@ import {
   Users,
   UserPlus,
   Plus,
+  Globe,
 } from 'lucide-react';
 
 const GithubIcon = ({ className = 'w-3.5 h-3.5' }) => (
@@ -67,10 +68,11 @@ export const SubmitProjectModal = ({
     usp: '',
     outcome: '',
 
-    // 3) Working Demo
+    // 3) Working Demo (3 Mandatory Links + Optional Live Demo)
     githubLink: '',
     presentation: '',
     video: '',
+    liveDemo: '',
     technicalSummary: '',
     pitch: '',
   });
@@ -123,6 +125,110 @@ export const SubmitProjectModal = ({
   // Registration lock state
   const [isRegistrationClosed, setIsRegistrationClosed] = useState(false);
   const [showClosedNotification, setShowClosedNotification] = useState(false);
+
+  // Upload states for Presentation (PDF) & Video (Strict <= 5MB)
+  const [presentationMode, setPresentationMode] = useState('link'); // 'link' | 'upload'
+  const [videoMode, setVideoMode] = useState('link'); // 'link' | 'upload'
+
+  const [pdfUploading, setPdfUploading] = useState(false);
+  const [pdfFileName, setPdfFileName] = useState('');
+  const [pdfFileSize, setPdfFileSize] = useState('');
+
+  const [videoUploading, setVideoUploading] = useState(false);
+  const [videoFileName, setVideoFileName] = useState('');
+  const [videoFileSize, setVideoFileSize] = useState('');
+  const [videoError, setVideoError] = useState('');
+
+  // Handle PDF upload for Slides / Presentation
+  const handleUploadPDF = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+      setError('Please select a valid PDF file.');
+      return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      setError('PDF file size exceeds 15MB limit. Please compress or link via Google Drive.');
+      return;
+    }
+
+    setPdfUploading(true);
+    setError('');
+
+    try {
+      const data = new FormData();
+      data.append('file', file);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: data,
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.success || !json.url) {
+        throw new Error(json.error || 'Failed to upload PDF');
+      }
+
+      updateField('presentation', json.url);
+      setPdfFileName(file.name);
+      setPdfFileSize((file.size / (1024 * 1024)).toFixed(1) + ' MB');
+    } catch (err) {
+      console.error('PDF upload error:', err);
+      setError(err.message || 'Failed to upload PDF. Please enter a presentation link.');
+    } finally {
+      setPdfUploading(false);
+      e.target.value = '';
+    }
+  };
+
+  // Handle Video upload strictly <= 5MB
+  const handleUploadVideo = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setVideoError('');
+
+    // Strictly enforce 5MB maximum limit as requested
+    const MAX_VIDEO_SIZE = 5 * 1024 * 1024; // 5 MB
+    if (file.size > MAX_VIDEO_SIZE) {
+      const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+      const errMsg = `Video file is ${sizeMb} MB. Direct video upload must be 5 MB or less! Please compress your video, or paste a YouTube / Loom / Google Drive link instead.`;
+      setVideoError(errMsg);
+      setError(errMsg);
+      e.target.value = '';
+      return;
+    }
+
+    setVideoUploading(true);
+    setError('');
+
+    try {
+      const data = new FormData();
+      data.append('file', file);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: data,
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.success || !json.url) {
+        throw new Error(json.error || 'Failed to upload video');
+      }
+
+      updateField('video', json.url);
+      setVideoFileName(file.name);
+      setVideoFileSize((file.size / (1024 * 1024)).toFixed(1) + ' MB');
+    } catch (err) {
+      console.error('Video upload error:', err);
+      setError(err.message || 'Failed to upload video. Please provide a YouTube/Drive link.');
+    } finally {
+      setVideoUploading(false);
+      e.target.value = '';
+    }
+  };
 
   // Fetch registration settings on modal open
   useEffect(() => {
@@ -178,6 +284,20 @@ export const SubmitProjectModal = ({
     if (!formData.projectTitle.trim()) return 'Please enter your project title.';
     if (!formData.problemStatement.trim()) return 'Please enter the problem statement.';
     if (!formData.solution.trim()) return 'Please describe your proposed solution.';
+    return '';
+  };
+
+  // Step 3 Validation (3 Mandatory Links / Uploads)
+  const validateStep3 = () => {
+    if (!formData.githubLink.trim()) {
+      return 'Please enter your Project GitHub Repository Link.';
+    }
+    if (!formData.presentation.trim()) {
+      return 'Please provide your Presentation / Slides (either paste a link or upload a PDF).';
+    }
+    if (!formData.video.trim()) {
+      return 'Please provide your Project Explanation Video (either paste a link or upload a video up to 5MB).';
+    }
     return '';
   };
 
@@ -238,6 +358,13 @@ export const SubmitProjectModal = ({
       return;
     }
 
+    const s3Err = validateStep3();
+    if (s3Err) {
+      setCurrentStep(3);
+      setError(s3Err);
+      return;
+    }
+
     setError('');
     setIsSubmitting(true);
 
@@ -265,9 +392,11 @@ export const SubmitProjectModal = ({
         usp: formData.usp.trim(),
         outcome: formData.outcome.trim(),
 
+        // Step 3 Deliverables
         githubLink: formData.githubLink.trim(),
         presentation: formData.presentation.trim(),
         video: formData.video.trim(),
+        liveDemo: formData.liveDemo?.trim() || '',
         technicalSummary: formData.technicalSummary.trim(),
         pitch: formData.pitch.trim(),
 
@@ -276,7 +405,9 @@ export const SubmitProjectModal = ({
         leadStudent: formData.name.trim(),
         institution: formData.college.trim(),
         githubUrl: formData.githubLink.trim(),
-        demoUrl: formData.video.trim() || formData.presentation.trim() || formData.githubLink.trim() || 'https://pibiopenintelligence.org',
+        presentationUrl: formData.presentation.trim(),
+        videoUrl: formData.video.trim(),
+        demoUrl: formData.liveDemo?.trim() || null,
         tagline: formData.pitch.trim() || formData.usp.trim(),
       };
 
@@ -853,55 +984,273 @@ export const SubmitProjectModal = ({
               {/* ───────────────────────────────────────────────────────────── */}
               {currentStep === 3 && (
                 <div className="space-y-4 animate-in fade-in duration-200">
-                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-                    <Video className="w-4 h-4 text-[#1f6fb2]" />
-                    <h3 className="text-sm sm:text-base font-extrabold text-slate-900">
-                      Step 3: Working Demo & Submission
-                    </h3>
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-100 flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                      <Video className="w-4 h-4 text-[#1f6fb2]" />
+                      <h3 className="text-sm sm:text-base font-extrabold text-slate-900">
+                        Step 3: Working Demo & Submission
+                      </h3>
+                    </div>
+                    <span className="text-[11px] font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                      * Required Deliverables
+                    </span>
                   </div>
 
-                  {/* GitHub Link & Presentation Link */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                        <GithubIcon className="w-3.5 h-3.5 text-slate-700" />
-                        <span>Project GitHub Link</span>
-                      </label>
-                      <input
-                        type="url"
-                        value={formData.githubLink}
-                        onChange={(e) => updateField('githubLink', e.target.value)}
-                        placeholder="https://github.com/username/project"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#2ec4b6] focus:ring-2 focus:ring-[#2ec4b6]/20 transition-all placeholder:text-slate-400"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                        <Presentation className="w-3.5 h-3.5 text-indigo-600" />
-                        <span>Presentation / Slides Link</span>
-                      </label>
-                      <input
-                        type="url"
-                        value={formData.presentation}
-                        onChange={(e) => updateField('presentation', e.target.value)}
-                        placeholder="https://docs.google.com/presentation/... or Canva"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#2ec4b6] focus:ring-2 focus:ring-[#2ec4b6]/20 transition-all placeholder:text-slate-400"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Project Explanation Video Link */}
+                  {/* GitHub Link (Mandatory) */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                      <PlayCircle className="w-3.5 h-3.5 text-red-500" />
-                      <span>Project Explanation Video (YouTube / Loom / Drive)</span>
+                    <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <GithubIcon className="w-3.5 h-3.5 text-slate-700" />
+                        <span>Project GitHub Link <span className="text-red-500 font-bold">*</span></span>
+                      </span>
+                      <span className="text-[10px] text-rose-500 font-semibold">Mandatory</span>
                     </label>
                     <input
                       type="url"
-                      value={formData.video}
-                      onChange={(e) => updateField('video', e.target.value)}
-                      placeholder="https://youtube.com/watch?v=... or Loom / Drive Link"
+                      required
+                      value={formData.githubLink}
+                      onChange={(e) => updateField('githubLink', e.target.value)}
+                      placeholder="https://github.com/username/project"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#2ec4b6] focus:ring-2 focus:ring-[#2ec4b6]/20 transition-all placeholder:text-slate-400"
+                    />
+                  </div>
+
+                  {/* Presentation / Slides (Link or Upload PDF) */}
+                  <div className="space-y-2 p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <Presentation className="w-3.5 h-3.5 text-indigo-600" />
+                        <span>Presentation / Slides <span className="text-red-500 font-bold">*</span></span>
+                      </label>
+
+                      {/* Mode Toggle Pills */}
+                      <div className="inline-flex rounded-lg bg-white p-0.5 border border-slate-200 shadow-2xs">
+                        <button
+                          type="button"
+                          onClick={() => setPresentationMode('link')}
+                          className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                            presentationMode === 'link'
+                              ? 'bg-indigo-600 text-white shadow-2xs'
+                              : 'text-slate-600 hover:text-slate-900'
+                          }`}
+                        >
+                          🔗 Enter Link
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPresentationMode('upload')}
+                          className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                            presentationMode === 'upload'
+                              ? 'bg-indigo-600 text-white shadow-2xs'
+                              : 'text-slate-600 hover:text-slate-900'
+                          }`}
+                        >
+                          📄 Upload PDF
+                        </button>
+                      </div>
+                    </div>
+
+                    {presentationMode === 'link' ? (
+                      <div>
+                        <input
+                          type="url"
+                          value={formData.presentation}
+                          onChange={(e) => updateField('presentation', e.target.value)}
+                          placeholder="https://docs.google.com/presentation/... or Canva Link"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-slate-400"
+                        />
+                        <p className="text-[10px] text-slate-400 mt-1">
+                          Paste your Google Slides (set to "Anyone with link can view") or Canva deck URL.
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        {formData.presentation && pdfFileName ? (
+                          <div className="flex items-center justify-between p-3 rounded-xl bg-white border border-indigo-200 text-xs">
+                            <div className="flex items-center gap-2 overflow-hidden">
+                              <span className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 font-bold">PDF</span>
+                              <div className="truncate">
+                                <div className="font-bold text-slate-900 truncate">{pdfFileName}</div>
+                                <div className="text-[10px] text-emerald-600 font-semibold">{pdfFileSize} • ✓ Uploaded successfully</div>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                updateField('presentation', '');
+                                setPdfFileName('');
+                                setPdfFileSize('');
+                              }}
+                              className="text-xs text-rose-600 hover:text-rose-800 font-bold ml-2 shrink-0 p-1 cursor-pointer"
+                            >
+                              ✕ Remove
+                            </button>
+                          </div>
+                        ) : (
+                          <label className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-indigo-200 hover:border-indigo-400 rounded-xl bg-white cursor-pointer transition-colors text-center group">
+                            <input
+                              type="file"
+                              accept=".pdf,application/pdf"
+                              onChange={handleUploadPDF}
+                              disabled={pdfUploading}
+                              className="hidden"
+                            />
+                            {pdfUploading ? (
+                              <div className="flex items-center gap-2 text-indigo-600 text-xs font-bold py-1">
+                                <div className="w-4 h-4 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                                <span>Uploading PDF to cloud storage...</span>
+                              </div>
+                            ) : (
+                              <>
+                                <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
+                                  📄
+                                </div>
+                                <span className="text-xs font-bold text-indigo-700">Click to upload Presentation PDF</span>
+                                <span className="text-[10px] text-slate-400 mt-0.5">Supports .pdf format (Max 15 MB)</span>
+                              </>
+                            )}
+                          </label>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Project Explanation Video (Link or Direct Upload <= 5MB) */}
+                  <div className="space-y-2 p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <PlayCircle className="w-3.5 h-3.5 text-rose-500" />
+                        <span>Project Explanation Video <span className="text-red-500 font-bold">*</span></span>
+                      </label>
+
+                      {/* Mode Toggle Pills */}
+                      <div className="inline-flex rounded-lg bg-white p-0.5 border border-slate-200 shadow-2xs">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setVideoMode('link');
+                            setVideoError('');
+                          }}
+                          className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                            videoMode === 'link'
+                              ? 'bg-rose-600 text-white shadow-2xs'
+                              : 'text-slate-600 hover:text-slate-900'
+                          }`}
+                        >
+                          🔗 Video Link (YouTube/Loom)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setVideoMode('upload');
+                            setVideoError('');
+                          }}
+                          className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                            videoMode === 'upload'
+                              ? 'bg-rose-600 text-white shadow-2xs'
+                              : 'text-slate-600 hover:text-slate-900'
+                          }`}
+                        >
+                          🎥 Upload Video (Max 5MB)
+                        </button>
+                      </div>
+                    </div>
+
+                    {videoMode === 'link' ? (
+                      <div>
+                        <input
+                          type="url"
+                          value={formData.video}
+                          onChange={(e) => updateField('video', e.target.value)}
+                          placeholder="https://youtube.com/watch?v=... or Loom / Drive Link"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 transition-all placeholder:text-slate-400"
+                        />
+                        <p className="text-[10px] text-slate-400 mt-1">
+                          Recommended for HD videos: Paste a YouTube, Loom, or public Google Drive video link.
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        {formData.video && videoFileName ? (
+                          <div className="flex items-center justify-between p-3 rounded-xl bg-white border border-rose-200 text-xs">
+                            <div className="flex items-center gap-2 overflow-hidden">
+                              <span className="p-1.5 rounded-lg bg-rose-50 text-rose-600 font-bold">VIDEO</span>
+                              <div className="truncate">
+                                <div className="font-bold text-slate-900 truncate">{videoFileName}</div>
+                                <div className="text-[10px] text-emerald-600 font-semibold">{videoFileSize} • ✓ Uploaded (under 5MB limit)</div>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                updateField('video', '');
+                                setVideoFileName('');
+                                setVideoFileSize('');
+                                setVideoError('');
+                              }}
+                              className="text-xs text-rose-600 hover:text-rose-800 font-bold ml-2 shrink-0 p-1 cursor-pointer"
+                            >
+                              ✕ Remove
+                            </button>
+                          </div>
+                        ) : (
+                          <div>
+                            <label className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-rose-200 hover:border-rose-400 rounded-xl bg-white cursor-pointer transition-colors text-center group">
+                              <input
+                                type="file"
+                                accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov"
+                                onChange={handleUploadVideo}
+                                disabled={videoUploading}
+                                className="hidden"
+                              />
+                              {videoUploading ? (
+                                <div className="flex items-center gap-2 text-rose-600 text-xs font-bold py-1">
+                                  <div className="w-4 h-4 border-2 border-rose-600 border-t-transparent rounded-full animate-spin" />
+                                  <span>Uploading video to cloud storage...</span>
+                                </div>
+                              ) : (
+                                <>
+                                  <div className="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mb-1 group-hover:scale-105 transition-transform">
+                                    🎥
+                                  </div>
+                                  <span className="text-xs font-bold text-rose-700">Click to upload video file</span>
+                                  <span className="text-[10px] font-semibold text-rose-500 mt-0.5">
+                                    Strict limit: 5 MB or less (.mp4, .webm)
+                                  </span>
+                                </>
+                              )}
+                            </label>
+
+                            {videoError && (
+                              <div className="p-2.5 mt-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-1.5">
+                                <span>⚠️</span>
+                                <span>{videoError}</span>
+                              </div>
+                            )}
+
+                            <p className="text-[10px] text-slate-500 mt-1.5">
+                              💡 Tip: If your video is longer or &gt; 5MB, upload to YouTube or Google Drive and use the "Video Link" option above.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Live Hosted Demo / Web App Link (Optional) */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <Globe className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Live Prototype / Hosted Web App Link</span>
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-normal">Optional</span>
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.liveDemo}
+                      onChange={(e) => updateField('liveDemo', e.target.value)}
+                      placeholder="https://yourproject.vercel.app (if deployed online)"
                       className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#2ec4b6] focus:ring-2 focus:ring-[#2ec4b6]/20 transition-all placeholder:text-slate-400"
                     />
                   </div>

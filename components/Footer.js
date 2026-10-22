@@ -7,6 +7,7 @@ const footerLinks = {
     { href: '/#learn', label: 'Learn AI' },
     { href: '/#contribute', label: 'Contribute' },
     { href: '/students', label: 'Student Hub' },
+    { href: '/registered-students', label: 'Registered Innovators' },
     { href: '/#empower', label: 'Empower' },
     { href: '/#apply', label: 'Apply' },
   ],

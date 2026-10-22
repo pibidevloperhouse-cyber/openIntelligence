@@ -393,6 +393,7 @@ export default function AdminPage() {
   const [loadingVoters, setLoadingVoters] = useState(false);
   const [voterSearchQuery, setVoterSearchQuery] = useState('');
   const [deletingVoteId, setDeletingVoteId] = useState('');
+  const [voteToDelete, setVoteToDelete] = useState(null);
 
   const handleOpenProjectVoters = async (project) => {
     setViewingVotersProject(project);
@@ -415,8 +416,9 @@ export default function AdminPage() {
     }
   };
 
-  const handleDeleteVote = async (voteId) => {
-    if (!confirm('Are you sure you want to remove this vote?')) return;
+  const handleConfirmDeleteVote = async () => {
+    if (!voteToDelete) return;
+    const voteId = voteToDelete.id;
     setDeletingVoteId(voteId);
     try {
       const res = await fetch('/api/admin/student-projects/votes', {
@@ -432,6 +434,7 @@ export default function AdminPage() {
         prev.map(p => p.id === viewingVotersProject?.id ? { ...p, votes_count: data.newCount } : p)
       );
       showToast('Vote removed successfully', 'success');
+      setVoteToDelete(null);
     } catch (err) {
       showToast(err.message, 'error');
     } finally {
@@ -2843,7 +2846,7 @@ export default function AdminPage() {
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border)' }}>
                             {/* External Deliverable Links (Step 3 info) */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                              {proj.demo_url && (
+                              {proj.demo_url && proj.demo_url !== proj.presentation_url && proj.demo_url !== proj.video_url && proj.demo_url !== proj.github_url && (
                                 <a
                                   href={proj.demo_url}
                                   target="_blank"
@@ -3578,7 +3581,7 @@ export default function AdminPage() {
 
               {/* Project External Links */}
               <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
-                {viewingStudentProject.demo_url && (
+                {viewingStudentProject.demo_url && viewingStudentProject.demo_url !== viewingStudentProject.presentation_url && viewingStudentProject.demo_url !== viewingStudentProject.video_url && viewingStudentProject.demo_url !== viewingStudentProject.github_url && (
                   <a
                     href={viewingStudentProject.demo_url}
                     target="_blank"
@@ -4489,7 +4492,7 @@ export default function AdminPage() {
                           <button
                             type="button"
                             disabled={deletingVoteId === voter.id}
-                            onClick={() => handleDeleteVote(voter.id)}
+                            onClick={() => setVoteToDelete(voter)}
                             style={{
                               background: 'none',
                               border: 'none',
@@ -4541,6 +4544,163 @@ export default function AdminPage() {
                 }}
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── REMOVE VOTE CONFIRMATION MODAL (CENTERED POPUP) ────────────────── */}
+      {voteToDelete && (
+        <div
+          className="light-theme"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(15, 23, 42, 0.72)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 10005,
+            padding: '1.25rem',
+            animation: 'fadeIn 0.15s ease-out'
+          }}
+          onClick={() => {
+            if (!deletingVoteId) setVoteToDelete(null);
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '20px',
+              maxWidth: '450px',
+              width: '100%',
+              border: '1px solid #e2e8f0',
+              padding: '1.75rem',
+              boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(239, 68, 68, 0.1)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+              textAlign: 'center'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Warning Icon Badge */}
+            <div style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              background: 'rgba(239, 68, 68, 0.12)',
+              color: '#ef4444',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto',
+              fontSize: '1.5rem',
+              border: '2px solid rgba(239, 68, 68, 0.2)'
+            }}>
+              🗑️
+            </div>
+
+            <div>
+              <h3 style={{ margin: '0 0 6px', fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
+                Remove This Vote?
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748b', lineHeight: 1.5 }}>
+                Are you sure you want to delete this vote from the public ledger?
+              </p>
+
+              {/* Voter detail chip */}
+              <div style={{
+                marginTop: '12px',
+                padding: '12px 14px',
+                background: '#f8fafc',
+                borderRadius: '12px',
+                border: '1px solid #e2e8f0',
+                textAlign: 'left',
+                fontSize: '0.82rem',
+                color: '#334155',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '6px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ color: '#64748b', minWidth: '55px' }}>👤 Voter:</span>
+                  <strong style={{ color: '#0f172a' }}>{voteToDelete.voter_name || 'Anonymous Voter'}</strong>
+                </div>
+                {voteToDelete.voter_email && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ color: '#64748b', minWidth: '55px' }}>✉️ Email:</span>
+                    <span style={{ fontFamily: 'monospace', color: '#0284c7', wordBreak: 'break-all' }}>{voteToDelete.voter_email}</span>
+                  </div>
+                )}
+                {voteToDelete.ip_address && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ color: '#64748b', minWidth: '55px' }}>🌐 IP:</span>
+                    <span style={{ fontFamily: 'monospace', color: '#64748b' }}>{voteToDelete.ip_address}</span>
+                  </div>
+                )}
+              </div>
+
+              <p style={{ margin: '10px 0 0', fontSize: '0.78rem', color: '#dc2626', fontWeight: 600 }}>
+                ⚠️ The project's public score will decrease immediately and the action cannot be undone.
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', marginTop: '0.25rem' }}>
+              <button
+                type="button"
+                disabled={!!deletingVoteId}
+                onClick={() => setVoteToDelete(null)}
+                style={{
+                  flex: 1,
+                  padding: '0.65rem 1.25rem',
+                  borderRadius: '10px',
+                  background: '#f1f5f9',
+                  color: '#475569',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '0.88rem',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={!!deletingVoteId}
+                onClick={handleConfirmDeleteVote}
+                style={{
+                  flex: 1,
+                  padding: '0.65rem 1.25rem',
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontSize: '0.88rem',
+                  fontWeight: 700,
+                  cursor: deletingVoteId ? 'wait' : 'pointer',
+                  boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px'
+                }}
+              >
+                {deletingVoteId ? (
+                  <>
+                    <span style={{ width: '14px', height: '14px', border: '2px solid #ffffff', borderTopColor: 'transparent', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />
+                    Removing...
+                  </>
+                ) : (
+                  'Yes, Remove Vote'
+                )}
               </button>
             </div>
           </div>
