@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import {
   Trophy,
   Sparkles,
@@ -233,6 +234,7 @@ export const HeroSection = ({
 
   const [hasMounted, setHasMounted] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, isClosed: false });
+  const [isTop10Active, setIsTop10Active] = useState(false);
 
   // Fetch deadline dynamically from settings API
   useEffect(() => {
@@ -242,6 +244,9 @@ export const HeroSection = ({
         if (data && data.countdownDeadline) {
           setDeadlineString(data.countdownDeadline);
           setTimeLeft(calculateTimeLeft(data.countdownDeadline));
+        }
+        if (data && data.isTop10Active !== undefined) {
+          setIsTop10Active(!!data.isTop10Active);
         }
       })
       .catch(() => {});
@@ -356,25 +361,183 @@ export const HeroSection = ({
               </div>
             </div>
   
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-              <button
-                onClick={onOpenSubmitModal}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-bold text-base text-white shadow-lg shadow-[#1f6fb2]/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-                style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
-              >
-                <Sparkles className="w-5 h-5 text-amber-200 animate-pulse" />
-                <span>Submit Your Project Now</span>
-                <ArrowRight className="w-5 h-5" />
-              </button>
+            {/* CTA Buttons & Directory Links */}
+            <div className="space-y-4 pt-2">
+              <style>{`
+                @keyframes registeredSuperPulse {
+                  0%, 100% {
+                    box-shadow: 0 0 20px rgba(124, 58, 237, 0.55), 0 0 35px rgba(99, 102, 241, 0.45);
+                    border-color: rgba(192, 132, 252, 0.75);
+                    transform: scale(1);
+                  }
+                  50% {
+                    box-shadow: 0 0 35px rgba(139, 92, 246, 0.95), 0 0 65px rgba(192, 132, 252, 0.8), 0 0 90px rgba(6, 182, 212, 0.5);
+                    border-color: #ffffff;
+                    transform: scale(1.03);
+                  }
+                }
+                @keyframes top10SuperPulse {
+                  0%, 100% {
+                    box-shadow: 0 0 20px rgba(245, 158, 11, 0.5), 0 0 35px rgba(225, 29, 72, 0.4);
+                    border-color: rgba(251, 191, 36, 0.7);
+                    transform: scale(1);
+                  }
+                  50% {
+                    box-shadow: 0 0 35px rgba(245, 158, 11, 0.95), 0 0 65px rgba(244, 63, 94, 0.8), 0 0 90px rgba(251, 191, 36, 0.5);
+                    border-color: #ffffff;
+                    transform: scale(1.03);
+                  }
+                }
+                @keyframes studentGradShimmer {
+                  0% { background-position: 0% 50%; }
+                  50% { background-position: 100% 50%; }
+                  100% { background-position: 0% 50%; }
+                }
+                @keyframes liveBeaconWave1 {
+                  0% { transform: scale(0.6); opacity: 1; }
+                  70% { transform: scale(2.8); opacity: 0; }
+                  100% { transform: scale(3.2); opacity: 0; }
+                }
+                @keyframes liveBeaconWave2 {
+                  0% { transform: scale(0.6); opacity: 0.9; }
+                  70% { transform: scale(2.5); opacity: 0; }
+                  100% { transform: scale(3.0); opacity: 0; }
+                }
+                @keyframes liveCoreFlash {
+                  0%, 100% {
+                    opacity: 1;
+                    transform: scale(1.2);
+                    box-shadow: 0 0 10px #c084fc, 0 0 22px #8b5cf6, 0 0 32px #06b6d4;
+                  }
+                  50% {
+                    opacity: 0.2;
+                    transform: scale(0.7);
+                    box-shadow: 0 0 2px #8b5cf6;
+                  }
+                }
+                @keyframes badgeGlowPulse {
+                  0%, 100% {
+                    opacity: 1;
+                    transform: scale(1);
+                    box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+                  }
+                  50% {
+                    opacity: 0.75;
+                    transform: scale(0.94);
+                    box-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
+                  }
+                }
+                @keyframes arrowNudgeAnim {
+                  0%, 100% { transform: translateX(0); }
+                  50% { transform: translateX(5px); }
+                }
+              `}</style>
 
-              <a
-                href="#prizes"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-base text-slate-700 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-xs transition-all"
-              >
-                <Trophy className="w-5 h-5 text-amber-500" />
-                <span>View Top 3 Prizes</span>
-              </a>
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                <button
+                  onClick={onOpenSubmitModal}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-bold text-base text-white shadow-lg shadow-[#1f6fb2]/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                  style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
+                >
+                  <Sparkles className="w-5 h-5 text-amber-200 animate-pulse" />
+                  <span>Submit Your Project Now</span>
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+
+                <a
+                  href="#prizes"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-base text-slate-700 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-xs transition-all"
+                >
+                  <Trophy className="w-5 h-5 text-amber-500" />
+                  <span>View Top 3 Prizes</span>
+                </a>
+              </div>
+
+              {/* Public Registered Student Projects Directory Button (Exact Same Styling & Shimmering Beacon) */}
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-1">
+                <Link
+                  href="/registered-students"
+                  className="inline-flex items-center gap-3.5 px-7 py-3.5 md:px-8 md:py-4 rounded-full text-white font-extrabold text-sm md:text-base transition-all duration-300 cursor-pointer shadow-lg hover:scale-[1.02]"
+                  style={{
+                    background: 'linear-gradient(115deg, #4f46e5 0%, #7c3aed 35%, #9333ea 70%, #06b6d4 100%)',
+                    backgroundSize: '200% 200%',
+                    border: '1.5px solid rgba(192, 132, 252, 0.9)',
+                    animation: 'registeredSuperPulse 2s ease-in-out infinite, studentGradShimmer 4s ease infinite',
+                  }}
+                >
+                  {/* Glowing Royal Purple / Electric Cyan Beacon */}
+                  <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, flexShrink: 0 }}>
+                    <span style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: '#c084fc', animation: 'liveBeaconWave1 1.6s cubic-bezier(0, 0, 0.2, 1) infinite' }} />
+                    <span style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: '#38bdf8', animation: 'liveBeaconWave2 1.6s cubic-bezier(0, 0, 0.2, 1) infinite 0.5s' }} />
+                    <span style={{ position: 'relative', width: 10, height: 10, borderRadius: '50%', background: 'radial-gradient(circle, #ffffff 35%, #8b5cf6 80%)', animation: 'liveCoreFlash 1.2s ease-in-out infinite' }} />
+                  </span>
+
+                  <span className="tracking-tight text-white drop-shadow-sm">👥 Registered Student Projects</span>
+
+                  <span
+                    style={{
+                      fontSize: '0.65rem',
+                      fontWeight: 900,
+                      letterSpacing: '0.06em',
+                      padding: '2px 7px',
+                      borderRadius: '9999px',
+                      background: 'rgba(255, 255, 255, 0.25)',
+                      backdropFilter: 'blur(4px)',
+                      border: '1px solid rgba(255, 255, 255, 0.7)',
+                      color: '#ffffff',
+                      animation: 'badgeGlowPulse 1.4s infinite ease-in-out',
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    LIVE DIRECTORY
+                  </span>
+
+                  <span style={{ animation: 'arrowNudgeAnim 1.5s infinite ease-in-out', display: 'inline-block' }} className="text-lg leading-none font-bold">&rarr;</span>
+                </Link>
+
+                {/* Public Top 10 Showcase Button (Only visible when isTop10Active is ON in Admin!) */}
+                {isTop10Active && (
+                  <Link
+                    href="/top-10"
+                    className="inline-flex items-center gap-3.5 px-7 py-3.5 md:px-8 md:py-4 rounded-full text-white font-extrabold text-sm md:text-base transition-all duration-300 cursor-pointer shadow-lg hover:scale-[1.02]"
+                    style={{
+                      background: 'linear-gradient(115deg, #f59e0b 0%, #ea580c 45%, #e11d48 100%)',
+                      backgroundSize: '200% 200%',
+                      border: '1.5px solid rgba(251, 191, 36, 0.9)',
+                      animation: 'top10SuperPulse 2s ease-in-out infinite, studentGradShimmer 4s ease infinite',
+                      boxShadow: '0 0 25px rgba(245, 158, 11, 0.6)',
+                    }}
+                  >
+                    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, flexShrink: 0 }}>
+                      <span style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: '#fbbf24', animation: 'liveBeaconWave1 1.6s cubic-bezier(0, 0, 0.2, 1) infinite' }} />
+                      <span style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: '#f43f5e', animation: 'liveBeaconWave2 1.6s cubic-bezier(0, 0, 0.2, 1) infinite 0.5s' }} />
+                      <span style={{ position: 'relative', width: 10, height: 10, borderRadius: '50%', background: 'radial-gradient(circle, #ffffff 35%, #f59e0b 80%)', animation: 'liveCoreFlash 1.2s ease-in-out infinite' }} />
+                    </span>
+
+                    <span className="tracking-tight text-white drop-shadow-sm">🏆 Top 10 Leaderboard</span>
+
+                    <span
+                      style={{
+                        fontSize: '0.65rem',
+                        fontWeight: 900,
+                        letterSpacing: '0.06em',
+                        padding: '2px 7px',
+                        borderRadius: '9999px',
+                        background: 'rgba(255, 255, 255, 0.25)',
+                        backdropFilter: 'blur(4px)',
+                        border: '1px solid rgba(255, 255, 255, 0.7)',
+                        color: '#ffffff',
+                        animation: 'badgeGlowPulse 1.4s infinite ease-in-out',
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      FEATURED
+                    </span>
+
+                    <span style={{ animation: 'arrowNudgeAnim 1.5s infinite ease-in-out', display: 'inline-block' }} className="text-lg leading-none font-bold">&rarr;</span>
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
 
