@@ -537,14 +537,26 @@ export default function RegisteredStudentsPage() {
                     playsInline
                     className="w-full h-full max-h-[300px] object-contain"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setInspectProject(null)}
-                    className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-white flex items-center justify-center transition-all cursor-pointer z-40 border border-white/20 shadow-md"
-                    aria-label="Close"
-                  >
-                    ✕
-                  </button>
+                  <div className="absolute top-3 right-3 flex items-center gap-2 z-40">
+                    <a
+                      href={inspectProject.video_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-2.5 py-1.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-white text-xs font-bold transition-all border border-white/20 shadow-md flex items-center gap-1.5"
+                      title="Open video in new tab"
+                    >
+                      <span>Open Video</span>
+                      <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setInspectProject(null)}
+                      className="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-white flex items-center justify-center transition-all cursor-pointer border border-white/20 shadow-md"
+                      aria-label="Close"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div
