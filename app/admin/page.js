@@ -274,6 +274,7 @@ export default function AdminPage() {
   const [studentProjectToDelete, setStudentProjectToDelete] = useState(null);
   const [studentProjectToTop10, setStudentProjectToTop10] = useState(null);
   const [studentActionLoading, setStudentActionLoading] = useState('');
+  const [resendingEmailId, setResendingEmailId] = useState('');
 
   // Student Registration Lock (ON = Closed, OFF = Open)
   const [isRegistrationClosed, setIsRegistrationClosed] = useState(false);
@@ -484,6 +485,38 @@ export default function AdminPage() {
       showToast(err.message, 'error');
     } finally {
       setStudentActionLoading('');
+    }
+  };
+
+  const handleResendStudentEmail = async (id, studentEmail) => {
+    if (!id) return;
+    setResendingEmailId(id);
+    try {
+      const res = await fetch('/api/admin/student-projects/resend-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to dispatch email');
+
+      const updated = data.project;
+      setStudentRegistrations(prev =>
+        prev.map(p => (p.id === id ? { ...p, is_email_sent: true, email_sent_at: updated?.email_sent_at || new Date().toISOString(), security_pin: updated?.security_pin || p.security_pin } : p))
+      );
+      if (viewingStudentProject?.id === id) {
+        setViewingStudentProject(prev => ({
+          ...prev,
+          is_email_sent: true,
+          email_sent_at: updated?.email_sent_at || new Date().toISOString(),
+          security_pin: updated?.security_pin || prev.security_pin,
+        }));
+      }
+      showToast(`✉️ PIN email sent successfully to ${studentEmail || 'student'}!`, 'success');
+    } catch (err) {
+      showToast(err.message || 'Failed to send email', 'error');
+    } finally {
+      setResendingEmailId('');
     }
   };
 
@@ -2442,6 +2475,17 @@ export default function AdminPage() {
                     </span>
                   </div>
                 </div>
+                <div style={{ background: '#ffffff', border: '1px solid rgba(16,185,129,0.3)', borderRadius: '12px', padding: '1rem', boxShadow: '0 2px 4px rgba(16,185,129,0.06)' }}>
+                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span>✉️</span> Emails Sent
+                  </div>
+                  <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#059669', marginTop: '4px', fontFamily: 'var(--font-display)' }}>
+                    {studentRegistrations.filter(s => s.is_email_sent).length}
+                    <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', marginLeft: '6px' }}>
+                      / {studentRegistrations.length}
+                    </span>
+                  </div>
+                </div>
               </div>
 
               {/* Filters and Search Bar */}
@@ -2451,7 +2495,7 @@ export default function AdminPage() {
                   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                   <input
                     type="text"
-                    placeholder="Search by student, college, title, tech..."
+                    placeholder="Search by student, PIN, reg ID, college, title..."
                     value={studentSearch}
                     onChange={e => setStudentSearch(e.target.value)}
                     style={{
@@ -2472,13 +2516,15 @@ export default function AdminPage() {
                 </div>
 
                 {/* Status Tabs */}
-                <div style={{ display: 'flex', gap: '6px', background: 'var(--bg-secondary, #f8fafc)', padding: '4px', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', background: 'var(--bg-secondary, #f8fafc)', padding: '4px', borderRadius: '10px', border: '1px solid var(--border)' }}>
                   {[
                     { key: 'ALL', label: 'All' },
                     { key: 'PENDING', label: 'Pending' },
                     { key: 'APPROVED', label: 'Approved' },
                     { key: 'REJECTED', label: 'Rejected' },
                     { key: 'TOP_10', label: '⭐ Top 10' },
+                    { key: 'EMAIL_SENT', label: '✉️ Mail Sent' },
+                    { key: 'EMAIL_PENDING', label: '⏳ Mail Pending' },
                   ].map(tab => (
                     <button
                       key={tab.key}
@@ -2524,6 +2570,10 @@ export default function AdminPage() {
                 const filtered = studentRegistrations.filter(p => {
                   if (studentStatusFilter === 'TOP_10') {
                     if (!p.is_top_10) return false;
+                  } else if (studentStatusFilter === 'EMAIL_SENT') {
+                    if (!p.is_email_sent) return false;
+                  } else if (studentStatusFilter === 'EMAIL_PENDING') {
+                    if (p.is_email_sent) return false;
                   } else if (studentStatusFilter !== 'ALL' && (p.status || 'PENDING') !== studentStatusFilter) {
                     return false;
                   }
@@ -2532,6 +2582,8 @@ export default function AdminPage() {
                   }
                   if (studentSearch.trim()) {
                     const q = studentSearch.toLowerCase();
+                    const matchPin = p.security_pin && String(p.security_pin).includes(q);
+                    const matchRegId = p.registration_id && p.registration_id.toLowerCase().includes(q);
                     const matchLead = p.lead_student?.toLowerCase().includes(q);
                     const matchInst = p.institution?.toLowerCase().includes(q);
                     const matchEmail = p.email?.toLowerCase().includes(q);
@@ -2549,7 +2601,7 @@ export default function AdminPage() {
                     const matchDesc = p.description?.toLowerCase().includes(q);
                     const matchTags = Array.isArray(p.tags) && p.tags.some(t => t.toLowerCase().includes(q));
                     const matchTeam = Array.isArray(p.team_members) && p.team_members.some(m => m.toLowerCase().includes(q));
-                    return matchLead || matchInst || matchEmail || matchPhone || matchDept || matchYear || matchDob || matchProblem || matchSolution || matchUsp || matchOutcome || matchTitle || matchTagline || matchPitch || matchDesc || matchTags || matchTeam;
+                    return matchPin || matchRegId || matchLead || matchInst || matchEmail || matchPhone || matchDept || matchYear || matchDob || matchProblem || matchSolution || matchUsp || matchOutcome || matchTitle || matchTagline || matchPitch || matchDesc || matchTags || matchTeam;
                   }
                   return true;
                 });
@@ -2663,6 +2715,52 @@ export default function AdminPage() {
                                   display: 'inline-flex', alignItems: 'center', gap: '5px'
                                 }}>
                                   <span>⭐</span> Top 10 Finalist ({proj.votes_count || 0} votes)
+                                </span>
+                              )}
+
+                              {/* Email Dispatch Status Badge */}
+                              {proj.is_email_sent ? (
+                                <span
+                                  style={{
+                                    background: 'rgba(16, 185, 129, 0.12)',
+                                    color: '#059669',
+                                    border: '1px solid rgba(16, 185, 129, 0.35)',
+                                    padding: '3px 10px',
+                                    borderRadius: '20px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 700,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                  }}
+                                  title={proj.email_sent_at ? `PIN Confirmation Email sent on ${new Date(proj.email_sent_at).toLocaleString('en-IN')}` : 'Confirmation PIN Email Sent'}
+                                >
+                                  <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                  <span>Mail Sent</span>
+                                  {proj.security_pin && (
+                                    <span style={{ opacity: 0.9, fontWeight: 800, fontSize: '0.68rem', background: 'rgba(16, 185, 129, 0.2)', padding: '1px 5px', borderRadius: '4px' }}>
+                                      PIN: {proj.security_pin}
+                                    </span>
+                                  )}
+                                </span>
+                              ) : (
+                                <span
+                                  style={{
+                                    background: 'rgba(239, 68, 68, 0.1)',
+                                    color: '#dc2626',
+                                    border: '1px solid rgba(239, 68, 68, 0.3)',
+                                    padding: '3px 10px',
+                                    borderRadius: '20px',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 700,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                  }}
+                                  title="PIN email has not been sent yet"
+                                >
+                                  <span>⚠️</span>
+                                  <span>Mail Not Sent</span>
                                 </span>
                               )}
                             </div>
@@ -2784,6 +2882,44 @@ export default function AdminPage() {
                                 </div>
                               </div>
                             )}
+
+                            {/* Security PIN & Reg ID */}
+                            <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Security PIN & Reg ID</div>
+                              <div style={{ fontSize: '0.88rem', fontWeight: 700, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span>🔑</span>
+                                <span style={{ fontFamily: 'monospace', color: '#0e3869', background: '#edfbfc', padding: '1px 7px', borderRadius: '4px', border: '1px solid #cceef3', letterSpacing: '0.05em' }}>
+                                  PIN: {proj.security_pin || '----'}
+                                </span>
+                                {proj.registration_id && (
+                                  <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }} title={proj.registration_id}>
+                                    ({proj.registration_id})
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Email Status & Timestamp */}
+                            <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Email Dispatch Status</div>
+                              <div style={{ fontSize: '0.88rem', fontWeight: 700, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span>✉️</span>
+                                {proj.is_email_sent ? (
+                                  <span style={{ color: '#059669', display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.84rem' }}>
+                                    <span>Sent ✓</span>
+                                    {proj.email_sent_at && (
+                                      <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 500 }}>
+                                        ({new Date(proj.email_sent_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })})
+                                      </span>
+                                    )}
+                                  </span>
+                                ) : (
+                                  <span style={{ color: '#dc2626', fontSize: '0.84rem' }}>
+                                    ⚠️ Not Sent (Pending)
+                                  </span>
+                                )}
+                              </div>
+                            </div>
                             {Array.isArray(proj.team_members) && proj.team_members.length > 0 && (
                               <div style={{ gridColumn: '1 / -1' }}>
                                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em', marginBottom: '4px' }}>Team Members</div>
@@ -2989,6 +3125,31 @@ export default function AdminPage() {
                                 }}>
                                   {proj.votes_count || 0}
                                 </span>
+                              </button>
+
+                              {/* Send / Resend PIN Email */}
+                              <button
+                                type="button"
+                                disabled={resendingEmailId === proj.id}
+                                onClick={() => handleResendStudentEmail(proj.id, proj.email)}
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '6px',
+                                  padding: '0.4rem 0.85rem',
+                                  borderRadius: '7px',
+                                  background: proj.is_email_sent ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
+                                  color: proj.is_email_sent ? '#059669' : '#dc2626',
+                                  border: proj.is_email_sent ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
+                                  fontSize: '0.78rem',
+                                  fontWeight: 700,
+                                  cursor: resendingEmailId === proj.id ? 'wait' : 'pointer',
+                                  transition: 'all 0.15s',
+                                }}
+                                title={proj.is_email_sent ? `Click to resend confirmation email with PIN ${proj.security_pin || ''}` : 'Click to send confirmation PIN email to student'}
+                              >
+                                <span>✉️</span>
+                                <span>{resendingEmailId === proj.id ? 'Sending...' : proj.is_email_sent ? 'Resend Mail' : 'Send Mail'}</span>
                               </button>
                             </div>
 
@@ -3299,6 +3460,37 @@ export default function AdminPage() {
                       ⭐ Top 10 Finalist ({viewingStudentProject.votes_count || 0} votes)
                     </span>
                   )}
+                  {viewingStudentProject.is_email_sent ? (
+                    <span style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      padding: '2px 9px',
+                      borderRadius: '12px',
+                      background: '#dcfce7',
+                      color: '#15803d',
+                      border: '1px solid #bbf7d0',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}>
+                      ✓ Mail Sent
+                    </span>
+                  ) : (
+                    <span style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      padding: '2px 9px',
+                      borderRadius: '12px',
+                      background: '#fee2e2',
+                      color: '#b91c1c',
+                      border: '1px solid #fecaca',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}>
+                      ⚠️ Mail Not Sent
+                    </span>
+                  )}
                 </div>
                 <h2 style={{
                   margin: 0,
@@ -3507,6 +3699,42 @@ export default function AdminPage() {
                   </div>
                   <div style={{ fontSize: '0.88rem', color: '#334155', fontWeight: 600, marginTop: '3px' }}>
                     {viewingStudentProject.created_at ? new Date(viewingStudentProject.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) : 'Recent'}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                    Security PIN & Reg ID
+                  </div>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0e3869', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontFamily: 'monospace', background: '#edfbfc', padding: '1px 7px', borderRadius: '4px', border: '1px solid #cceef3' }}>
+                      PIN: {viewingStudentProject.security_pin || '----'}
+                    </span>
+                    {viewingStudentProject.registration_id && (
+                      <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>
+                        ({viewingStudentProject.registration_id})
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
+                    Email Dispatch
+                  </div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 700, marginTop: '3px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {viewingStudentProject.is_email_sent ? (
+                      <span style={{ color: '#15803d', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <span>Sent ✓</span>
+                        {viewingStudentProject.email_sent_at && (
+                          <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>
+                            ({new Date(viewingStudentProject.email_sent_at).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })})
+                          </span>
+                        )}
+                      </span>
+                    ) : (
+                      <span style={{ color: '#b91c1c' }}>⚠️ Not Sent (Pending)</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -3871,6 +4099,30 @@ export default function AdminPage() {
                 >
                   <span>🗳️</span>
                   <span>View Voters ({viewingStudentProject.votes_count || 0})</span>
+                </button>
+
+                <button
+                  type="button"
+                  style={{
+                    background: viewingStudentProject.is_email_sent ? 'rgba(16, 185, 129, 0.12)' : 'linear-gradient(135deg, #0284c7, #0ea5e9)',
+                    color: viewingStudentProject.is_email_sent ? '#059669' : '#ffffff',
+                    border: viewingStudentProject.is_email_sent ? '1px solid rgba(16, 185, 129, 0.4)' : 'none',
+                    borderRadius: '8px',
+                    padding: '0.6rem 1.1rem',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    cursor: resendingEmailId === viewingStudentProject.id ? 'wait' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: viewingStudentProject.is_email_sent ? 'none' : '0 2px 6px rgba(2, 132, 199, 0.3)',
+                    transition: 'all 0.15s'
+                  }}
+                  disabled={resendingEmailId === viewingStudentProject.id}
+                  onClick={() => handleResendStudentEmail(viewingStudentProject.id, viewingStudentProject.email)}
+                >
+                  <span>✉️</span>
+                  <span>{resendingEmailId === viewingStudentProject.id ? 'Sending...' : viewingStudentProject.is_email_sent ? 'Resend PIN Mail' : 'Send PIN Mail'}</span>
                 </button>
               </div>
 
