@@ -105,6 +105,14 @@ export const Navbar = ({
               </span>
             </button>
 
+            {/* Collect Badge Button */}
+            <a
+              href="/students/badge/collect"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#070e1e] hover:bg-[#0c162c] text-[#2ec4b6] border border-[#2ec4b6]/40 shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+            >
+              <span>🎖️ Collect Badge</span>
+            </a>
+
             {/* Submit Project Button */}
             <button
               onClick={onOpenSubmitModal}
@@ -172,6 +180,14 @@ export const Navbar = ({
             >
               FAQ
             </a>
+            <a
+              href="/students/badge/collect"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-[#070e1e] text-[#2ec4b6] border border-[#2ec4b6]/40 shadow-xs mb-2"
+            >
+              <span>🎖️ Collect Your Badge</span>
+            </a>
+
             <button
               onClick={() => {
                 setMobileMenuOpen(false);

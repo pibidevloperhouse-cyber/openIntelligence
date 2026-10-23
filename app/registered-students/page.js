@@ -3,6 +3,29 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { SubmitProjectModal } from '@/components/student-showcase/components/SubmitProjectModal';
+import DigitalBadge, { generateBadgePng } from '@/components/student-showcase/components/DigitalBadge';
+import confetti from 'canvas-confetti';
+import {
+  KeyRound,
+  ShieldCheck,
+  Download,
+  Users,
+  UserCheck,
+  CheckCircle2,
+  Sparkles,
+  Check,
+  Copy,
+  AlertCircle,
+  MessageCircle,
+  X,
+  ExternalLink,
+} from 'lucide-react';
+
+const LinkedInIcon = ({ className = 'w-4 h-4' }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
+  </svg>
+);
 
 // Helper to format names with capital letters
 function formatName(name) {
@@ -73,15 +96,38 @@ export default function RegisteredStudentsPage() {
   const [copiedId, setCopiedId] = useState(null);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
+  // Badge Access Modal State
+  const [badgeModalProject, setBadgeModalProject] = useState(null);
+  const [badgePin, setBadgePin] = useState('');
+  const [badgeLoading, setBadgeLoading] = useState(false);
+  const [badgeError, setBadgeError] = useState('');
+  const [unlockedBadge, setUnlockedBadge] = useState(null);
+  const [badgeSelectedMember, setBadgeSelectedMember] = useState('');
+  const [badgeDownloading, setBadgeDownloading] = useState(false);
+  const [badgeDownloadSuccess, setBadgeDownloadSuccess] = useState(false);
+  const [badgeLinkedInOpened, setBadgeLinkedInOpened] = useState(false);
+  const [badgeCustomId, setBadgeCustomId] = useState('');
+  const [badgeCopiedLink, setBadgeCopiedLink] = useState(false);
+
   // Top 10 button toggle state controlled via Admin panel
   const [isTop10Active, setIsTop10Active] = useState(false);
 
-  // Check URL query param or hash for ?submit=true
+  // Check URL query param or hash for ?submit=true or ?regId=...
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       if (params.get('submit') === 'true' || window.location.hash === '#submit') {
         setIsSubmitModalOpen(true);
+      }
+      const regIdParam = params.get('regId') || params.get('badge');
+      if (regIdParam) {
+        setSearchTerm(regIdParam);
+        setBadgeModalProject({
+          registration_id: regIdParam,
+          title: 'Registered Innovation Project',
+          lead_student: 'Student Innovator',
+        });
+        setBadgeCustomId(regIdParam);
       }
     }
   }, []);
@@ -118,22 +164,147 @@ export default function RegisteredStudentsPage() {
     fetchRegistered();
   }, []);
 
+  // Sync full project data into badgeModalProject once projects load
+  useEffect(() => {
+    if (projects.length > 0 && badgeModalProject?.registration_id && !badgeModalProject.id) {
+      const found = projects.find(
+        (p) => (p.registration_id || '').toLowerCase() === badgeModalProject.registration_id.toLowerCase()
+      );
+      if (found) {
+        setBadgeModalProject(found);
+      }
+    }
+  }, [projects, badgeModalProject]);
+
+  const handleOpenBadgeModal = (project) => {
+    const proj = project || { registration_id: '', title: 'Student Project' };
+    setBadgeModalProject(proj);
+    setBadgePin('');
+    setBadgeError('');
+    setUnlockedBadge(null);
+    setBadgeSelectedMember(proj?.lead_student || '');
+    setBadgeLinkedInOpened(false);
+    setBadgeCustomId(proj?.registration_id || '');
+  };
+
+  const handleVerifyBadgePin = async (e) => {
+    if (e) e.preventDefault();
+    const targetRegId = (badgeModalProject?.registration_id || badgeCustomId || '').trim();
+    if (!targetRegId) {
+      setBadgeError('Please enter your Registration ID or Registered Email.');
+      return;
+    }
+    if (!badgePin || badgePin.trim().length < 4) {
+      setBadgeError('Please enter your 4-digit Security PIN sent to your email.');
+      return;
+    }
+
+    setBadgeLoading(true);
+    setBadgeError('');
+
+    try {
+      const res = await fetch('/api/student-projects/badge/claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          identifier: targetRegId,
+          pin: badgePin.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setBadgeError(data.error || 'Incorrect 4-digit Security PIN. Please check your confirmation email.');
+        return;
+      }
+
+      setUnlockedBadge(data.badge);
+      setBadgeSelectedMember(data.badge.studentName || badgeModalProject?.lead_student || '');
+
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.4 },
+        colors: ['#1f6fb2', '#2ec4b6', '#38bdf8', '#10b981', '#f59e0b'],
+      });
+    } catch (err) {
+      setBadgeError('Unable to connect to verification server. Please try again.');
+    } finally {
+      setBadgeLoading(false);
+    }
+  };
+
+  const currentBadgeInnovator = badgeSelectedMember || unlockedBadge?.studentName || badgeModalProject?.lead_student || 'Student Innovator';
+  const badgeTeamMembers = Array.from(new Set([
+    unlockedBadge?.studentName || badgeModalProject?.lead_student,
+    ...(Array.isArray(unlockedBadge?.teamMembers) ? unlockedBadge.teamMembers : Array.isArray(badgeModalProject?.team_members) ? badgeModalProject.team_members : [])
+  ].map(m => String(m || '').trim()).filter(Boolean)));
+
+  const badgeLinkedInPostText = `🚀 I've taken a step beyond the classroom!
+
+I've registered our AI/ML project "${unlockedBadge?.projectTitle || badgeModalProject?.title || 'AI/ML Project'}" for the **PiBi Open Intelligence Student Project Awards 2026**!
+
+I believe student projects shouldn't end with a final-year presentation. They should be shared, improved, and developed further.
+
+Proud to be recognized as an Open Intelligence Builder!
+
+🔗 Explore the registered projects: https://www.pibiopenintelligence.com/registered-students
+
+#PiBiOpenIntelligence #StudentProjects #ArtificialIntelligence #MachineLearning #LearnBuildContribute`;
+
+  const handleDownloadBadgeFromModal = async () => {
+    if (!unlockedBadge) return;
+    setBadgeDownloading(true);
+    try {
+      await generateBadgePng({
+        studentName: currentBadgeInnovator,
+        projectTitle: unlockedBadge.projectTitle || badgeModalProject?.title,
+        registrationId: unlockedBadge.registrationId || badgeModalProject?.registration_id,
+        institution: unlockedBadge.institution || badgeModalProject?.institution,
+        domain: unlockedBadge.domain || badgeModalProject?.domain,
+        dept: unlockedBadge.dept || badgeModalProject?.dept,
+        year: unlockedBadge.year || badgeModalProject?.year,
+      });
+      setBadgeDownloadSuccess(true);
+      setTimeout(() => setBadgeDownloadSuccess(false), 4000);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setBadgeDownloading(false);
+    }
+  };
+
+  const handleShareBadgeLinkedIn = async () => {
+    if (navigator?.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(badgeLinkedInPostText);
+      } catch (e) {}
+    }
+    const shareUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(badgeLinkedInPostText)}`;
+    window.open(shareUrl, '_blank', 'noopener,noreferrer');
+    setBadgeLinkedInOpened(true);
+    setTimeout(() => setBadgeLinkedInOpened(false), 6000);
+  };
+
   // Lock body scroll when modal is active
   useEffect(() => {
-    if (inspectProject) {
+    if (inspectProject || badgeModalProject) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') setInspectProject(null);
+      if (e.key === 'Escape') {
+        setInspectProject(null);
+        setBadgeModalProject(null);
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       document.body.style.overflow = '';
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [inspectProject]);
+  }, [inspectProject, badgeModalProject]);
 
   // Clean list sorted by latest submission
   const filteredProjects = useMemo(() => {
@@ -402,6 +573,17 @@ export default function RegisteredStudentsPage() {
                           </svg>
                         </a>
                       )}
+
+                      {project.registration_id && (
+                        <button
+                          type="button"
+                          onClick={() => handleOpenBadgeModal(project)}
+                          className="px-2.5 py-1.5 rounded-lg bg-[#070e1e] text-[#2ec4b6] border border-[#2ec4b6]/40 hover:bg-[#0c162c] text-[10px] font-bold transition-all flex items-center gap-1 shadow-2xs cursor-pointer hover:scale-105 active:scale-95"
+                          title="Collect Badge with 4-Digit PIN"
+                        >
+                          <span>🎖️ Badge</span>
+                        </button>
+                      )}
                     </div>
 
                     <button
@@ -476,13 +658,25 @@ export default function RegisteredStudentsPage() {
                           </div>
                         </td>
                         <td className="py-4 px-5 text-center whitespace-nowrap">
-                          <button
-                            type="button"
-                            onClick={() => setInspectProject(project)}
-                            className="px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-[#1f6fb2] border border-sky-200/80 font-bold text-xs transition-all cursor-pointer hover:scale-105 active:scale-95"
-                          >
-                            Inspect
-                          </button>
+                          <div className="flex items-center justify-center gap-1.5">
+                            {project.registration_id && (
+                              <button
+                                type="button"
+                                onClick={() => handleOpenBadgeModal(project)}
+                                className="px-2.5 py-1.5 rounded-lg bg-[#070e1e] text-[#2ec4b6] border border-[#2ec4b6]/40 hover:bg-[#0c162c] text-xs font-bold transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+                                title="Collect Badge"
+                              >
+                                🎖️ Badge
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => setInspectProject(project)}
+                              className="px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-[#1f6fb2] border border-sky-200/80 font-bold text-xs transition-all cursor-pointer hover:scale-105 active:scale-95"
+                            >
+                              Inspect
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -790,6 +984,18 @@ export default function RegisteredStudentsPage() {
 
                   <button
                     type="button"
+                    onClick={() => {
+                      const p = inspectProject;
+                      setInspectProject(null);
+                      handleOpenBadgeModal(p);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#1f6fb2] to-[#2ec4b6] text-white font-bold text-xs hover:opacity-95 shadow-sm transition-all cursor-pointer"
+                  >
+                    <span>🎖️ Builder Badge</span>
+                  </button>
+
+                  <button
+                    type="button"
                     onClick={() => handleCopyShareLink(inspectProject.id)}
                     className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all w-full sm:w-auto text-center justify-center sm:ml-auto"
                   >
@@ -811,6 +1017,289 @@ export default function RegisteredStudentsPage() {
           fetchRegistered();
         }}
       />
+
+      {/* ─── OFFICIAL BUILDER BADGE MODAL ──────────────────────────────── */}
+      {badgeModalProject && (
+        <div
+          className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-y-auto"
+          onClick={() => setBadgeModalProject(null)}
+        >
+          <div
+            className="bg-[#070e1e] text-slate-100 rounded-3xl max-w-4xl w-full border border-teal-500/30 shadow-2xl p-5 sm:p-7 relative my-auto space-y-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={() => setBadgeModalProject(null)}
+              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center transition cursor-pointer z-50"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            {!unlockedBadge ? (
+              /* STEP A: Enter 4-Digit PIN */
+              <div className="max-w-md mx-auto py-6 space-y-6">
+                <div className="text-center space-y-2">
+                  <div className="inline-flex p-3 rounded-2xl bg-teal-500/10 border border-teal-500/30 text-[#2ec4b6] mb-1">
+                    <KeyRound className="w-7 h-7" />
+                  </div>
+
+                  <h3
+                    className="text-2xl sm:text-3xl font-black text-white tracking-tight"
+                    style={{ fontFamily: 'var(--font-plus-jakarta)' }}
+                  >
+                    Access Builder Badge
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-slate-400">
+                    Project: <strong className="text-white">&ldquo;{badgeModalProject.title || 'Student Innovation'}&rdquo;</strong>
+                  </p>
+                  {badgeModalProject.registration_id && (
+                    <p className="text-xs font-mono text-teal-300 font-bold">
+                      Registration ID: {badgeModalProject.registration_id}
+                    </p>
+                  )}
+                </div>
+
+                {badgeError && (
+                  <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                    <span>{badgeError}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handleVerifyBadgePin} className="space-y-4">
+                  {!badgeModalProject.registration_id && (
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                        Registration ID or Registered Email
+                      </label>
+                      <input
+                        type="text"
+                        value={badgeCustomId}
+                        onChange={(e) => setBadgeCustomId(e.target.value)}
+                        placeholder="PIBI-2026-BDR-XXXX"
+                        className="w-full px-4 py-3 rounded-xl bg-[#0b162c] border border-slate-700 text-white text-sm focus:outline-hidden focus:border-[#2ec4b6] transition"
+                        required
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                        Enter 4-Digit Security PIN
+                      </label>
+                      <span className="text-[11px] text-slate-400">
+                        Check your email inbox
+                      </span>
+                    </div>
+                    <input
+                      type="text"
+                      maxLength={4}
+                      value={badgePin}
+                      onChange={(e) => setBadgePin(e.target.value.replace(/\D/g, ''))}
+                      placeholder="• • • •"
+                      className="w-full px-4 py-3 rounded-xl bg-[#0b162c] border border-slate-700 text-white text-center font-mono text-2xl tracking-[0.5em] font-black focus:outline-hidden focus:border-[#2ec4b6] transition"
+                      autoFocus
+                      required
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={badgeLoading}
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#1f6fb2] to-[#2ec4b6] text-white font-extrabold text-sm sm:text-base shadow-lg hover:opacity-95 transition cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {badgeLoading ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Verifying Security PIN...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="w-5 h-5" />
+                        <span>Unlock My Builder Badge</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+
+                <p className="text-[11px] text-slate-400 text-center leading-relaxed">
+                  Your 4-digit PIN was sent from <strong>openintelligencepibi@gmail.com</strong> when your project was submitted.
+                </p>
+              </div>
+            ) : (
+              /* STEP B: Render Unlocked Badge from pibi.pdf template */
+              <div className="space-y-6">
+                <div className="text-center space-y-1.5">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 text-xs font-bold">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Security PIN Verified · Badge Unlocked</span>
+                  </div>
+
+                  <h3
+                    className="text-2xl sm:text-3xl font-black text-white tracking-tight"
+                    style={{ fontFamily: 'var(--font-plus-jakarta)' }}
+                  >
+                    {currentBadgeInnovator}&apos;s Builder Badge
+                  </h3>
+
+                  <p className="text-xs text-slate-400">
+                    PiBi Open Intelligence · Student Project Awards 2026
+                  </p>
+                </div>
+
+                {/* Team Members Selector (if multiple members) */}
+                {badgeTeamMembers.length > 1 && (
+                  <div className="p-3.5 rounded-2xl bg-[#0b162c] border border-slate-800 space-y-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
+                      <span className="font-bold text-slate-200 flex items-center gap-1.5">
+                        <Users className="w-4 h-4 text-[#2ec4b6]" />
+                        <span>Registered Team Members ({badgeTeamMembers.length})</span>
+                      </span>
+                      <span className="text-[11px] text-slate-400">
+                        Click any team member to view & download their personalized badge
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {badgeTeamMembers.map((member, idx) => {
+                        const isLead = member.toLowerCase() === (unlockedBadge.studentName || badgeModalProject.lead_student || '').toLowerCase();
+                        const active = currentBadgeInnovator.toLowerCase() === member.toLowerCase();
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setBadgeSelectedMember(member)}
+                            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                              active
+                                ? 'bg-gradient-to-r from-[#1f6fb2] to-[#2ec4b6] text-white shadow-md'
+                                : 'bg-slate-900/90 text-slate-300 hover:text-white border border-slate-700/70'
+                            }`}
+                          >
+                            <UserCheck className="w-3.5 h-3.5 text-teal-300" />
+                            <span>{member}</span>
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded ${active ? 'bg-black/30 text-teal-100' : 'bg-slate-800 text-slate-400'}`}>
+                              {isLead ? 'Lead' : 'Member'}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Official Badge Canvas (Rendered from public/docs/pibi.pdf) */}
+                <div className="py-1">
+                  <DigitalBadge
+                    studentName={currentBadgeInnovator}
+                    institution={unlockedBadge.institution || badgeModalProject.institution}
+                    dept={unlockedBadge.dept || badgeModalProject.dept}
+                    year={unlockedBadge.year || badgeModalProject.year}
+                    projectTitle={unlockedBadge.projectTitle || badgeModalProject.title}
+                    registrationId={unlockedBadge.registrationId || badgeModalProject.registration_id}
+                  />
+                </div>
+
+                {/* Summary Details */}
+                <div className="p-3.5 rounded-2xl bg-[#0b162c] border border-slate-800 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Innovator</span>
+                    <span className="font-bold text-white truncate block">{currentBadgeInnovator}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Institution / College</span>
+                    <span className="font-bold text-slate-200 truncate block">{unlockedBadge.institution || badgeModalProject.institution || 'Engineering College'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Department & Year</span>
+                    <span className="font-bold text-[#2ec4b6] truncate block">{[unlockedBadge.year || badgeModalProject.year, unlockedBadge.dept || badgeModalProject.dept].filter(Boolean).join(' • ') || 'Engineering 2026'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Registration ID</span>
+                    <span className="font-mono font-bold text-teal-300 truncate block">{unlockedBadge.registrationId || badgeModalProject.registration_id}</span>
+                  </div>
+                </div>
+
+                {/* Side-by-side Download and LinkedIn Share Buttons */}
+                <div className="space-y-3 pt-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <button
+                      type="button"
+                      onClick={handleDownloadBadgeFromModal}
+                      disabled={badgeDownloading}
+                      className="flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#1f6fb2] via-[#0284c7] to-[#2ec4b6] hover:opacity-95 text-white font-extrabold text-sm sm:text-base shadow-xl transition cursor-pointer disabled:opacity-50 hover:scale-[1.01] active:scale-98"
+                    >
+                      {badgeDownloading ? (
+                        <>
+                          <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <span>Generating High-Res PNG...</span>
+                        </>
+                      ) : badgeDownloadSuccess ? (
+                        <>
+                          <Check className="w-5 h-5 text-white" />
+                          <span>Badge Downloaded!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Download className="w-5 h-5" />
+                          <span>Download My Badge</span>
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleShareBadgeLinkedIn}
+                      className="flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-[#0a66c2] hover:bg-[#004182] text-white font-extrabold text-sm sm:text-base shadow-xl transition cursor-pointer hover:scale-[1.01] active:scale-98"
+                    >
+                      <LinkedInIcon className="w-5 h-5" />
+                      <span>Share on LinkedIn</span>
+                    </button>
+                  </div>
+
+                  {badgeLinkedInOpened && (
+                    <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-300 text-xs flex items-center gap-2 animate-in fade-in">
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                      <span>LinkedIn opened in a new tab! Post text has been copied to your clipboard. Attach your downloaded badge image to your post.</span>
+                    </div>
+                  )}
+
+                  {/* LinkedIn Template Snippet */}
+                  <div className="p-4 rounded-2xl bg-[#070e1e] border border-slate-800 space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                        <Sparkles className="w-4 h-4 text-[#2ec4b6]" />
+                        <span>Official LinkedIn Post Template</span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (navigator?.clipboard?.writeText) {
+                            await navigator.clipboard.writeText(badgeLinkedInPostText);
+                          }
+                          setBadgeCopiedLink(true);
+                          setTimeout(() => setBadgeCopiedLink(false), 2500);
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2ec4b6] hover:bg-[#28ad9f] text-slate-950 font-extrabold text-xs transition cursor-pointer"
+                      >
+                        {badgeCopiedLink ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span>{badgeCopiedLink ? 'Copied!' : 'Copy Post'}</span>
+                      </button>
+                    </div>
+                    <div className="p-3 bg-[#050a16] rounded-xl border border-slate-800 text-xs font-sans text-slate-300 whitespace-pre-line leading-relaxed max-h-32 overflow-y-auto">
+                      {badgeLinkedInPostText}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

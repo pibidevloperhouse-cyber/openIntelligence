@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import crypto from 'crypto';
 import { supabaseAdmin } from '@/lib/supabase-admin';
+import { sendStudentRegistrationEmail } from '@/lib/student-email';
 
 // Helper to check if current user is banned
 async function getIsBanned() {
@@ -91,7 +93,7 @@ export async function POST(request) {
 
     const finalName = (name || leadStudent || '').trim();
     const finalCollege = (college || institution || '').trim();
-    const finalEmail = (email || '').trim();
+    const finalEmail = (email || '').trim().toLowerCase();
     const finalPhone = (phone || phoneNo || '').trim();
     const finalTitle = (projectTitle || title || '').trim();
     const finalDomain = (domain || category || 'AI & ML').trim();
@@ -145,6 +147,27 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Project Explanation Video (link or video upload) is required' }, { status: 400 });
     }
 
+    // Check for duplicate submission by email & project title
+    const { data: existingDup } = await supabaseAdmin
+      .from('student_project_submissions')
+      .select('id, title, lead_student, registration_id, share_token')
+      .ilike('email', finalEmail)
+      .ilike('title', finalTitle)
+      .maybeSingle();
+
+    if (existingDup) {
+      return NextResponse.json(
+        {
+          error: `A submission for "${finalTitle}" under ${finalEmail} is already registered! Registration ID: ${existingDup.registration_id || 'Confirmed'}`,
+          isDuplicate: true,
+          registrationId: existingDup.registration_id,
+          shareToken: existingDup.share_token,
+          project: existingDup,
+        },
+        { status: 409 }
+      );
+    }
+
     let membersArray = [];
     if (Array.isArray(teamMembers) && teamMembers.length > 0) {
       membersArray = teamMembers.map((m) => String(m).trim()).filter(Boolean);
@@ -169,6 +192,28 @@ export async function POST(request) {
       finalOutcome ? `### Expected Outcome\n${finalOutcome}` : '',
       finalTechSummary ? `### Technical Summary\n${finalTechSummary}` : '',
     ].filter(Boolean).join('\n\n');
+
+    // Generate collision-resistant Registration ID (PIBI-2026-BDR-XXXX)
+    let registrationId = null;
+    for (let i = 0; i < 10; i++) {
+      const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+      const candidateId = `PIBI-2026-BDR-${randomSuffix}`;
+      const { data: collision } = await supabaseAdmin
+        .from('student_project_submissions')
+        .select('id')
+        .eq('registration_id', candidateId)
+        .maybeSingle();
+      if (!collision) {
+        registrationId = candidateId;
+        break;
+      }
+    }
+    if (!registrationId) {
+      registrationId = `PIBI-2026-BDR-${Date.now().toString().slice(-4)}`;
+    }
+
+    const shareToken = crypto.randomBytes(16).toString('hex');
+    const securityPin = Math.floor(1000 + Math.random() * 9000).toString();
 
     const insertPayload = {
       title: finalTitle,
@@ -198,6 +243,9 @@ export async function POST(request) {
       description: fullDescription || 'Student innovation project for 2026 National Showcase',
       tags: tagsArray,
       status: 'PENDING',
+      registration_id: registrationId,
+      share_token: shareToken,
+      security_pin: securityPin,
       raw_data: body,
     };
 
@@ -212,7 +260,37 @@ export async function POST(request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, project: data }, { status: 201 });
+    const assignedRegId = data.registration_id || registrationId;
+    const assignedToken = data.share_token || shareToken;
+    const assignedPin = data.security_pin || securityPin;
+
+    // Trigger confirmation email with Builder Kit PDF asynchronously
+    try {
+      sendStudentRegistrationEmail({
+        toEmail: finalEmail,
+        studentName: finalName,
+        projectTitle: finalTitle,
+        college: finalCollege,
+        domain: finalDomain,
+        dept: (body.dept || '').trim(),
+        year: (body.year || '').trim(),
+        registrationId: assignedRegId,
+        shareToken: assignedToken,
+        securityPin: assignedPin,
+      }).catch((emailErr) => {
+        console.error('[POST /api/student-projects] Email sending background error:', emailErr);
+      });
+    } catch (emailErr) {
+      console.error('[POST /api/student-projects] Failed to trigger email:', emailErr);
+    }
+
+    return NextResponse.json({
+      success: true,
+      project: data,
+      registrationId: assignedRegId,
+      shareToken: assignedToken,
+      securityPin: assignedPin,
+    }, { status: 201 });
   } catch (err) {
     console.error('[POST /api/student-projects]', err);
     return NextResponse.json({ error: err.message || 'Failed to submit student project' }, { status: 500 });

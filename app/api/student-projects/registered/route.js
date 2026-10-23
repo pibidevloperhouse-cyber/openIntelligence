@@ -8,6 +8,7 @@ export async function GET() {
       .from('student_project_submissions')
       .select(`
         id,
+        registration_id,
         title,
         category,
         domain,

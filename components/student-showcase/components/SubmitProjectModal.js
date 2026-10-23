@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
+import RegistrationSuccessScreen from './RegistrationSuccessScreen';
+import { trackEvent } from '@/lib/analytics';
 import {
   X,
   Sparkles,
@@ -62,6 +64,7 @@ export const SubmitProjectModal = ({
     dept: '',
     year: 'Final Year (4th)',
     dob: '',
+    linkedin: '',
     teamMembers: [],
 
     // 2) Project Information
@@ -82,8 +85,39 @@ export const SubmitProjectModal = ({
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [registrationResult, setRegistrationResult] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  const handleModalClose = () => {
+    setSubmitted(false);
+    setRegistrationResult(null);
+    setCurrentStep(1);
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      city: '',
+      college: '',
+      dept: '',
+      year: 'Final Year (4th)',
+      dob: '',
+      teamMembers: [],
+      projectTitle: '',
+      domain: 'AI & Machine Learning',
+      problemStatement: '',
+      solution: '',
+      usp: '',
+      outcome: '',
+      githubLink: '',
+      presentation: '',
+      video: '',
+      liveDemo: '',
+      technicalSummary: '',
+      pitch: '',
+    });
+    onClose();
+  };
 
   // Team Member input state & handlers
   const [newMemberName, setNewMemberName] = useState('');
@@ -447,14 +481,24 @@ export const SubmitProjectModal = ({
 
       // Trigger celebration confetti
       confetti({
-        particleCount: 120,
-        spread: 90,
-        origin: { y: 0.5 },
-        colors: ['#1f6fb2', '#2ec4b6', '#8b5cf6', '#10b981', '#f59e0b'],
+        particleCount: 140,
+        spread: 100,
+        origin: { y: 0.4 },
+        colors: ['#1f6fb2', '#2ec4b6', '#8b5cf6', '#10b981', '#f59e0b', '#38bdf8'],
       });
+
+      trackEvent('registration_success', {
+        registration_id: data.registrationId || data.project?.registration_id,
+        domain: formData.domain,
+        city: formData.city,
+      });
+
+      const assignedRegId = data.registrationId || data.project?.registration_id || 'PIBI-2026-BDR-CONFIRMED';
+      const assignedToken = data.shareToken || data.project?.share_token;
 
       const newProject = {
         id: data.project?.id || `proj-${Date.now()}`,
+        registration_id: assignedRegId,
         title: formData.projectTitle,
         tagline: formData.pitch || formData.usp || 'Breakthrough student innovation for 2026 Awards',
         category: formData.domain,
@@ -469,34 +513,30 @@ export const SubmitProjectModal = ({
         demoUrl: formData.video || formData.presentation || undefined,
       };
 
+      if (onSubmitSuccess) onSubmitSuccess(newProject);
+
+      setRegistrationResult({
+        ...data.project,
+        registrationId: assignedRegId,
+        registration_id: assignedRegId,
+        lead_student: formData.name,
+        name: formData.name,
+        title: formData.projectTitle,
+        projectTitle: formData.projectTitle,
+        institution: formData.college,
+        college: formData.college,
+        domain: formData.domain,
+        category: formData.domain,
+        dept: formData.dept,
+        year: formData.year,
+        linkedin: formData.linkedin,
+        email: formData.email,
+        phone: formData.phone,
+        shareToken: assignedToken,
+        share_token: assignedToken,
+      });
+
       setSubmitted(true);
-      setTimeout(() => {
-        if (onSubmitSuccess) onSubmitSuccess(newProject);
-        setSubmitted(false);
-        setCurrentStep(1);
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          college: '',
-          dept: '',
-          year: 'Final Year (4th)',
-          dob: '',
-          teamMembers: [],
-          projectTitle: '',
-          domain: 'AI & Machine Learning',
-          problemStatement: '',
-          solution: '',
-          usp: '',
-          outcome: '',
-          githubLink: '',
-          presentation: '',
-          video: '',
-          technicalSummary: '',
-          pitch: '',
-        });
-        onClose();
-      }, 2600);
     } catch (err) {
       console.error(err);
       setError(err.message || 'Failed to submit project. Please try again.');
@@ -541,20 +581,22 @@ export const SubmitProjectModal = ({
                   className="text-base sm:text-lg font-black text-slate-900 tracking-tight"
                   style={{ fontFamily: 'var(--font-plus-jakarta)' }}
                 >
-                  Submit Student Project
+                  {submitted ? 'Registration Confirmed!' : 'Submit Student Project'}
                 </h2>
                 <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#2ec4b6]/15 text-[#0e8579] border border-[#2ec4b6]/30 font-stylized whitespace-nowrap">
                   Candidate 2026
                 </span>
               </div>
               <p className="text-[11px] sm:text-xs text-slate-500 truncate">
-                3-Step Submission for Top 3 Cash Prizes & PiBi Spotlight
+                {submitted
+                  ? 'Official Builder Badge & Sharing Kit'
+                  : '3-Step Submission for Top 3 Cash Prizes & PiBi Spotlight'}
               </p>
             </div>
           </div>
 
           <button
-            onClick={onClose}
+            onClick={handleModalClose}
             className="p-2 rounded-full bg-white hover:bg-slate-100 text-slate-400 hover:text-slate-800 transition-colors cursor-pointer border border-slate-200/80 shrink-0 shadow-xs"
             aria-label="Close modal"
           >
@@ -645,29 +687,10 @@ export const SubmitProjectModal = ({
           className="p-4 sm:p-6 md:p-7 overflow-y-auto space-y-4 modal-scroll flex-1"
         >
           {submitted ? (
-            <div className="text-center py-10 sm:py-12 space-y-4">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center mx-auto shadow-xl animate-bounce">
-                <CheckCircle2 className="w-10 h-10" />
-              </div>
-              <div className="space-y-1.5">
-                <h3
-                  className="text-2xl sm:text-3xl font-black text-slate-900"
-                  style={{ fontFamily: 'var(--font-plus-jakarta)' }}
-                >
-                  Project Recorded in Supabase! 🎉
-                </h3>
-                <p className="text-slate-600 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
-                  Thank you <strong className="text-slate-900">{formData.name}</strong> from{' '}
-                  <strong className="text-slate-900">{formData.college}</strong>. Your project{' '}
-                  <strong className="text-[#1f6fb2]">"{formData.projectTitle}"</strong> has been saved directly to the database and queued for jury evaluation!
-                </p>
-              </div>
-
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Eligible for Top 3 Cash Rewards & Open Intelligence Publication</span>
-              </div>
-            </div>
+            <RegistrationSuccessScreen
+              studentData={registrationResult}
+              onClose={handleModalClose}
+            />
           ) : (
             <div>
               {isRegistrationClosed && (
@@ -825,6 +848,26 @@ export const SubmitProjectModal = ({
                         className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#2ec4b6] focus:ring-2 focus:ring-[#2ec4b6]/20 transition-all"
                       />
                     </div>
+                  </div>
+
+                  {/* Optional LinkedIn Profile for Recognition */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-[#0a66c2]" fill="currentColor">
+                          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
+                        </svg>
+                        <span>LinkedIn Profile URL</span>
+                      </span>
+                      <span className="text-[11px] font-normal text-slate-400">Optional • For builder spotlight</span>
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.linkedin || ''}
+                      onChange={(e) => updateField('linkedin', e.target.value)}
+                      placeholder="https://www.linkedin.com/in/yourname"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-[#2ec4b6] focus:ring-2 focus:ring-[#2ec4b6]/20 transition-all placeholder:text-slate-400"
+                    />
                   </div>
 
                   {/* Team Members Section */}
