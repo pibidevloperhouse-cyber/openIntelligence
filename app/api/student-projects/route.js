@@ -263,10 +263,10 @@ export async function POST(request) {
     const assignedRegId = data.registration_id || registrationId;
     const assignedToken = data.share_token || shareToken;
     const assignedPin = data.security_pin || securityPin;
-
-    // Trigger confirmation email with Builder Kit PDF asynchronously
+    // Dispatch confirmation email with 4-digit PIN and badge access link
+    let emailDispatched = false;
     try {
-      sendStudentRegistrationEmail({
+      const emailResult = await sendStudentRegistrationEmail({
         toEmail: finalEmail,
         studentName: finalName,
         projectTitle: finalTitle,
@@ -277,11 +277,21 @@ export async function POST(request) {
         registrationId: assignedRegId,
         shareToken: assignedToken,
         securityPin: assignedPin,
-      }).catch((emailErr) => {
-        console.error('[POST /api/student-projects] Email sending background error:', emailErr);
       });
+
+      if (emailResult && emailResult.success) {
+        emailDispatched = true;
+        // Mark as sent in database
+        await supabaseAdmin
+          .from('student_project_submissions')
+          .update({
+            is_email_sent: true,
+            email_sent_at: new Date().toISOString(),
+          })
+          .eq('id', data.id);
+      }
     } catch (emailErr) {
-      console.error('[POST /api/student-projects] Failed to trigger email:', emailErr);
+      console.error('[POST /api/student-projects] Failed to send registration email:', emailErr);
     }
 
     return NextResponse.json({
@@ -290,6 +300,7 @@ export async function POST(request) {
       registrationId: assignedRegId,
       shareToken: assignedToken,
       securityPin: assignedPin,
+      emailSent: emailDispatched,
     }, { status: 201 });
   } catch (err) {
     console.error('[POST /api/student-projects]', err);
