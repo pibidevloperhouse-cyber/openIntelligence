@@ -162,6 +162,21 @@ export default function RegisteredStudentsPage() {
 
   useEffect(() => {
     fetchRegistered();
+
+    // Live sync: As new student teams register and join, automatically update the count
+    const interval = setInterval(() => {
+      fetch('/api/student-projects/registered')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && Array.isArray(data.projects)) {
+            setProjects(data.projects);
+            if (data.stats) setStats(data.stats);
+          }
+        })
+        .catch(() => {});
+    }, 12000);
+
+    return () => clearInterval(interval);
   }, []);
 
   // Sync full project data into badgeModalProject once projects load
@@ -423,7 +438,7 @@ Proud to be recognized as an Open Intelligence Builder!
                 </h1>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-extrabold bg-[#1f6fb2]/10 text-[#1f6fb2] border border-[#1f6fb2]/20 shadow-xs">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  {displayStats.totalInnovators || displayStats.totalProjects || 0} Registered Innovators
+                  <span>{loading ? '...' : (projects.length || displayStats.totalProjects || 0)} Registered Teams</span>
                 </span>
               </div>
 
