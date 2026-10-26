@@ -457,65 +457,6 @@ Proud to be recognized as an Open Intelligence Builder!
               )}
             </div>
           </div>
-
-          {/* ─── LIVE REGISTRATION METRICS COUNTERS ────────────────────────── */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-6 pt-6 border-t border-slate-100">
-            {/* Stat 1: Total Innovators */}
-            <div className="bg-gradient-to-br from-blue-50/70 via-sky-50/30 to-white rounded-2xl p-4 border border-blue-100/80 shadow-xs hover:border-blue-200 transition-all">
-              <div className="flex items-center justify-between text-blue-600 mb-1">
-                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Student Innovators</span>
-                <span className="text-base sm:text-lg">👥</span>
-              </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                {loading ? '...' : displayStats.totalInnovators}
-              </div>
-              <div className="text-[10px] sm:text-xs font-semibold text-blue-600 mt-0.5">
-                Students & Leads Registered
-              </div>
-            </div>
-
-            {/* Stat 2: Submitted Projects */}
-            <div className="bg-gradient-to-br from-teal-50/70 via-emerald-50/30 to-white rounded-2xl p-4 border border-teal-100/80 shadow-xs hover:border-teal-200 transition-all">
-              <div className="flex items-center justify-between text-teal-600 mb-1">
-                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Submitted Projects</span>
-                <span className="text-base sm:text-lg">🚀</span>
-              </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                {loading ? '...' : displayStats.totalProjects}
-              </div>
-              <div className="text-[10px] sm:text-xs font-semibold text-teal-600 mt-0.5">
-                Collegiate Prototypes
-              </div>
-            </div>
-
-            {/* Stat 3: Institutions */}
-            <div className="bg-gradient-to-br from-indigo-50/70 via-purple-50/30 to-white rounded-2xl p-4 border border-indigo-100/80 shadow-xs hover:border-indigo-200 transition-all">
-              <div className="flex items-center justify-between text-indigo-600 mb-1">
-                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Colleges & Unis</span>
-                <span className="text-base sm:text-lg">🏛️</span>
-              </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                {loading ? '...' : displayStats.uniqueColleges}
-              </div>
-              <div className="text-[10px] sm:text-xs font-semibold text-indigo-600 mt-0.5">
-                Campuses Represented
-              </div>
-            </div>
-
-            {/* Stat 4: Tech Domains */}
-            <div className="bg-gradient-to-br from-violet-50/70 via-fuchsia-50/30 to-white rounded-2xl p-4 border border-violet-100/80 shadow-xs hover:border-violet-200 transition-all">
-              <div className="flex items-center justify-between text-violet-600 mb-1">
-                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Domain Tracks</span>
-                <span className="text-base sm:text-lg">💡</span>
-              </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                {loading ? '...' : (displayStats.uniqueDomains || 4)}
-              </div>
-              <div className="text-[10px] sm:text-xs font-semibold text-violet-600 mt-0.5">
-                AI / ML / Web / IoT Tracks
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* ─── SEARCH & FILTER CONTROLS ─────────────────────────────────── */}
