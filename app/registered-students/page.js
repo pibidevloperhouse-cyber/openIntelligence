@@ -240,6 +240,12 @@ export default function RegisteredStudentsPage() {
     ...(Array.isArray(unlockedBadge?.teamMembers) ? unlockedBadge.teamMembers : Array.isArray(badgeModalProject?.team_members) ? badgeModalProject.team_members : [])
   ].map(m => String(m || '').trim()).filter(Boolean)));
 
+  const badgeRegistrationId = unlockedBadge?.registrationId || badgeModalProject?.registration_id;
+  const isMemberSelected = badgeSelectedMember && badgeSelectedMember !== (unlockedBadge?.studentName || badgeModalProject?.lead_student);
+  const badgePublicUrl = badgeRegistrationId
+    ? `https://www.pibiopenintelligence.com/students/badge/${encodeURIComponent(badgeRegistrationId)}${isMemberSelected ? `?member=${encodeURIComponent(badgeSelectedMember)}` : ''}`
+    : 'https://www.pibiopenintelligence.com/registered-students';
+
   const badgeLinkedInPostText = `🚀 I've taken a step beyond the classroom!
 
 I've registered our AI/ML project "${unlockedBadge?.projectTitle || badgeModalProject?.title || 'AI/ML Project'}" for the **PiBi Open Intelligence Student Project Awards 2026**!
@@ -248,7 +254,7 @@ I believe student projects shouldn't end with a final-year presentation. They sh
 
 Proud to be recognized as an Open Intelligence Builder!
 
-🔗 Explore the registered projects: https://www.pibiopenintelligence.com/registered-students
+🔗 View my Official Builder Badge: ${badgePublicUrl}
 
 #PiBiOpenIntelligence #StudentProjects #ArtificialIntelligence #MachineLearning #LearnBuildContribute`;
 
@@ -283,7 +289,7 @@ Proud to be recognized as an Open Intelligence Builder!
     const shareUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(badgeLinkedInPostText)}`;
     window.open(shareUrl, '_blank', 'noopener,noreferrer');
     setBadgeLinkedInOpened(true);
-    setTimeout(() => setBadgeLinkedInOpened(false), 6000);
+    setTimeout(() => setBadgeLinkedInOpened(false), 8000);
   };
 
   // Lock body scroll when modal is active
@@ -1264,7 +1270,7 @@ Proud to be recognized as an Open Intelligence Builder!
                   {badgeLinkedInOpened && (
                     <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-300 text-xs flex items-center gap-2 animate-in fade-in">
                       <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
-                      <span>LinkedIn opened in a new tab! Post text has been copied to your clipboard. Attach your downloaded badge image to your post.</span>
+                      <span>LinkedIn opened in a new tab! Your badge poster PNG was downloaded and the post link will preview your personalized badge card.</span>
                     </div>
                   )}
 

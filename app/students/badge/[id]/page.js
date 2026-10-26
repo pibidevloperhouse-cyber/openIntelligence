@@ -4,9 +4,12 @@ import { notFound } from 'next/navigation';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import PublicBadgeClient from './PublicBadgeClient';
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata({ params, searchParams }) {
   const { id } = await params;
   if (!id) return { title: 'Builder Badge | PiBi Open Intelligence' };
+
+  const sParams = searchParams ? await searchParams : {};
+  const member = sParams?.member ? decodeURIComponent(sParams.member).trim() : null;
 
   const trimmedId = id.trim();
   let query = supabaseAdmin
@@ -33,27 +36,32 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  const studentName = record.lead_student || 'Student Innovator';
+  const studentName = member || record.lead_student || 'Student Innovator';
   const projectTitle = record.title || 'AI Project';
+  const badgeId = record.registration_id || id;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.pibiopenintelligence.com';
+  const ogImageUrl = `${siteUrl}/api/og/badge/${encodeURIComponent(badgeId)}.png${member ? `?member=${encodeURIComponent(member)}` : ''}`;
+  const canonicalUrl = `${siteUrl}/students/badge/${encodeURIComponent(badgeId)}${member ? `?member=${encodeURIComponent(member)}` : ''}`;
 
   return {
     title: `${studentName} — Open Intelligence Builder Badge 2026`,
     description: `Official Registration Badge for "${projectTitle}" by ${studentName} — PiBi Open Intelligence Student Project Awards 2026.`,
     robots: {
-      index: false,
+      index: true,
       follow: true,
     },
     openGraph: {
       title: `${studentName} is an Open Intelligence Builder!`,
       description: `Registered project: "${projectTitle}" for the PiBi Open Intelligence Student Project Awards 2026.`,
-      url: `https://www.pibiopenintelligence.com/students/badge/${record.registration_id || id}`,
+      url: canonicalUrl,
       siteName: 'PiBi Open Intelligence',
       images: [
         {
-          url: '/pii.webp',
-          width: 500,
-          height: 500,
-          alt: 'PiBi Open Intelligence Builder Badge',
+          url: ogImageUrl,
+          width: 1609,
+          height: 977,
+          type: 'image/png',
+          alt: `${studentName} — PiBi Open Intelligence Builder Badge`,
         },
       ],
       type: 'profile',
@@ -62,12 +70,12 @@ export async function generateMetadata({ params }) {
       card: 'summary_large_image',
       title: `${studentName} — Open Intelligence Builder Badge 2026`,
       description: `Registered "${projectTitle}" for the PiBi Open Intelligence Student Project Awards 2026.`,
-      images: ['/pii.webp'],
+      images: [ogImageUrl],
     },
   };
 }
 
-export default async function PublicBadgePage({ params }) {
+export default async function PublicBadgePage({ params, searchParams }) {
   const { id } = await params;
   if (!id) notFound();
 
@@ -81,6 +89,8 @@ export default async function PublicBadgePage({ params }) {
       lead_student,
       title,
       institution,
+      dept,
+      year,
       domain,
       category,
       team_members,
@@ -131,7 +141,10 @@ export default async function PublicBadgePage({ params }) {
     studentName: record.lead_student || 'Student Innovator',
     projectTitle: record.title || 'AI Project',
     institution: record.institution || 'Engineering College',
+    dept: record.dept || '',
+    year: record.year || '',
     domain: record.domain || record.category || 'AI & Machine Learning',
+    teamMembers: record.team_members || [],
     createdAt: record.created_at,
     status: 'Registration Confirmed',
   };

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { sendStudentRegistrationEmail } from '@/lib/student-email';
+import { sendStudentRegistrationEmail, cleanRecipientEmail } from '@/lib/student-email';
 import crypto from 'crypto';
 
 async function isAdmin() {
@@ -22,7 +22,7 @@ export async function POST(request) {
   if (!(await isAdmin())) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   try {
-    const { id } = await request.json();
+    const { id, customEmail } = await request.json();
     if (!id) {
       return NextResponse.json({ error: 'Project ID is required' }, { status: 400 });
     }
@@ -38,8 +38,14 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Student registration not found' }, { status: 404 });
     }
 
-    if (!record.email) {
-      return NextResponse.json({ error: 'No email address registered for this student' }, { status: 400 });
+    let finalEmail = (customEmail || record.email || '').trim().toLowerCase();
+    const cleaned = cleanRecipientEmail(finalEmail);
+    if (cleaned) {
+      finalEmail = cleaned;
+    }
+
+    if (!finalEmail) {
+      return NextResponse.json({ error: 'No valid email address registered for this student' }, { status: 400 });
     }
 
     // Ensure PIN exists
@@ -66,7 +72,7 @@ export async function POST(request) {
 
     // Send email
     const emailResult = await sendStudentRegistrationEmail({
-      toEmail: record.email,
+      toEmail: finalEmail,
       studentName: record.lead_student || 'Student Innovator',
       projectTitle: record.title || 'Student Innovation Project',
       college: record.institution || '',
@@ -82,11 +88,12 @@ export async function POST(request) {
       return NextResponse.json({ error: emailResult.error || 'Failed to send email via SMTP' }, { status: 500 });
     }
 
-    // Mark as sent in DB
+    // Mark as sent in DB & save clean email
     const nowIso = new Date().toISOString();
     const { data: updated, error: updateError } = await supabaseAdmin
       .from('student_project_submissions')
       .update({
+        email: finalEmail,
         is_email_sent: true,
         email_sent_at: nowIso,
         security_pin: pin,
@@ -104,7 +111,7 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       project: updated,
-      message: `Email successfully sent to ${record.email} with PIN: ${pin}`,
+      message: `Email successfully sent to ${finalEmail} with PIN: ${pin}`,
     });
   } catch (err) {
     console.error('[POST /api/admin/student-projects/resend-email]', err);

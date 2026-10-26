@@ -3,7 +3,7 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { sendStudentRegistrationEmail } from '@/lib/student-email';
+import { sendStudentRegistrationEmail, cleanRecipientEmail } from '@/lib/student-email';
 
 // Helper to check if current user is banned
 async function getIsBanned() {
@@ -93,7 +93,7 @@ export async function POST(request) {
 
     const finalName = (name || leadStudent || '').trim();
     const finalCollege = (college || institution || '').trim();
-    const finalEmail = (email || '').trim().toLowerCase();
+    const finalEmail = cleanRecipientEmail(email || '').trim().toLowerCase();
     const finalPhone = (phone || phoneNo || '').trim();
     const finalTitle = (projectTitle || title || '').trim();
     const finalDomain = (domain || category || 'AI & ML').trim();
@@ -116,8 +116,9 @@ export async function POST(request) {
     if (!finalName) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
     }
-    if (!finalEmail) {
-      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+    if (!finalEmail || !emailRegex.test(finalEmail) || (finalEmail.match(/@/g) || []).length !== 1) {
+      return NextResponse.json({ error: 'Please enter a valid email address (e.g. name@domain.com)' }, { status: 400 });
     }
     if (!finalPhone) {
       return NextResponse.json({ error: 'Phone number is required' }, { status: 400 });

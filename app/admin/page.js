@@ -488,36 +488,47 @@ export default function AdminPage() {
     }
   };
 
-  const handleResendStudentEmail = async (id, studentEmail) => {
+  const handleResendStudentEmail = async (id, studentEmail, customEmail = null) => {
     if (!id) return;
     setResendingEmailId(id);
     try {
       const res = await fetch('/api/admin/student-projects/resend-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id, customEmail }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to dispatch email');
 
       const updated = data.project;
+      const finalSentEmail = updated?.email || customEmail || studentEmail;
       setStudentRegistrations(prev =>
-        prev.map(p => (p.id === id ? { ...p, is_email_sent: true, email_sent_at: updated?.email_sent_at || new Date().toISOString(), security_pin: updated?.security_pin || p.security_pin } : p))
+        prev.map(p => (p.id === id ? { ...p, is_email_sent: true, email: finalSentEmail, email_sent_at: updated?.email_sent_at || new Date().toISOString(), security_pin: updated?.security_pin || p.security_pin } : p))
       );
       if (viewingStudentProject?.id === id) {
         setViewingStudentProject(prev => ({
           ...prev,
+          email: finalSentEmail,
           is_email_sent: true,
           email_sent_at: updated?.email_sent_at || new Date().toISOString(),
           security_pin: updated?.security_pin || prev.security_pin,
         }));
       }
-      showToast(`✉️ PIN email sent successfully to ${studentEmail || 'student'}!`, 'success');
+      showToast(`✉️ PIN email sent successfully to ${finalSentEmail}!`, 'success');
     } catch (err) {
       showToast(err.message || 'Failed to send email', 'error');
     } finally {
       setResendingEmailId('');
     }
+  };
+
+  const handleEditStudentEmail = async (proj) => {
+    if (!proj) return;
+    const current = proj.email || '';
+    const newEmail = window.prompt(`Edit email address for ${proj.lead_student || 'Student'}:`, current);
+    if (!newEmail || newEmail.trim() === current) return;
+    const clean = newEmail.trim().toLowerCase();
+    await handleResendStudentEmail(proj.id, proj.email, clean);
   };
 
   const handleToggleTop10 = (proj) => {
@@ -2837,6 +2848,21 @@ export default function AdminPage() {
                                   >
                                     {proj.email}
                                   </a>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleEditStudentEmail(proj)}
+                                    title="Edit Email Address"
+                                    style={{
+                                      background: 'none',
+                                      border: 'none',
+                                      cursor: 'pointer',
+                                      fontSize: '0.72rem',
+                                      padding: '0 2px',
+                                      opacity: 0.7,
+                                    }}
+                                  >
+                                    ✏️
+                                  </button>
                                 </div>
                               </div>
                             )}
@@ -3591,10 +3617,29 @@ export default function AdminPage() {
                     <div style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>
                       Email Address
                     </div>
-                    <div style={{ fontSize: '0.92rem', fontWeight: 600, color: '#1f6fb2', marginTop: '3px' }}>
+                    <div style={{ fontSize: '0.92rem', fontWeight: 600, color: '#1f6fb2', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <a href={`mailto:${viewingStudentProject.email}`} style={{ color: '#1f6fb2', textDecoration: 'none' }}>
                         {viewingStudentProject.email}
                       </a>
+                      <button
+                        type="button"
+                        onClick={() => handleEditStudentEmail(viewingStudentProject)}
+                        title="Edit email address"
+                        style={{
+                          background: '#f1f5f9',
+                          border: '1px solid #cbd5e1',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '0.72rem',
+                          padding: '1px 6px',
+                          color: '#475569',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px'
+                        }}
+                      >
+                        <span>✏️</span> Edit
+                      </button>
                     </div>
                   </div>
                 )}

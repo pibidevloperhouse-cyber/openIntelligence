@@ -112,6 +112,11 @@ export default function CollectBadgeClient() {
 
   const isCurrentLead = badgeData?.studentName && currentInnovator.toLowerCase() === badgeData.studentName.toLowerCase();
 
+  const isMemberSelected = selectedMember && selectedMember !== badgeData?.studentName;
+  const publicShareUrl = badgeData?.registrationId
+    ? `https://www.pibiopenintelligence.com/students/badge/${encodeURIComponent(badgeData.registrationId)}${isMemberSelected ? `?member=${encodeURIComponent(selectedMember)}` : ''}`
+    : 'https://www.pibiopenintelligence.com/registered-students';
+
   const linkedInPostText = `🚀 I've taken a step beyond the classroom!
 
 I've registered our AI/ML project "${badgeData?.projectTitle || 'AI/ML Project'}" for the **PiBi Open Intelligence Student Project Awards 2026**!
@@ -120,7 +125,7 @@ I believe student projects shouldn't end with a final-year presentation. They sh
 
 Proud to be recognized as an Open Intelligence Builder!
 
-🔗 Explore the projects & register: ${campaignUrl}
+🔗 View my Official Builder Badge: ${publicShareUrl}
 
 #PiBiOpenIntelligence #StudentProjects #ArtificialIntelligence #MachineLearning #LearnBuildContribute`;
 
@@ -160,7 +165,7 @@ Proud to be recognized as an Open Intelligence Builder!
     const shareUrl = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(linkedInPostText)}`;
     window.open(shareUrl, '_blank', 'noopener,noreferrer');
     setLinkedInOpenedNotice(true);
-    setTimeout(() => setLinkedInOpenedNotice(false), 6000);
+    setTimeout(() => setLinkedInOpenedNotice(false), 8000);
   };
 
   const handleShareWhatsApp = () => {
