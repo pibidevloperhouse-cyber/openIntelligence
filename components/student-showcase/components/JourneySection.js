@@ -55,11 +55,11 @@ const ROADMAP_STEPS = [
     subtitle: 'Live Demos & Prizes',
     title: 'Phase 3 : Grand Finale & Prize Distribution - Dec 12',
     description:
-      'Shortlisted qualifiers compete in the live demonstration round on December 12. The grand jury evaluates projects and awards ₹30,000 cash prizes to the Top 3 winners on the spot!',
+      'Shortlisted candidates will present their projects live at our office on December 12.Participants will demonstrate their working projects before the grand jury.The jury will evaluate each project based on innovation, functionality, and real-world impact.The Top 3 outstanding projects will be selected as winners.Winners will receive cash prizes of ₹30,000, awarded on the spot!',
     status: 'upcoming',
     icon: Trophy,
     highlights: [
-      'Live Evaluation: December 12',
+      'offline Evaluation: December 12',
       'Top 3 Winners Selection',
       '₹30,000 Cash Prize Awards',
     ],
