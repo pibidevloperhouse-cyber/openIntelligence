@@ -114,7 +114,7 @@ export default function CollectBadgeClient() {
 
   const isMemberSelected = selectedMember && selectedMember !== badgeData?.studentName;
   const publicShareUrl = badgeData?.registrationId
-    ? `https://www.pibiopenintelligence.com/students/badge/${encodeURIComponent(badgeData.registrationId)}${isMemberSelected ? `?member=${encodeURIComponent(selectedMember)}` : ''}`
+    ? `https://www.pibiopenintelligence.com/students/badge/${encodeURIComponent(badgeData.registrationId)}?v=2026${isMemberSelected ? `&member=${encodeURIComponent(selectedMember)}` : ''}`
     : 'https://www.pibiopenintelligence.com/registered-students';
 
   const linkedInPostText = `🚀 I've taken a step beyond the classroom!

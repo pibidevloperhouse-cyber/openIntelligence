@@ -94,6 +94,7 @@ export async function GET(request) {
     return new Response(imageBuffer, {
       headers: {
         'Content-Type': 'image/png',
+        'Content-Length': String(imageBuffer.length),
         'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
       },
     });

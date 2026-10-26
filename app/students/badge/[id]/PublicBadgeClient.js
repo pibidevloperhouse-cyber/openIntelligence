@@ -67,7 +67,7 @@ export default function PublicBadgeClient({ badgeData }) {
   }, [registrationId, domain]);
 
   const isMemberSelected = selectedMember && selectedMember !== studentName;
-  const publicShareUrl = `https://www.pibiopenintelligence.com/students/badge/${encodeURIComponent(registrationId)}${isMemberSelected ? `?member=${encodeURIComponent(selectedMember)}` : ''}`;
+  const publicShareUrl = `https://www.pibiopenintelligence.com/students/badge/${encodeURIComponent(registrationId)}?v=2026${isMemberSelected ? `&member=${encodeURIComponent(selectedMember)}` : ''}`;
 
   const linkedInPostText = `🚀 I've taken a step beyond the classroom!
 

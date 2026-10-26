@@ -243,7 +243,7 @@ export default function RegisteredStudentsPage() {
   const badgeRegistrationId = unlockedBadge?.registrationId || badgeModalProject?.registration_id;
   const isMemberSelected = badgeSelectedMember && badgeSelectedMember !== (unlockedBadge?.studentName || badgeModalProject?.lead_student);
   const badgePublicUrl = badgeRegistrationId
-    ? `https://www.pibiopenintelligence.com/students/badge/${encodeURIComponent(badgeRegistrationId)}${isMemberSelected ? `?member=${encodeURIComponent(badgeSelectedMember)}` : ''}`
+    ? `https://www.pibiopenintelligence.com/students/badge/${encodeURIComponent(badgeRegistrationId)}?v=2026${isMemberSelected ? `&member=${encodeURIComponent(badgeSelectedMember)}` : ''}`
     : 'https://www.pibiopenintelligence.com/registered-students';
 
   const badgeLinkedInPostText = `🚀 I've taken a step beyond the classroom!
@@ -312,10 +312,88 @@ Proud to be recognized as an Open Intelligence Builder!
     };
   }, [inspectProject, badgeModalProject]);
 
-  // Clean list sorted by latest submission
-  const filteredProjects = useMemo(() => {
-    return [...projects].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+  // Live registration statistics computed from projects and API
+  const displayStats = useMemo(() => {
+    let innovatorsCount = 0;
+    const colleges = new Set();
+    const domains = new Set();
+
+    projects.forEach((p) => {
+      if (Array.isArray(p.team_members) && p.team_members.length > 0) {
+        innovatorsCount += p.team_members.length;
+      } else {
+        innovatorsCount += 1;
+      }
+      if (p.institution) colleges.add(p.institution.trim().toLowerCase());
+      const dom = p.domain || p.category;
+      if (dom) {
+        dom.split(',').forEach((d) => {
+          const trimmed = d.trim().toLowerCase();
+          if (trimmed) domains.add(trimmed);
+        });
+      }
+    });
+
+    return {
+      totalInnovators: stats.totalInnovators || innovatorsCount,
+      totalProjects: stats.totalProjects || projects.length,
+      uniqueColleges: stats.uniqueColleges || colleges.size,
+      uniqueDomains: stats.uniqueDomains || domains.size,
+    };
+  }, [projects, stats]);
+
+  // Unique domains available for filtering
+  const availableDomains = useMemo(() => {
+    const set = new Set();
+    projects.forEach((p) => {
+      const d = p.domain || p.category;
+      if (d) {
+        d.split(',').forEach((sub) => {
+          const trimmed = sub.trim();
+          if (trimmed) set.add(trimmed);
+        });
+      }
+    });
+    return Array.from(set).sort();
   }, [projects]);
+
+  // Clean list sorted by latest submission with search and domain filtering
+  const filteredProjects = useMemo(() => {
+    let list = [...projects];
+
+    if (searchTerm.trim()) {
+      const q = searchTerm.toLowerCase().trim();
+      list = list.filter((p) => {
+        const title = (p.title || '').toLowerCase();
+        const lead = (p.lead_student || '').toLowerCase();
+        const inst = (p.institution || '').toLowerCase();
+        const reg = (p.registration_id || '').toLowerCase();
+        const city = (p.city || '').toLowerCase();
+        const dept = (p.dept || '').toLowerCase();
+        const members = Array.isArray(p.team_members)
+          ? p.team_members.map((m) => (typeof m === 'string' ? m : m.name || '')).join(' ').toLowerCase()
+          : '';
+        return (
+          title.includes(q) ||
+          lead.includes(q) ||
+          inst.includes(q) ||
+          reg.includes(q) ||
+          city.includes(q) ||
+          dept.includes(q) ||
+          members.includes(q)
+        );
+      });
+    }
+
+    if (selectedDomain && selectedDomain !== 'ALL') {
+      list = list.filter((p) => {
+        const dom = (p.domain || p.category || '').toLowerCase();
+        return dom.includes(selectedDomain.toLowerCase());
+      });
+    }
+
+    return list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+  }, [projects, searchTerm, selectedDomain]);
 
   const handleCopyShareLink = (projectId) => {
     if (typeof window !== 'undefined') {
@@ -329,17 +407,8 @@ Proud to be recognized as an Open Intelligence Builder!
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col selection:bg-[#2ec4b6]/20 selection:text-[#1f6fb2]">
       <main className="flex-1 pt-8 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        {/* Breadcrumb Navigation */}
-        {/* <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-4">
-          <Link href="/" className="hover:text-[#1f6fb2] transition-colors">Home</Link>
-          <span>/</span>
-          <Link href="/students" className="hover:text-[#1f6fb2] transition-colors">Students Showcase</Link>
-          <span>/</span>
-          <span className="text-slate-800 font-bold">Registered Candidates</span>
-        </div> */}
-
         {/* ─── HERO HEADER BANNER ────────────────────────────────────────── */}
-        <div className="relative bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 mb-8 overflow-hidden">
+        <div className="relative bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 mb-6 overflow-hidden">
           {/* Top Brand Blue & Cyan Gradient Stripe */}
           <div
             className="absolute top-0 left-0 right-0 h-1.5"
@@ -348,11 +417,17 @@ Proud to be recognized as an Open Intelligence Builder!
 
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="max-w-2xl">
-              <h1 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
-                Registered Student Innovators
-              </h1>
+              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mb-2">
+                <h1 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+                  Registered Student Innovators
+                </h1>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-extrabold bg-[#1f6fb2]/10 text-[#1f6fb2] border border-[#1f6fb2]/20 shadow-xs">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  {displayStats.totalInnovators || displayStats.totalProjects || 0} Registered Innovators
+                </span>
+              </div>
 
-              <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                 Meet all the registered student innovators, co-engineering teams, and collegiate prototypes participating in the 2026 National Innovation Showcase.
               </p>
             </div>
@@ -382,6 +457,117 @@ Proud to be recognized as an Open Intelligence Builder!
               )}
             </div>
           </div>
+
+          {/* ─── LIVE REGISTRATION METRICS COUNTERS ────────────────────────── */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-6 pt-6 border-t border-slate-100">
+            {/* Stat 1: Total Innovators */}
+            <div className="bg-gradient-to-br from-blue-50/70 via-sky-50/30 to-white rounded-2xl p-4 border border-blue-100/80 shadow-xs hover:border-blue-200 transition-all">
+              <div className="flex items-center justify-between text-blue-600 mb-1">
+                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Student Innovators</span>
+                <span className="text-base sm:text-lg">👥</span>
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                {loading ? '...' : displayStats.totalInnovators}
+              </div>
+              <div className="text-[10px] sm:text-xs font-semibold text-blue-600 mt-0.5">
+                Students & Leads Registered
+              </div>
+            </div>
+
+            {/* Stat 2: Submitted Projects */}
+            <div className="bg-gradient-to-br from-teal-50/70 via-emerald-50/30 to-white rounded-2xl p-4 border border-teal-100/80 shadow-xs hover:border-teal-200 transition-all">
+              <div className="flex items-center justify-between text-teal-600 mb-1">
+                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Submitted Projects</span>
+                <span className="text-base sm:text-lg">🚀</span>
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                {loading ? '...' : displayStats.totalProjects}
+              </div>
+              <div className="text-[10px] sm:text-xs font-semibold text-teal-600 mt-0.5">
+                Collegiate Prototypes
+              </div>
+            </div>
+
+            {/* Stat 3: Institutions */}
+            <div className="bg-gradient-to-br from-indigo-50/70 via-purple-50/30 to-white rounded-2xl p-4 border border-indigo-100/80 shadow-xs hover:border-indigo-200 transition-all">
+              <div className="flex items-center justify-between text-indigo-600 mb-1">
+                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Colleges & Unis</span>
+                <span className="text-base sm:text-lg">🏛️</span>
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                {loading ? '...' : displayStats.uniqueColleges}
+              </div>
+              <div className="text-[10px] sm:text-xs font-semibold text-indigo-600 mt-0.5">
+                Campuses Represented
+              </div>
+            </div>
+
+            {/* Stat 4: Tech Domains */}
+            <div className="bg-gradient-to-br from-violet-50/70 via-fuchsia-50/30 to-white rounded-2xl p-4 border border-violet-100/80 shadow-xs hover:border-violet-200 transition-all">
+              <div className="flex items-center justify-between text-violet-600 mb-1">
+                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Domain Tracks</span>
+                <span className="text-base sm:text-lg">💡</span>
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                {loading ? '...' : (displayStats.uniqueDomains || 4)}
+              </div>
+              <div className="text-[10px] sm:text-xs font-semibold text-violet-600 mt-0.5">
+                AI / ML / Web / IoT Tracks
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ─── SEARCH & FILTER CONTROLS ─────────────────────────────────── */}
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 mb-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          <div className="relative flex-1">
+            <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </span>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by student name, college, project title, or ID..."
+              className="w-full pl-10 pr-8 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1f6fb2] focus:bg-white transition-all text-slate-800 placeholder-slate-400"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm('')}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 text-xs font-bold cursor-pointer"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            {availableDomains.length > 0 && (
+              <select
+                value={selectedDomain}
+                onChange={(e) => setSelectedDomain(e.target.value)}
+                className="px-3 py-2 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1f6fb2] cursor-pointer"
+              >
+                <option value="ALL">All Domains ({projects.length})</option>
+                {availableDomains.map((dom) => (
+                  <option key={dom} value={dom}>
+                    {dom}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            <div className="text-xs font-bold text-slate-600 px-3 py-2 bg-slate-100 rounded-xl whitespace-nowrap">
+              <span>Showing </span>
+              <span className="text-[#1f6fb2]">{filteredProjects.length}</span>
+              <span> of </span>
+              <span className="text-slate-900">{projects.length}</span>
+              <span> Projects</span>
+            </div>
+          </div>
         </div>
 
         {/* ─── LOADING STATE ────────────────────────────────────────────── */}
@@ -396,20 +582,38 @@ Proud to be recognized as an Open Intelligence Builder!
         {!loading && filteredProjects.length === 0 && (
           <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-slate-200 shadow-sm max-w-lg mx-auto">
             <div className="w-16 h-16 rounded-full bg-sky-50 text-[#1f6fb2] flex items-center justify-center text-3xl mx-auto mb-4">
-              👥
+              {projects.length === 0 ? '👥' : '🔍'}
             </div>
-            <h3 className="text-lg font-bold text-slate-800 mb-1">No Registrations Yet</h3>
+            <h3 className="text-lg font-bold text-slate-800 mb-1">
+              {projects.length === 0 ? 'No Registrations Yet' : 'No Matching Innovators Found'}
+            </h3>
             <p className="text-xs text-slate-500 mb-6 leading-relaxed">
-              No student projects have been submitted yet. Be the first innovator to register!
+              {projects.length === 0
+                ? 'No student projects have been submitted yet. Be the first innovator to register!'
+                : `We could not find any registered projects matching "${searchTerm || selectedDomain}". Try clearing your search filters.`}
             </p>
-            <button
-              type="button"
-              onClick={() => setIsSubmitModalOpen(true)}
-              className="px-5 py-2.5 rounded-xl text-white font-bold text-xs transition-all cursor-pointer inline-block shadow-md hover:opacity-95 active:scale-95"
-              style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
-            >
-              Register Your Project Now
-            </button>
+            {projects.length === 0 ? (
+              <button
+                type="button"
+                onClick={() => setIsSubmitModalOpen(true)}
+                className="px-5 py-2.5 rounded-xl text-white font-bold text-xs transition-all cursor-pointer inline-block shadow-md hover:opacity-95 active:scale-95"
+                style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
+              >
+                Register Your Project Now
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchTerm('');
+                  setSelectedDomain('ALL');
+                }}
+                className="px-5 py-2.5 rounded-xl text-white font-bold text-xs transition-all cursor-pointer inline-block shadow-md hover:opacity-95 active:scale-95"
+                style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
+              >
+                Clear Search & Filters
+              </button>
+            )}
           </div>
         )}
 
@@ -597,7 +801,7 @@ Proud to be recognized as an Open Intelligence Builder!
                       onClick={() => setInspectProject(project)}
                       className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#1f6fb2]/10 to-[#2ec4b6]/15 hover:from-[#1f6fb2]/20 hover:to-[#2ec4b6]/25 text-[#1f6fb2] border border-[#1f6fb2]/30 font-bold text-xs transition-all cursor-pointer flex items-center gap-1 hover:scale-105 active:scale-95 shadow-2xs"
                     >
-                      <span>Inspect Dossier</span>
+                      <span>Full Details</span>
                       <span>→</span>
                     </button>
                   </div>

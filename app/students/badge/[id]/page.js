@@ -58,13 +58,14 @@ export async function generateMetadata({ params, searchParams }) {
       images: [
         {
           url: ogImageUrl,
+          secureUrl: ogImageUrl,
           width: 1609,
           height: 977,
           type: 'image/png',
           alt: `${studentName} — PiBi Open Intelligence Builder Badge`,
         },
       ],
-      type: 'profile',
+      type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
