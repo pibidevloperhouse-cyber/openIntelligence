@@ -420,23 +420,23 @@ Proud to be recognized as an Open Intelligence Builder!
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col selection:bg-[#2ec4b6]/20 selection:text-[#1f6fb2]">
-      <main className="flex-1 pt-8 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col selection:bg-[#2ec4b6]/20 selection:text-[#1f6fb2] w-full max-w-full overflow-x-hidden">
+      <main className="flex-1 pt-5 sm:pt-8 pb-16 sm:pb-20 px-3.5 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full min-w-0">
         {/* ─── HERO HEADER BANNER ────────────────────────────────────────── */}
-        <div className="relative bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 mb-6 overflow-hidden">
+        <div className="relative bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm p-4 sm:p-8 mb-5 sm:mb-6 overflow-hidden w-full min-w-0">
           {/* Top Brand Blue & Cyan Gradient Stripe */}
           <div
             className="absolute top-0 left-0 right-0 h-1.5"
             style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
           />
 
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div className="max-w-2xl">
-              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mb-2">
-                <h1 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 sm:gap-6">
+            <div className="max-w-2xl min-w-0">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                <h1 className="text-xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-tight">
                   Registered Student Innovators
                 </h1>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-extrabold bg-[#1f6fb2]/10 text-[#1f6fb2] border border-[#1f6fb2]/20 shadow-xs">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs sm:text-sm font-extrabold bg-[#1f6fb2]/10 text-[#1f6fb2] border border-[#1f6fb2]/20 shadow-xs">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span>{loading ? '...' : (projects.length || displayStats.totalProjects || 0)} Registered Teams</span>
                 </span>
@@ -448,11 +448,11 @@ Proud to be recognized as an Open Intelligence Builder!
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full lg:w-auto shrink-0">
               <button
                 type="button"
                 onClick={() => setIsSubmitModalOpen(true)}
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl text-white font-bold text-xs sm:text-sm shadow-md transition-all hover:opacity-95 hover:scale-[1.02] active:scale-95 cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl sm:rounded-2xl text-white font-bold text-xs sm:text-sm shadow-md transition-all hover:opacity-95 hover:scale-[1.02] active:scale-95 cursor-pointer"
                 style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
               >
                 <span>➕ Submit Your Project</span>
@@ -461,7 +461,7 @@ Proud to be recognized as an Open Intelligence Builder!
               {isTop10Active && (
                 <Link
                   href="/top-10"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl text-white font-extrabold text-xs sm:text-sm transition-all shadow-md active:scale-95 hover:opacity-95 hover:scale-[1.02] cursor-pointer animate-in fade-in"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl sm:rounded-2xl text-white font-extrabold text-xs sm:text-sm transition-all shadow-md active:scale-95 hover:opacity-95 hover:scale-[1.02] cursor-pointer animate-in fade-in"
                   style={{
                     background: 'linear-gradient(135deg, #f59e0b, #ea580c)',
                     boxShadow: '0 4px 14px rgba(245, 158, 11, 0.4)',
@@ -475,8 +475,8 @@ Proud to be recognized as an Open Intelligence Builder!
         </div>
 
         {/* ─── SEARCH & FILTER CONTROLS ─────────────────────────────────── */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-4 mb-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-          <div className="relative flex-1">
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-3.5 sm:p-4 mb-5 sm:mb-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 w-full min-w-0">
+          <div className="relative flex-1 min-w-0">
             <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -486,8 +486,8 @@ Proud to be recognized as an Open Intelligence Builder!
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by student name, college, project title, or ID..."
-              className="w-full pl-10 pr-8 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1f6fb2] focus:bg-white transition-all text-slate-800 placeholder-slate-400"
+              placeholder="Search by student, college, project title, or ID..."
+              className="w-full pl-10 pr-8 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1f6fb2] focus:bg-white transition-all text-slate-800 placeholder-slate-400"
             />
             {searchTerm && (
               <button
@@ -500,23 +500,26 @@ Proud to be recognized as an Open Intelligence Builder!
             )}
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto min-w-0">
             {availableDomains.length > 0 && (
               <select
                 value={selectedDomain}
                 onChange={(e) => setSelectedDomain(e.target.value)}
-                className="px-3 py-2 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1f6fb2] cursor-pointer"
+                className="w-full sm:w-auto sm:max-w-xs px-3 py-2.5 text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1f6fb2] cursor-pointer truncate"
               >
                 <option value="ALL">All Domains ({projects.length})</option>
-                {availableDomains.map((dom) => (
-                  <option key={dom} value={dom}>
-                    {dom}
-                  </option>
-                ))}
+                {availableDomains.map((dom) => {
+                  const display = dom.length > 36 ? dom.slice(0, 34) + '…' : dom;
+                  return (
+                    <option key={dom} value={dom} title={dom}>
+                      {display}
+                    </option>
+                  );
+                })}
               </select>
             )}
 
-            <div className="text-xs font-bold text-slate-600 px-3 py-2 bg-slate-100 rounded-xl whitespace-nowrap">
+            <div className="text-xs font-bold text-slate-600 px-3 py-2.5 bg-slate-100 rounded-xl whitespace-nowrap text-center sm:text-left shrink-0">
               <span>Showing </span>
               <span className="text-[#1f6fb2]">{filteredProjects.length}</span>
               <span> of </span>
@@ -536,11 +539,11 @@ Proud to be recognized as an Open Intelligence Builder!
 
         {/* ─── EMPTY STATE ──────────────────────────────────────────────── */}
         {!loading && filteredProjects.length === 0 && (
-          <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-slate-200 shadow-sm max-w-lg mx-auto">
+          <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border border-dashed border-slate-200 shadow-sm max-w-lg mx-auto">
             <div className="w-16 h-16 rounded-full bg-sky-50 text-[#1f6fb2] flex items-center justify-center text-3xl mx-auto mb-4">
               {projects.length === 0 ? '👥' : '🔍'}
             </div>
-            <h3 className="text-lg font-bold text-slate-800 mb-1">
+            <h3 className="text-base sm:text-lg font-bold text-slate-800 mb-1">
               {projects.length === 0 ? 'No Registrations Yet' : 'No Matching Innovators Found'}
             </h3>
             <p className="text-xs text-slate-500 mb-6 leading-relaxed">
@@ -575,7 +578,7 @@ Proud to be recognized as an Open Intelligence Builder!
 
         {/* ─── CARD GRID VIEW ───────────────────────────────────────────── */}
         {!loading && viewMode === 'grid' && filteredProjects.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 w-full min-w-0">
             {filteredProjects.map((project, idx) => {
               const domain = project.domain || project.category || 'AI & ML';
               const teamMembers = Array.isArray(project.team_members) ? project.team_members : [];
@@ -583,16 +586,16 @@ Proud to be recognized as an Open Intelligence Builder!
               return (
                 <div
                   key={project.id || idx}
-                  className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-lg transition-all duration-200 flex flex-col justify-between overflow-hidden group hover:border-[#1f6fb2]/40"
+                  className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:shadow-lg transition-all duration-200 flex flex-col justify-between overflow-hidden group hover:border-[#1f6fb2]/40 w-full min-w-0"
                 >
                   {/* Card Header Top Gradient */}
-                  <div className="p-5 pb-3">
+                  <div className="p-4 sm:p-5 pb-3 min-w-0">
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '10px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, flex: 1, overflow: 'hidden' }}>
                         <span
                           style={{
                             display: 'inline-block',
-                            maxWidth: '170px',
+                            maxWidth: '150px',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
@@ -648,28 +651,28 @@ Proud to be recognized as an Open Intelligence Builder!
                     </div>
 
                     {/* Project Title */}
-                    <h3 className="font-extrabold text-slate-900 text-base group-hover:text-[#1f6fb2] transition-colors leading-snug line-clamp-2">
+                    <h3 className="font-extrabold text-slate-900 text-sm sm:text-base group-hover:text-[#1f6fb2] transition-colors leading-snug line-clamp-2 break-words">
                       {project.title}
                     </h3>
 
                     {/* Lead Student & College */}
-                    <div className="mt-3 space-y-1.5 pt-3 border-t border-slate-100">
-                      <div className="flex items-center gap-1.5">
+                    <div className="mt-3 space-y-1.5 pt-3 border-t border-slate-100 min-w-0">
+                      <div className="flex items-center gap-1.5 min-w-0">
                         <div
-                          className="w-5 h-5 rounded-full text-white flex items-center justify-center text-[10px] font-bold shadow-2xs"
+                          className="w-5 h-5 rounded-full text-white flex items-center justify-center text-[10px] font-bold shadow-2xs shrink-0"
                           style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
                         >
                           {(project.lead_student || 'S')[0].toUpperCase()}
                         </div>
-                        <span className="font-bold text-slate-900 text-xs">
+                        <span className="font-bold text-slate-900 text-xs truncate">
                           {formatName(project.lead_student)}
                         </span>
-                        <span className="text-[9px] font-extrabold text-[#1f6fb2] bg-sky-50 px-1.5 py-0.2 rounded border border-sky-200/70">
+                        <span className="text-[9px] font-extrabold text-[#1f6fb2] bg-sky-50 px-1.5 py-0.2 rounded border border-sky-200/70 shrink-0">
                           Lead
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-1.5 text-[11px] text-slate-500 truncate">
+                      <div className="flex items-center gap-1.5 text-[11px] text-slate-500 min-w-0">
                         <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                           <path d="M3 21h18M3 7v14M21 7v14M6 11h2M6 15h2M16 11h2M16 15h2M10 21V7l4-3v17" />
                         </svg>
@@ -680,7 +683,7 @@ Proud to be recognized as an Open Intelligence Builder!
                       </div>
 
                       {(project.dept || project.year) && (
-                        <div className="text-[10px] text-slate-400 font-medium">
+                        <div className="text-[10px] text-slate-400 font-medium truncate">
                           {[project.dept, project.year].filter(Boolean).join(' • ')}
                         </div>
                       )}
@@ -688,7 +691,7 @@ Proud to be recognized as an Open Intelligence Builder!
 
                     {/* ── TEAM MEMBERS DISPLAY (HIGHLIGHTED) ── */}
                     {teamMembers.length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-dashed border-slate-200">
+                      <div className="mt-3 pt-3 border-t border-dashed border-slate-200 min-w-0">
                         <div className="flex items-center justify-between mb-1.5">
                           <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
                             <span>👥</span>
@@ -701,15 +704,15 @@ Proud to be recognized as an Open Intelligence Builder!
                             return (
                               <span
                                 key={mIdx}
-                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium border ${
+                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium border max-w-full ${
                                   isLead
                                     ? 'bg-sky-50 text-[#1f6fb2] border-sky-200 font-bold'
                                     : 'bg-slate-50 text-slate-700 border-slate-200'
                                 }`}
                               >
-                                <span className={`w-1.5 h-1.5 rounded-full ${isLead ? 'bg-[#1f6fb2]' : 'bg-emerald-500'}`} />
-                                <span>{member}</span>
-                                {isLead && <span className="text-[8px] font-bold text-[#1f6fb2]">(Lead)</span>}
+                                <span className={`w-1.5 h-1.5 shrink-0 rounded-full ${isLead ? 'bg-[#1f6fb2]' : 'bg-emerald-500'}`} />
+                                <span className="truncate max-w-[130px] sm:max-w-[180px]">{member}</span>
+                                {isLead && <span className="text-[8px] font-bold text-[#1f6fb2] shrink-0">(Lead)</span>}
                               </span>
                             );
                           })}
@@ -718,20 +721,20 @@ Proud to be recognized as an Open Intelligence Builder!
                     )}
 
                     {/* Pitch / USP / Problem Snippet */}
-                    <p className="mt-3 text-xs text-slate-600 leading-relaxed line-clamp-2">
+                    <p className="mt-3 text-xs text-slate-600 leading-relaxed line-clamp-2 break-words">
                       {project.usp || project.tagline || project.problem_statement || project.solution || 'Collegiate AI & tech innovation prototype.'}
                     </p>
                   </div>
 
                   {/* Card Actions Footer */}
-                  <div className="px-5 py-3.5 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
+                  <div className="px-4 sm:px-5 py-3 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-2 min-w-0">
+                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                       {project.github_url && (
                         <a
                           href={project.github_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors"
+                          className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors shrink-0"
                           title="View GitHub Repository"
                         >
                           <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
@@ -744,7 +747,7 @@ Proud to be recognized as an Open Intelligence Builder!
                         <button
                           type="button"
                           onClick={() => handleOpenBadgeModal(project)}
-                          className="px-2.5 py-1.5 rounded-lg bg-[#070e1e] text-[#2ec4b6] border border-[#2ec4b6]/40 hover:bg-[#0c162c] text-[10px] font-bold transition-all flex items-center gap-1 shadow-2xs cursor-pointer hover:scale-105 active:scale-95"
+                          className="px-2.5 py-1.5 rounded-lg bg-[#070e1e] text-[#2ec4b6] border border-[#2ec4b6]/40 hover:bg-[#0c162c] text-[10px] font-bold transition-all flex items-center gap-1 shadow-2xs cursor-pointer hover:scale-105 active:scale-95 shrink-0"
                           title="Collect Badge with 4-Digit PIN"
                         >
                           <span>🎖️ Badge</span>
@@ -755,7 +758,7 @@ Proud to be recognized as an Open Intelligence Builder!
                     <button
                       type="button"
                       onClick={() => setInspectProject(project)}
-                      className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#1f6fb2]/10 to-[#2ec4b6]/15 hover:from-[#1f6fb2]/20 hover:to-[#2ec4b6]/25 text-[#1f6fb2] border border-[#1f6fb2]/30 font-bold text-xs transition-all cursor-pointer flex items-center gap-1 hover:scale-105 active:scale-95 shadow-2xs"
+                      className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#1f6fb2]/10 to-[#2ec4b6]/15 hover:from-[#1f6fb2]/20 hover:to-[#2ec4b6]/25 text-[#1f6fb2] border border-[#1f6fb2]/30 font-bold text-xs transition-all cursor-pointer flex items-center gap-1 hover:scale-105 active:scale-95 shadow-2xs shrink-0"
                     >
                       <span>Full Details</span>
                       <span>→</span>
@@ -1114,15 +1117,15 @@ Proud to be recognized as an Open Intelligence Builder!
                 )}
 
                 {/* External Links */}
-                <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2.5 sm:gap-3">
+                <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2 sm:gap-2.5">
                   {inspectProject.github_url && (
                     <a
                       href={inspectProject.github_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-all"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-all flex-1 sm:flex-none text-center"
                     >
-                      <span>View GitHub Code</span>
+                      <span>View GitHub</span>
                     </a>
                   )}
 
@@ -1131,7 +1134,7 @@ Proud to be recognized as an Open Intelligence Builder!
                       href={inspectProject.presentation_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-50 text-[#1f6fb2] border border-sky-200 font-bold text-xs hover:bg-sky-100 transition-all"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sky-50 text-[#1f6fb2] border border-sky-200 font-bold text-xs hover:bg-sky-100 transition-all flex-1 sm:flex-none text-center"
                     >
                       <span>Slide Deck</span>
                     </a>
@@ -1142,7 +1145,7 @@ Proud to be recognized as an Open Intelligence Builder!
                       href={inspectProject.demo_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-all"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-all flex-1 sm:flex-none text-center"
                     >
                       <span>Live Prototype ↗</span>
                     </a>
@@ -1155,7 +1158,7 @@ Proud to be recognized as an Open Intelligence Builder!
                       setInspectProject(null);
                       handleOpenBadgeModal(p);
                     }}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#1f6fb2] to-[#2ec4b6] text-white font-bold text-xs hover:opacity-95 shadow-sm transition-all cursor-pointer"
+                    className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#1f6fb2] to-[#2ec4b6] text-white font-bold text-xs hover:opacity-95 shadow-sm transition-all cursor-pointer flex-1 sm:flex-none text-center"
                   >
                     <span>🎖️ Builder Badge</span>
                   </button>
@@ -1163,7 +1166,7 @@ Proud to be recognized as an Open Intelligence Builder!
                   <button
                     type="button"
                     onClick={() => handleCopyShareLink(inspectProject.id)}
-                    className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all w-full sm:w-auto text-center justify-center sm:ml-auto"
+                    className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all w-full sm:w-auto text-center justify-center sm:ml-auto"
                   >
                     {copiedId === inspectProject.id ? '✓ Link Copied' : 'Share Project'}
                   </button>

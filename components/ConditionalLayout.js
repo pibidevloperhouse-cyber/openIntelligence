@@ -20,10 +20,10 @@ export default function ConditionalLayout({ children }) {
   }
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen w-full max-w-[100vw] overflow-x-hidden">
       <Navbar />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 w-full max-w-[100vw] overflow-x-hidden">{children}</main>
       <Footer />
-    </>
+    </div>
   );
 }
