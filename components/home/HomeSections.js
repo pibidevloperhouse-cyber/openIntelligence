@@ -3,7 +3,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import AnimatedFadeIn from './AnimatedFadeIn';
 import Link from 'next/link';
-import { HeartPulse, Leaf, BookOpen, Globe, Accessibility, Building2, Briefcase, TriangleAlert, Bot, Database, Cloud, Cpu, TrendingUp, ShieldCheck, ArrowLeft, ArrowRight } from 'lucide-react';
+import { HeartPulse, Leaf, BookOpen, Globe, Accessibility, Building2, Briefcase, TriangleAlert, Bot, Database, Cloud, Cpu, TrendingUp, ShieldCheck, ArrowLeft, ArrowRight, FileText, Download, Eye, X, Sparkles, CheckCircle2, Headphones, Flame, ThumbsUp, Bookmark } from 'lucide-react';
 
 function TypewriterOnce({ text, typingSpeed = 75, delay = 500, className = "", style = {} }) {
   const ref = useRef(null);
@@ -193,7 +193,7 @@ export function ContributeSection() {
           setIsTop10Active(data.isTop10Active);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const areas = [
@@ -570,9 +570,8 @@ export function ContributeSection() {
                     });
                   }
                 }}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  activeIndex === i ? 'w-6 bg-[#1f6fb2]' : 'w-1.5 bg-slate-300'
-                }`}
+                className={`h-1.5 rounded-full transition-all duration-300 ${activeIndex === i ? 'w-6 bg-[#1f6fb2]' : 'w-1.5 bg-slate-300'
+                  }`}
                 aria-label={`Go to slide ${i + 1}`}
               />
             ))}
@@ -670,6 +669,28 @@ export function ApplySection() {
 
 export function EmpowerSection() {
   const [activeTab, setActiveTab] = useState('article');
+  const [openGuideModal, setOpenGuideModal] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(142);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setOpenGuideModal(false);
+    };
+    if (openGuideModal) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [openGuideModal]);
+
   const topics = [
     { title: "AI & Machine Learning", desc: "Explore practical knowledge, research, tools and emerging developments across modern AI and machine learning.", icon: <img src="/11.png" className="w-full h-full object-contain scale-[1.7] grayscale contrast-[3] invert mix-blend-screen transition-all duration-500 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" alt="AI logo" /> },
     { title: "Data Engineering", desc: "Discover resources on building reliable data systems, analytics platforms and data foundations for AI.", icon: <img src="/22.png" className="w-full h-full object-contain scale-90 grayscale contrast-[3] invert mix-blend-screen transition-all duration-500 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" alt="Data logo" /> },
@@ -677,6 +698,18 @@ export function EmpowerSection() {
     { title: "Digital Transformation", desc: "Explore how AI and emerging technologies are changing businesses, processes and customer experiences.", icon: <img src="/44.png" className="w-full h-full object-contain scale-[1.7] grayscale contrast-[3] invert mix-blend-screen transition-all duration-500 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" alt="Digital logo" /> },
     { title: "Product & Growth", desc: "Find practical insights on building AI products, product strategy, customer adoption and sustainable growth.", icon: <img src="/55.png" className="w-full h-full object-contain scale-[1.7] grayscale contrast-[3] invert mix-blend-screen transition-all duration-500 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" alt="Growth logo" /> },
     { title: "Security & Governance", desc: "Explore resources covering AI security, privacy, governance, compliance and responsible technology.", icon: <img src="/66.png" className="w-full h-full object-contain scale-90 grayscale contrast-[3] invert mix-blend-screen transition-all duration-500 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" alt="Security logo" /> },
+  ];
+
+  const podcasts = [
+    { title: "Data Engineering in DevOps: CI/CD & Pipelines", host: "PiBi Tech Talks", duration: "42 mins", desc: "Deep dive into orchestrating continuous integration and streaming data systems at scale.", tag: "Podcast Ep. 14" },
+    { title: "Agentic AI & The Open Intelligence Mission", host: "Future Compute", duration: "38 mins", desc: "Exploring autonomous agents, developer tooling, and distributed machine learning systems.", tag: "Podcast Ep. 13" },
+    { title: "Scaling Modern Cloud Infrastructure for ML", host: "Cloud Matrix", duration: "45 mins", desc: "Best practices in managing Kubernetes GPU clusters, inference latency, and distributed storage.", tag: "Podcast Ep. 12" },
+  ];
+
+  const trendingTopics = [
+    { title: "Agentic AI Workflows", metric: "+185% interest", desc: "Autonomous multi-agent execution, tool-calling, and reasoning models shaping new developer paradigms." },
+    { title: "Real-Time Streaming Pipelines", metric: "+140% interest", desc: "Next-generation ETL, Apache Flink, Iceberg and Lakehouse architectures replacing legacy batch jobs." },
+    { title: "Edge AI & Small Language Models", metric: "+98% interest", desc: "Running quantized, highly-efficient models directly on client hardware and edge environments." },
   ];
 
   return (
@@ -711,24 +744,211 @@ export function EmpowerSection() {
           ))}
         </div>
 
-        {/* Topics Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          {topics.map((topic, idx) => (
-            <AnimatedFadeIn key={idx} delay={0.1 * idx} className="h-full bg-black/20 backdrop-blur-md border border-white/20 p-8 rounded-[2rem] hover:bg-black/40 hover:border-[#2ec4b6]/50 hover:-translate-y-2 hover:shadow-[0_15px_40px_rgba(0,0,0,0.4)] transition-all duration-500 group flex flex-col items-center text-center relative overflow-hidden cursor-pointer">
+        {/* Content based on activeTab */}
 
-              {/* Subtle elegant glow on hover */}
-              <div className="absolute top-0 right-0 w-48 h-48 bg-[#2ec4b6]/0 rounded-full blur-3xl -translate-y-12 translate-x-12 group-hover:bg-[#2ec4b6]/20 transition-all duration-700"></div>
+        {/* ── 1. ARTICLE TAB (Default Topics Grid) ──────────────── */}
+        {activeTab === 'article' && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            {topics.map((topic, idx) => (
+              <AnimatedFadeIn key={idx} delay={0.1 * idx} className="h-full bg-black/20 backdrop-blur-md border border-white/20 p-8 rounded-[2rem] hover:bg-black/40 hover:border-[#2ec4b6]/50 hover:-translate-y-2 hover:shadow-[0_15px_40px_rgba(0,0,0,0.4)] transition-all duration-500 group flex flex-col items-center text-center relative overflow-hidden cursor-pointer">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-[#2ec4b6]/0 rounded-full blur-3xl -translate-y-12 translate-x-12 group-hover:bg-[#2ec4b6]/20 transition-all duration-700"></div>
+                <div className="w-14 h-14 mx-auto flex items-center justify-center mb-6 text-white group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 relative z-10">
+                  <div className="w-full h-full drop-shadow-sm transition-colors duration-500">{topic.icon}</div>
+                </div>
+                <h4 className="font-bold text-xl mb-3 text-white relative z-10 transition-transform duration-300">{topic.title}</h4>
+                <p className="text-white/80 text-sm leading-relaxed relative z-10 group-hover:text-white transition-colors duration-300 mt-auto">{topic.desc}</p>
+              </AnimatedFadeIn>
+            ))}
+          </div>
+        )}
 
-              {/* Transparent Icon Container for perfect blending */}
-              <div className="w-14 h-14 mx-auto flex items-center justify-center mb-6 text-white group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-500 relative z-10">
-                <div className="w-full h-full drop-shadow-sm transition-colors duration-500">{topic.icon}</div>
+        {/* ── 2. GUIDE TAB (Compact Cards with Guide Cover thumbnail) ───────── */}
+        {activeTab === 'guide' && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            {/* CARD 1: CI/CD for Data Engineering (Click to open full-screen view) */}
+            <AnimatedFadeIn delay={0.05} className="h-full">
+              <div
+                onClick={() => setOpenGuideModal(true)}
+                className="h-full bg-black/20 backdrop-blur-md border border-white/20 hover:border-[#2ec4b6] p-7 rounded-[2rem] hover:bg-black/40 hover:-translate-y-2 hover:shadow-[0_20px_45px_rgba(0,0,0,0.45)] transition-all duration-500 group flex flex-col text-left relative overflow-hidden cursor-pointer"
+              >
+                {/* Subtle Glow */}
+                <div className="absolute top-0 right-0 w-48 h-48 bg-[#2ec4b6]/10 rounded-full blur-3xl -translate-y-12 translate-x-12 group-hover:bg-[#2ec4b6]/25 transition-all duration-700"></div>
+
+                {/* Compact Thumbnail Container (Kutty-ah irukanum) */}
+                <div className="w-full h-44 bg-slate-950/60 rounded-2xl overflow-hidden mb-5 flex items-center justify-center p-2.5 border border-white/10 group-hover:border-[#2ec4b6]/50 transition-all duration-300 shadow-inner relative">
+                  <img
+                    src="/guide-cover.jpg"
+                    alt="CI/CD Pipeline for Data Engineering in DevOps"
+                    className="h-full w-auto max-w-full object-contain rounded-lg shadow-lg group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-2.5">
+                    <span className="text-xs font-semibold text-white bg-black/80 backdrop-blur-sm px-3 py-1 rounded-full border border-white/20 flex items-center gap-1.5">
+                      <Eye className="w-3.5 h-3.5 text-[#2ec4b6]" /> Click to Open Full Guide
+                    </span>
+                  </div>
+                </div>
+
+                {/* Badge */}
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="px-3 py-0.5 text-xs font-extrabold uppercase tracking-wider rounded-full bg-[#2ec4b6]/20 text-[#2ec4b6] border border-[#2ec4b6]/40 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3" /> E-Book & Guide
+                  </span>
+                  <span className="text-xs text-white/60 font-medium">OCT 2026</span>
+                </div>
+
+                <h4 className="font-extrabold text-xl mb-2 text-white group-hover:text-[#2ec4b6] transition-colors leading-snug">
+                  CI/CD for Data Engineering
+                </h4>
+                <p className="text-xs text-[#2ec4b6] font-bold mb-3 tracking-wide">
+                  Build | Automate | Stream | Deploy
+                </p>
+                <p className="text-white/80 text-sm leading-relaxed mb-6">
+                  From code validation to real-time streaming and RAG: a production-ready 25-step pipeline across four layers.
+                </p>
+
+                {/* CTA Footer */}
+                <div className="mt-auto pt-4 border-t border-white/10 flex items-center justify-between">
+                  <span className="text-xs text-white/70 font-semibold bg-white/10 px-2.5 py-1 rounded-full">
+                    Free PDF Download
+                  </span>
+                  <span className="text-sm font-bold text-[#2ec4b6] flex items-center gap-1 group-hover:translate-x-1.5 transition-transform">
+                    Open Guide &rarr;
+                  </span>
+                </div>
               </div>
-
-              <h4 className="font-bold text-xl mb-3 text-white relative z-10 transition-transform duration-300">{topic.title}</h4>
-              <p className="text-white/80 text-sm leading-relaxed relative z-10 group-hover:text-white transition-colors duration-300 mt-auto">{topic.desc}</p>
             </AnimatedFadeIn>
-          ))}
-        </div>
+
+            {/* CARD 2: Evolutionary Architecture in Practice */}
+            <AnimatedFadeIn delay={0.1} className="h-full">
+              <a
+                href="/docs/pibi1.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-full bg-black/20 backdrop-blur-md border border-white/20 hover:border-[#2ec4b6] p-7 rounded-[2rem] hover:bg-black/40 hover:-translate-y-2 hover:shadow-[0_20px_45px_rgba(0,0,0,0.45)] transition-all duration-500 group flex flex-col text-left relative overflow-hidden"
+              >
+                <div className="w-full h-44 bg-slate-950/60 rounded-2xl overflow-hidden mb-5 flex items-center justify-center p-3 border border-white/10 group-hover:border-[#2ec4b6]/50 transition-all duration-300">
+                  <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-[#2ec4b6] group-hover:scale-110 transition-transform">
+                    <BookOpen className="w-8 h-8" />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="px-3 py-0.5 text-xs font-bold uppercase tracking-wider rounded-full bg-white/15 text-white border border-white/20">
+                    Technical eMag
+                  </span>
+
+                </div>
+
+                <h4 className="font-extrabold text-xl mb-2 text-white group-hover:text-[#2ec4b6] transition-colors leading-snug">
+                  Evolutionary Architecture in Practice
+                </h4>
+                <p className="text-xs text-[#2ec4b6] font-bold mb-3 tracking-wide">
+                  Safe • Clear • Deliberate Change
+                </p>
+                <p className="text-white/80 text-sm leading-relaxed mb-6">
+                  Keeping architectural change safe, clear, and deliberate in the face of constant technological and organizational movement.
+                </p>
+
+                <div className="mt-auto pt-4 border-t border-white/10 flex items-center justify-between">
+                  <span className="text-xs text-white/70 font-semibold bg-white/10 px-2.5 py-1 rounded-full">
+                    Read eMag (PDF)
+                  </span>
+                  <span className="text-sm font-bold text-white flex items-center gap-1 group-hover:translate-x-1.5 transition-transform">
+                    Read Online &rarr;
+                  </span>
+                </div>
+              </a>
+            </AnimatedFadeIn>
+
+            {/* CARD 3: Enterprise RAG & AI Systems */}
+            <AnimatedFadeIn delay={0.15} className="h-full">
+              <a
+                href="/docs/pibi.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-full bg-black/20 backdrop-blur-md border border-white/20 hover:border-[#2ec4b6] p-7 rounded-[2rem] hover:bg-black/40 hover:-translate-y-2 hover:shadow-[0_20px_45px_rgba(0,0,0,0.45)] transition-all duration-500 group flex flex-col text-left relative overflow-hidden"
+              >
+                <div className="w-full h-44 bg-slate-950/60 rounded-2xl overflow-hidden mb-5 flex items-center justify-center p-3 border border-white/10 group-hover:border-[#2ec4b6]/50 transition-all duration-300">
+                  <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-[#2ec4b6] group-hover:scale-110 transition-transform">
+                    <Database className="w-8 h-8" />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="px-3 py-0.5 text-xs font-bold uppercase tracking-wider rounded-full bg-white/15 text-white border border-white/20">
+                    Whitepaper
+                  </span>
+                  <span className="text-xs text-white/60 font-medium">AI & Data</span>
+                </div>
+
+                <h4 className="font-extrabold text-xl mb-2 text-white group-hover:text-[#2ec4b6] transition-colors leading-snug">
+                  Enterprise RAG & AI Orchestration
+                </h4>
+                <p className="text-xs text-[#2ec4b6] font-bold mb-3 tracking-wide">
+                  Retrieval • Guardrails • Scale
+                </p>
+                <p className="text-white/80 text-sm leading-relaxed mb-6">
+                  Production guidelines for building scalable retrieval-augmented generation and autonomous multi-agent pipelines.
+                </p>
+
+                <div className="mt-auto pt-4 border-t border-white/10 flex items-center justify-between">
+                  <span className="text-xs text-white/70 font-semibold bg-white/10 px-2.5 py-1 rounded-full">
+                    Read Guide (PDF)
+                  </span>
+                  <span className="text-sm font-bold text-white flex items-center gap-1 group-hover:translate-x-1.5 transition-transform">
+                    Read Online &rarr;
+                  </span>
+                </div>
+              </a>
+            </AnimatedFadeIn>
+          </div>
+        )}
+
+        {/* ── 3. PODCASTS TAB ───────────────────────────────────── */}
+        {activeTab === 'podcasts' && (
+          <div className="grid md:grid-cols-3 gap-6 mb-16">
+            {podcasts.map((pod, idx) => (
+              <AnimatedFadeIn key={idx} delay={0.1 * idx} className="h-full bg-black/20 backdrop-blur-md border border-white/20 p-8 rounded-[2rem] hover:bg-black/40 hover:border-[#2ec4b6]/50 hover:-translate-y-2 hover:shadow-[0_15px_40px_rgba(0,0,0,0.4)] transition-all duration-500 group flex flex-col text-left relative overflow-hidden">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="px-3 py-1 text-xs font-bold rounded-full bg-[#2ec4b6]/20 text-[#2ec4b6] border border-[#2ec4b6]/30">
+                    {pod.tag}
+                  </span>
+                  <span className="text-xs text-white/70 font-medium">{pod.duration}</span>
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center mb-4 text-[#2ec4b6] group-hover:scale-110 transition-transform">
+                  <Headphones className="w-6 h-6" />
+                </div>
+                <h4 className="font-bold text-xl mb-2 text-white group-hover:text-[#2ec4b6] transition-colors">{pod.title}</h4>
+                <p className="text-xs text-[#2ec4b6] font-semibold mb-3">Host: {pod.host}</p>
+                <p className="text-white/80 text-sm leading-relaxed mb-6 mt-auto">{pod.desc}</p>
+                <Link href="/open-intelligence" className="mt-auto text-sm font-bold text-white flex items-center gap-1.5 group-hover:translate-x-1 transition-transform">
+                  Listen Episode &rarr;
+                </Link>
+              </AnimatedFadeIn>
+            ))}
+          </div>
+        )}
+
+        {/* ── 4. TRENDING TOPICS TAB ────────────────────────────── */}
+        {activeTab === 'trending topics' && (
+          <div className="grid md:grid-cols-3 gap-6 mb-16">
+            {trendingTopics.map((trend, idx) => (
+              <AnimatedFadeIn key={idx} delay={0.1 * idx} className="h-full bg-black/20 backdrop-blur-md border border-white/20 p-8 rounded-[2rem] hover:bg-black/40 hover:border-[#2ec4b6]/50 hover:-translate-y-2 hover:shadow-[0_15px_40px_rgba(0,0,0,0.4)] transition-all duration-500 group flex flex-col text-left relative overflow-hidden">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="px-3 py-1 text-xs font-bold rounded-full bg-[#ff5e00]/20 text-[#ff8843] border border-[#ff5e00]/30 flex items-center gap-1.5">
+                    <Flame className="w-3.5 h-3.5" /> Trending Now
+                  </span>
+                  <span className="text-xs font-extrabold text-[#2ec4b6]">{trend.metric}</span>
+                </div>
+                <h4 className="font-bold text-xl mb-3 text-white group-hover:text-[#2ec4b6] transition-colors">{trend.title}</h4>
+                <p className="text-white/80 text-sm leading-relaxed mb-6 mt-auto">{trend.desc}</p>
+                <Link href="/open-intelligence" className="mt-auto text-sm font-bold text-white flex items-center gap-1.5 group-hover:translate-x-1 transition-transform">
+                  Explore Topic &rarr;
+                </Link>
+              </AnimatedFadeIn>
+            ))}
+          </div>
+        )}
 
         {/* Action Banner */}
         <AnimatedFadeIn delay={0.4}>
@@ -754,6 +974,293 @@ export function EmpowerSection() {
         </AnimatedFadeIn>
 
       </div>
+
+      {/* ── CI/CD FULL-SCREEN EMAG PAGE (Clean, No Cutoff, Full-Width View) ── */}
+      {openGuideModal && (
+        <div className="fixed inset-0 z-[100] bg-white text-slate-900 overflow-y-auto w-full h-full flex flex-col animate-in fade-in duration-200">
+
+          {/* ── Fixed Clean Top Navigation Bar ────────────────────────── */}
+          <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-3 md:gap-5">
+              <button
+                type="button"
+                onClick={() => setOpenGuideModal(false)}
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm transition-all hover:-translate-x-0.5 active:scale-95"
+              >
+                <ArrowLeft className="w-4 h-4 text-slate-700" />
+                <span>Back to Guides</span>
+              </button>
+
+              <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-slate-500">
+                <span>Open Intelligence</span>
+                <span>/</span>
+                <span className="text-[#0066cc]">CI/CD for Data Engineering</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <a
+                href="/cicd.pdf"
+                download="CI-CD-Pipeline-for-Data-Engineering.pdf"
+                className="hidden sm:inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#0066cc] hover:bg-[#0052a3] text-white font-bold text-xs rounded-lg shadow-sm transition-all"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>DOWNLOAD PDF</span>
+              </a>
+
+              <button
+                type="button"
+                onClick={() => setOpenGuideModal(false)}
+                className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-950 transition-colors"
+                aria-label="Close"
+                title="Close (Esc)"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </header>
+
+          {/* ── Main Scrollable Content Container ─────────────────────── */}
+          <main className="flex-1 max-w-5xl w-full mx-auto px-5 sm:px-8 py-8 md:py-12 space-y-12 text-left">
+
+            {/* ── TOP SECTION (Matching Image 2) ────────────────────────── */}
+            <div>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 mb-8 tracking-tight leading-tight">
+                CI/CD Pipeline for Data Engineering in DevOps
+              </h1>
+
+              <div className="grid md:grid-cols-12 gap-8 lg:gap-14 items-start">
+                {/* Left Column: Book Cover Thumbnail */}
+                <div className="md:col-span-5 flex flex-col items-center sm:items-start">
+                  <div className="w-full max-w-[320px] rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-slate-950">
+                    <img
+                      src="/guide-cover.jpg"
+                      alt="CI/CD Pipeline for Data Engineering in DevOps"
+                      className="w-full h-auto object-cover"
+                    />
+                  </div>
+                  <div className="mt-4 text-xs text-slate-500 font-semibold uppercase tracking-wider">
+                    OCT 16, 2026 &nbsp;•&nbsp; PiBi Technologies
+                  </div>
+                </div>
+
+                {/* Right Column: Social Actions, Summary & Download Button */}
+                <div className="md:col-span-7 flex flex-col justify-start">
+                  {/* Like & Bookmark Buttons */}
+                  <div className="flex items-center gap-3 mb-6">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLiked(!liked);
+                        setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
+                      }}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold border transition-all ${liked
+                          ? 'bg-blue-50 text-[#0066cc] border-[#0066cc]'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        }`}
+                    >
+                      <ThumbsUp className={`w-4 h-4 ${liked ? 'fill-[#0066cc]' : ''}`} />
+                      <span>LIKE</span>
+                      <span className="text-slate-400 font-normal">({likeCount})</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setBookmarked(!bookmarked)}
+                      className={`p-2.5 rounded-lg border transition-all ${bookmarked
+                          ? 'bg-blue-50 text-[#0066cc] border-[#0066cc]'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        }`}
+                      title="Bookmark Guide"
+                    >
+                      <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-[#0066cc]' : ''}`} />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard?.writeText(window.location.href);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }}
+                      className="text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors ml-auto"
+                    >
+                      {copied ? '✓ Link Copied!' : 'Share'}
+                    </button>
+                  </div>
+
+                  {/* Excerpt paragraphs extracted directly from cicd.pdf */}
+                  <div className="space-y-4 text-slate-700 text-base md:text-lg leading-relaxed">
+                    <p>
+                      Architecture and data engineering are often framed as simply making change easier. A far more compelling argument is that evolution is about keeping change safe, clear, and deliberate in the face of constant technological and organizational movement.
+                    </p>
+                    <p>
+                      Modern data platforms do more than collect and store data. They process batch workloads, consume real-time events, validate data quality, power analytics, and support AI applications such as Retrieval-Augmented Generation (RAG).
+                    </p>
+                    <p className="text-slate-600 text-sm md:text-base">
+                      A successful code deployment does not mean the data pipeline is working correctly. Traditional CI/CD focuses on application code. Data engineering adds a second thing to protect: the data itself. A production-grade platform must validate both <strong>the software and the data it processes</strong>.
+                    </p>
+                  </div>
+
+                  {/* Free Download Label + Blue Download Button */}
+                  <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <div>
+                      <div className="text-xs text-slate-500 font-semibold mb-2">Free download</div>
+                      <a
+                        href="/cicd.pdf"
+                        download="CI-CD-Pipeline-for-Data-Engineering.pdf"
+                        className="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-[#0066cc] hover:bg-[#0052a3] text-white font-extrabold text-sm rounded-lg shadow-md transition-all hover:scale-105 active:scale-95 uppercase tracking-wider"
+                      >
+                        <Download className="w-4 h-4" /> DOWNLOAD PDF
+                      </a>
+                    </div>
+
+                    <div className="sm:self-end">
+                      <a
+                        href="/cicd.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-lg border border-slate-300 transition-all"
+                      >
+                        <FileText className="w-4 h-4" /> Read Online
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── BOTTOM SECTION (Matching Image 3) ─────────────────────── */}
+            <div className="pt-10 border-t border-slate-200">
+              <h2 className="text-2xl md:text-3xl font-black text-slate-950 mb-3">
+                The CI/CD for Data Engineering Guide includes:
+              </h2>
+              <p className="italic text-slate-600 text-base md:text-lg leading-relaxed mb-8">
+                The 25 steps across four layers, explained in order. From code validation to real-time streaming and RAG: a production-ready pipeline that is tested, safely deployed, and continuously monitored.
+              </p>
+
+              {/* 4 Core Layers Breakdown with Green Bullet points */}
+              <div className="space-y-6 text-base md:text-lg text-slate-700 leading-relaxed">
+                <div className="flex items-start gap-3.5">
+                  <span className="text-emerald-500 text-2xl font-black shrink-0 leading-none mt-1">•</span>
+                  <div>
+                    <strong className="text-slate-900 font-bold">
+                      Layer A: Source Control & CI Validation (Steps 1–7):
+                    </strong>{' '}
+                    Pre-merge validation proving code, dependencies, schemas, data quality rules, streaming behavior, and RAG logic are safe without manual checks. Includes static analysis, secrets scanning, unit and contract tests, and automated test gates.
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5">
+                  <span className="text-emerald-500 text-2xl font-black shrink-0 leading-none mt-1">•</span>
+                  <div>
+                    <strong className="text-slate-900 font-bold">
+                      Layer B: Build, Package & Release (Steps 8–14):
+                    </strong>{' '}
+                    Packaging immutable versioned Docker images, DAGs, and SQL migrations; vulnerability scanning and cryptographic signing (SBOM); promotion to staging for integration, e2e, and load tests; policy approval gates, and rolling/canary production deployments.
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5">
+                  <span className="text-emerald-500 text-2xl font-black shrink-0 leading-none mt-1">•</span>
+                  <div>
+                    <strong className="text-slate-900 font-bold">
+                      Layer C: Runtime Data Validation & Freshness (Steps 15–20):
+                    </strong>{' '}
+                    Ingesting batch records, event streams, and RAG documents; schema registry validation; automated quarantine for malformed records (DLQ); transformations to Data Lakes (S3/Delta) & Warehouses; and post-deploy record counts and freshness verification.
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5">
+                  <span className="text-emerald-500 text-2xl font-black shrink-0 leading-none mt-1">•</span>
+                  <div>
+                    <strong className="text-slate-900 font-bold">
+                      Layer D: Observability, Rollback & Improvement (Steps 21–25):
+                    </strong>{' '}
+                    Continuous monitoring for infrastructure, data drift, and retrieval quality; baselines and golden-set evaluation; automated rollbacks and replay mechanisms; and closing the feedback loop so production incidents become regression tests.
+                  </div>
+                </div>
+              </div>
+
+              {/* AWS Technology Mapping Grid */}
+              <div className="mt-10 p-6 md:p-8 rounded-2xl bg-slate-50 border border-slate-200">
+                <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-5 flex items-center gap-2">
+                  <Cloud className="w-5 h-5 text-[#0066cc]" /> Example AWS Technology Mapping
+                </h3>
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3.5 text-xs md:text-sm">
+                  <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+                    <span className="text-slate-500 block text-[11px] uppercase font-bold mb-1">CI/CD & Git</span>
+                    <span className="font-semibold text-slate-800">GitHub Actions, AWS CodePipeline</span>
+                  </div>
+                  <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+                    <span className="text-slate-500 block text-[11px] uppercase font-bold mb-1">Batch & ETL</span>
+                    <span className="font-semibold text-slate-800">AWS Glue, Amazon EMR</span>
+                  </div>
+                  <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+                    <span className="text-slate-500 block text-[11px] uppercase font-bold mb-1">Streaming</span>
+                    <span className="font-semibold text-slate-800">Amazon MSK (Kafka), Kinesis</span>
+                  </div>
+                  <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+                    <span className="text-slate-500 block text-[11px] uppercase font-bold mb-1">Lake & Warehouse</span>
+                    <span className="font-semibold text-slate-800">Amazon S3, Amazon Redshift</span>
+                  </div>
+                  <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+                    <span className="text-slate-500 block text-[11px] uppercase font-bold mb-1">Orchestration</span>
+                    <span className="font-semibold text-slate-800">Amazon MWAA (Airflow), Step Functions</span>
+                  </div>
+                  <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+                    <span className="text-slate-500 block text-[11px] uppercase font-bold mb-1">Vector & RAG</span>
+                    <span className="font-semibold text-slate-800">Amazon OpenSearch Service</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Production-Readiness Checklist */}
+              <div className="mt-8 p-6 md:p-8 rounded-2xl bg-blue-50/70 border border-blue-200">
+                <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600" /> Production-Readiness Core Rules
+                </h3>
+                <div className="grid sm:grid-cols-2 gap-3 text-sm text-slate-700">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-emerald-600 font-bold text-base">✓</span>
+                    <span>Automated quality gates stop failures before prod</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-emerald-600 font-bold text-base">✓</span>
+                    <span>All code, artifacts, schemas & RAG logic versioned</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-emerald-600 font-bold text-base">✓</span>
+                    <span>Replay & recovery designed for partial writes & lag</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-emerald-600 font-bold text-base">✓</span>
+                    <span>Freshness monitored as well as availability</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Download Card */}
+              <div className="mt-12 p-8 rounded-3xl bg-slate-900 text-white flex flex-col md:flex-row items-center justify-between gap-6">
+                <div>
+                  <h4 className="text-xl font-bold mb-1">Get the Complete 6-Page PDF Reference</h4>
+                  <p className="text-slate-300 text-sm">Download the full architecture guide, 25 steps, diagrams, and checklist.</p>
+                </div>
+                <a
+                  href="/cicd.pdf"
+                  download="CI-CD-Pipeline-for-Data-Engineering.pdf"
+                  className="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-[#0066cc] hover:bg-blue-600 text-white font-extrabold text-sm rounded-xl shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0"
+                >
+                  <Download className="w-4 h-4" /> DOWNLOAD PDF (FREE)
+                </a>
+              </div>
+
+            </div>
+
+          </main>
+        </div>
+      )}
+
     </section>
   );
 }
