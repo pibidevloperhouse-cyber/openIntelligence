@@ -84,7 +84,7 @@ export function AboutSection() {
               {/* Left Column */}
               <div className="lg:col-span-5 text-left">
                 <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] leading-[1.1] font-extrabold text-[#0a192f] mb-6 tracking-tight drop-shadow-sm flex flex-col gap-2">
-                  <span>Pi Bi Foundatio</span>
+                  <span>Pi Bi Foundation</span>
                   <span>for</span>
                   <span className="text-transparent bg-clip-text text-3xl md:text-4xl lg:text-[2.75rem] whitespace-nowrap" style={{ backgroundImage: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}>
                     Open Intelligence
