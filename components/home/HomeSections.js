@@ -818,46 +818,44 @@ export function EmpowerSection() {
               </div>
             </AnimatedFadeIn>
 
-            {/* CARD 2: Evolutionary Architecture in Practice */}
+            {/* CARD 2: Cloud & AI Infrastructure */}
             <AnimatedFadeIn delay={0.1} className="h-full">
-              <a
-                href="/docs/pibi1.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/open-intelligence"
                 className="h-full bg-black/20 backdrop-blur-md border border-white/20 hover:border-[#2ec4b6] p-7 rounded-[2rem] hover:bg-black/40 hover:-translate-y-2 hover:shadow-[0_20px_45px_rgba(0,0,0,0.45)] transition-all duration-500 group flex flex-col text-left relative overflow-hidden"
               >
                 <div className="w-full h-44 bg-slate-950/60 rounded-2xl overflow-hidden mb-5 flex items-center justify-center p-3 border border-white/10 group-hover:border-[#2ec4b6]/50 transition-all duration-300">
                   <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-[#2ec4b6] group-hover:scale-110 transition-transform">
-                    <BookOpen className="w-8 h-8" />
+                    <Cloud className="w-8 h-8" />
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 mb-3">
                   <span className="px-3 py-0.5 text-xs font-bold uppercase tracking-wider rounded-full bg-white/15 text-white border border-white/20">
-                    Technical eMag
+                    Technical Guide
                   </span>
-
+                  <span className="text-xs text-[#2ec4b6] font-semibold">PiBi Technologies</span>
                 </div>
 
                 <h4 className="font-extrabold text-xl mb-2 text-white group-hover:text-[#2ec4b6] transition-colors leading-snug">
-                  Evolutionary Architecture in Practice
+                  Cloud & AI Infrastructure
                 </h4>
                 <p className="text-xs text-[#2ec4b6] font-bold mb-3 tracking-wide">
-                  Safe • Clear • Deliberate Change
+                  GPU Clusters • Edge • Modern DevOps
                 </p>
                 <p className="text-white/80 text-sm leading-relaxed mb-6">
-                  Keeping architectural change safe, clear, and deliberate in the face of constant technological and organizational movement.
+                  Architectural blueprints for scaling Kubernetes GPU clusters, low-latency AI inference, and cloud cost governance.
                 </p>
 
                 <div className="mt-auto pt-4 border-t border-white/10 flex items-center justify-between">
                   <span className="text-xs text-white/70 font-semibold bg-white/10 px-2.5 py-1 rounded-full">
-                    Read eMag (PDF)
+                    PiBi Guide
                   </span>
                   <span className="text-sm font-bold text-white flex items-center gap-1 group-hover:translate-x-1.5 transition-transform">
-                    Read Online &rarr;
+                    Explore Guide &rarr;
                   </span>
                 </div>
-              </a>
+              </Link>
             </AnimatedFadeIn>
 
             {/* CARD 3: Enterprise RAG & AI Systems */}
@@ -878,7 +876,7 @@ export function EmpowerSection() {
                   <span className="px-3 py-0.5 text-xs font-bold uppercase tracking-wider rounded-full bg-white/15 text-white border border-white/20">
                     Whitepaper
                   </span>
-                  <span className="text-xs text-white/60 font-medium">AI & Data</span>
+                  <span className="text-xs text-[#2ec4b6] font-semibold">PiBi Technologies</span>
                 </div>
 
                 <h4 className="font-extrabold text-xl mb-2 text-white group-hover:text-[#2ec4b6] transition-colors leading-snug">
