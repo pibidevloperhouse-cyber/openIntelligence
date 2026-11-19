@@ -60,9 +60,12 @@ const ROADMAP_STEPS = [
     status: 'upcoming',
     icon: Trophy,
     highlights: [
-      'Live project presentations',
+      'Live project presentations and jury evaluation',
+      'Top 3 winners announcement',
       'Recognition certificates for all participants',
-      'Top 3 Prizes',
+      'Networking opportunities with industry experts',
+      'Incubation guidance and VC networking support',
+     
     ],
   },
 ];
