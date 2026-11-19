@@ -17,15 +17,16 @@ const ROADMAP_STEPS = [
     phaseDate: 'Phase 1',
     shortTitle: 'Registration',
     subtitle: 'Deadline Nov 21',
-    title: 'Phase 1 : Project Registration & Submissions - Deadline Nov 21',
+    title: 'Phase 1 : Project Registration & Submissions – Deadline Nov 21',
     description:
-      'Register your team and submit your working AI/ML prototypes, code repository, and demo links before November 21.',
+      'Register your team and submit your AI/ML prototype, code repo, and demo links by Nov 21. Registration closes and voting opens the same day.',
     status: 'active',
     icon: Rocket,
     highlights: [
-      'Deadline: November 21',
+      'Registration Deadline: Nov 21',
       'Working Prototype Demo',
       'GitHub / Code Repository',
+      'Voting Starts: Nov 21',
     ],
   },
   {
@@ -35,15 +36,15 @@ const ROADMAP_STEPS = [
     phaseDate: 'Phase 2',
     shortTitle: 'Shortlist',
     subtitle: 'Announced Nov 30',
-    title: 'Phase 2 : Shortlisted Teams Announcement - Nov 30',
+    title: 'Phase 2 : Voting & Shortlist Announcement – Nov 30',
     description:
-      'Evaluation jury reviews submitted code, architecture, and impact metrics to announce the shortlisted teams on November 30.',
+      'Public voting runs till Nov 29 while the jury reviews code, architecture, and impact. Shortlisted teams will be announced on Nov 30.',
     status: 'upcoming',
     icon: Users,
     highlights: [
-      'Shortlist Out: November 30',
+      'Voting: Nov 21 – Nov 29',
       'Code & Architecture Review',
-      'Shortlisted Teams Announcement',
+      'Shortlist Out: Nov 30',
     ],
   },
   {
@@ -53,13 +54,13 @@ const ROADMAP_STEPS = [
     phaseDate: 'Phase 3: Dec 12 • Grand Finale',
     shortTitle: 'Finale & Awards',
     subtitle: 'Live Demos & Prizes',
-    title: 'Phase 3 : Grand Finale & Prize Distribution - Dec 12',
+    title: 'Phase 3 : Grand Finale & Prize Distribution – Dec 12',
     description:
-      'Shortlisted candidates will present their projects live at our office on December 12.Participants will demonstrate their working projects before the grand jury.The jury will evaluate each project based on innovation, functionality, and real-world impact.The Top 3 outstanding projects will be selected as winners.Winners will receive cash prizes of ₹30,000, awarded on the spot!',
+      'Shortlisted teams demo live at our office on Dec 12 before the grand jury. Top 3 projects win ₹30,000 in cash prizes on the spot!',
     status: 'upcoming',
     icon: Trophy,
     highlights: [
-      'offline Evaluation: December 12',
+      'Offline Evaluation: Dec 12',
       'Top 3 Winners Selection',
       '₹30,000 Cash Prize Awards',
     ],

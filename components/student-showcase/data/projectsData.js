@@ -215,19 +215,19 @@ export const TIMELINE_STEPS = [
   {
     date: 'Phase 1: Deadline Nov 21',
     title: 'Project Registration & Submissions',
-    description: 'Register your team and submit your working AI/ML prototypes, code repository, and demo links before November 21.',
+    description: 'Register your team and submit your AI/ML prototype, code repo, and demo links by Nov 21. Registration closes and voting opens the same day.',
     status: 'active',
   },
   {
     date: 'Phase 2: Nov 30',
-    title: 'Shortlisted Teams Announcement',
-    description: 'Evaluation jury reviews submitted code, architecture, and impact metrics to announce the shortlisted teams on November 30.',
+    title: 'Voting & Shortlist Announcement',
+    description: 'Public voting runs till Nov 29 while the jury reviews code, architecture, and impact. Shortlisted teams will be announced on Nov 30.',
     status: 'upcoming',
   },
   {
     date: 'Phase 3: Dec 12',
-    title: 'Shortlisted Teams Live Evaluation',
-    description: 'Shortlisted qualifiers compete in an exclusive live demonstration round on December 12 with in-depth jury review and Q&A.',
+    title: 'Grand Finale & Prize Distribution',
+    description: 'Shortlisted teams demo live at our office on Dec 12 before the grand jury. Top 3 projects win ₹30,000 in cash prizes on the spot!',
     status: 'upcoming',
   },
   {
