@@ -219,9 +219,9 @@ export const TIMELINE_STEPS = [
     status: 'active',
   },
   {
-    date: 'Phase 2: Nov 30',
+    date: 'Phase 2: Dec 1',
     title: 'Voting & Shortlist Announcement',
-    description: 'Public voting runs till Nov 29 while the jury reviews code, architecture, and impact. Shortlisted teams will be announced on Nov 30.',
+    description: 'Public voting runs till Nov 30 while the jury reviews code, architecture, and impact. Shortlisted teams will be announced on Dec 1.',
     status: 'upcoming',
   },
   {

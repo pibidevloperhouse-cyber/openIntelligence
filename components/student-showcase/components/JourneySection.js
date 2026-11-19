@@ -38,13 +38,13 @@ const ROADMAP_STEPS = [
     subtitle: 'Announced Nov 30',
     title: 'Phase 2 : Voting & Shortlist Announcement – Nov 30',
     description:
-      'Public voting runs till Nov 29 while the jury reviews code, architecture, and impact. Shortlisted teams will be announced on Nov 30.',
+      'Public voting runs till Nov 30 while the jury reviews code, architecture, and impact. Shortlisted teams will be announced on Dec 1.',
     status: 'upcoming',
     icon: Users,
     highlights: [
-      'Voting: Nov 21 – Nov 29',
+      'Voting: Nov 21 – Nov 30',
       'Code & Architecture Review',
-      'Shortlist Out: Nov 30',
+      'Shortlist Out: Dec 1',
     ],
   },
   {
