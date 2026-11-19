@@ -49,15 +49,7 @@ export default function Top10ShowcasePage() {
   const [sortBy, setSortBy] = useState('votes'); // 'votes' | 'rank' | 'alpha'
 
   // Modals & User state
-  const [votingProject, setVotingProject] = useState(null);
-  const [voterName, setVoterName] = useState('');
-  const [voterEmail, setVoterEmail] = useState('');
-  const [voteSubmitting, setVoteSubmitting] = useState(false);
-  const [voteError, setVoteError] = useState('');
-  const [voteSuccess, setVoteSuccess] = useState('');
   const [activeVideoModal, setActiveVideoModal] = useState(null);
-  const [votedProjectId, setVotedProjectId] = useState(null);
-  const [votedProjectTitle, setVotedProjectTitle] = useState('');
   const [copiedId, setCopiedId] = useState(null);
   const [isTop10Active, setIsTop10Active] = useState(true);
 
@@ -69,7 +61,7 @@ export default function Top10ShowcasePage() {
   const getCardTab = (id) => cardActiveTabs[id] || 'usp';
   const setCardTab = (id, tab) => setCardActiveTabs((prev) => ({ ...prev, [id]: tab }));
 
-  // Load from localStorage and fetch admin settings on mount
+  // Fetch admin settings on mount
   useEffect(() => {
     fetch('/api/student-projects/settings')
       .then((r) => r.json())
@@ -80,46 +72,19 @@ export default function Top10ShowcasePage() {
       })
       .catch(() => { });
 
-    try {
-      const storedId = localStorage.getItem('pibi_top10_voted_project_id');
-      const storedTitle = localStorage.getItem('pibi_top10_voted_project_title');
-      if (storedId) {
-        setVotedProjectId(storedId);
-        if (storedTitle) setVotedProjectTitle(storedTitle);
-      }
-      const savedEmail = localStorage.getItem('pibi_top10_voter_email');
-      if (savedEmail) {
-        setVoterEmail(savedEmail);
-        // Verify vote status from server for this email
-        fetch(`/api/top-10-projects/vote?email=${encodeURIComponent(savedEmail)}`)
-          .then((r) => r.json())
-          .then((data) => {
-            if (data && data.hasVoted && data.votedProjectId) {
-              setVotedProjectId(data.votedProjectId);
-              if (data.votedProjectTitle) setVotedProjectTitle(data.votedProjectTitle);
-              localStorage.setItem('pibi_top10_voted_project_id', data.votedProjectId);
-              if (data.votedProjectTitle) localStorage.setItem('pibi_top10_voted_project_title', data.votedProjectTitle);
-            }
-          })
-          .catch(() => { });
-      }
-      const savedName = localStorage.getItem('pibi_top10_voter_name');
-      if (savedName) setVoterName(savedName);
-    } catch { }
   }, []);
 
   // Lock body scroll and listen for Escape key when any modal is open
   useEffect(() => {
-    if (inspectProject || votingProject) {
+    if (inspectProject) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
 
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && !voteSubmitting) {
+      if (e.key === 'Escape') {
         setInspectProject(null);
-        setVotingProject(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -128,7 +93,7 @@ export default function Top10ShowcasePage() {
       document.body.style.overflow = '';
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [inspectProject, votingProject, voteSubmitting]);
+  }, [inspectProject]);
 
   // Fetch Top 10 projects
   const fetchTopProjects = async () => {
@@ -192,96 +157,6 @@ export default function Top10ShowcasePage() {
     return result;
   }, [projects, selectedCategory, searchTerm, sortBy]);
 
-  // Handle Vote Submission
-  const handleCastVote = async (e) => {
-    e.preventDefault();
-    if (!votingProject) return;
-
-    setVoteError('');
-    setVoteSuccess('');
-
-    const cleanName = voterName.trim();
-    const cleanEmail = voterEmail.trim().toLowerCase();
-
-    if (!cleanName || cleanName.length < 2) {
-      setVoteError('Please enter your full name (minimum 2 characters).');
-      return;
-    }
-    if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-      setVoteError('Please enter a valid email address.');
-      return;
-    }
-
-    setVoteSubmitting(true);
-    try {
-      const res = await fetch('/api/top-10-projects/vote', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          projectId: votingProject.id,
-          voterName: cleanName,
-          voterEmail: cleanEmail,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        // Strict error for duplicate vote
-        setVoteError(data.error || 'Failed to submit vote. Duplicate votes with the same email are blocked.');
-        if (data.alreadyVotedProjectId) {
-          setVotedProjectId(data.alreadyVotedProjectId);
-          if (data.alreadyVotedTitle) setVotedProjectTitle(data.alreadyVotedTitle);
-          try {
-            localStorage.setItem('pibi_top10_voted_project_id', data.alreadyVotedProjectId);
-            if (data.alreadyVotedTitle) localStorage.setItem('pibi_top10_voted_project_title', data.alreadyVotedTitle);
-          } catch { }
-        }
-        return;
-      }
-
-      // Success!
-      setVoteSuccess(data.message || `🎉 Your vote for "${votingProject.title}" has been recorded!`);
-      setVotedProjectId(votingProject.id);
-      setVotedProjectTitle(votingProject.title);
-
-      // Update state locally
-      setProjects((prev) =>
-        prev.map((p) =>
-          p.id === votingProject.id ? { ...p, votes_count: data.newVoteCount } : p
-        )
-      );
-      setTotalVotes((prev) => prev + 1);
-
-      // Save to localStorage
-      try {
-        localStorage.setItem('pibi_top10_voter_email', cleanEmail);
-        localStorage.setItem('pibi_top10_voter_name', cleanName);
-        localStorage.setItem('pibi_top10_voted_project_id', votingProject.id);
-        localStorage.setItem('pibi_top10_voted_project_title', votingProject.title);
-      } catch { }
-
-      // Fire confetti if available
-      if (typeof window !== 'undefined') {
-        import('canvas-confetti')
-          .then((confettiModule) => {
-            const confetti = confettiModule.default;
-            confetti({
-              particleCount: 80,
-              spread: 70,
-              origin: { y: 0.6 },
-              colors: ['#1f6fb2', '#2ec4b6', '#f59e0b', '#10b981', '#ec4899'],
-            });
-          })
-          .catch(() => { });
-      }
-    } catch (err) {
-      setVoteError(err.message || 'Network error occurred while submitting your vote.');
-    } finally {
-      setVoteSubmitting(false);
-    }
-  };
-
   // Copy share link
   const handleCopyLink = (projectId, title) => {
     if (typeof window !== 'undefined') {
@@ -313,7 +188,7 @@ export default function Top10ShowcasePage() {
                 Top 10 Student Innovations
               </h1>
               <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
-                Explore finalist prototypes, inspect technical architectures, and cast your official vote.
+                Explore finalist prototypes and their technical architectures. Use the voting link sent to the registered project contact to vote.
               </p>
             </div>
 
@@ -401,7 +276,6 @@ export default function Top10ShowcasePage() {
                 <tbody className="divide-y divide-slate-100">
                   {filteredProjects.map((project, idx) => {
                     const rank = idx + 1;
-                    const isVotedByMe = votedProjectId === project.id;
                     return (
                       <tr key={project.id} className="hover:bg-slate-50/70 transition-colors group">
                         {/* Rank Medallion */}
@@ -490,31 +364,6 @@ export default function Top10ShowcasePage() {
                               <span>Inspect</span>
                             </button>
 
-                            {isVotedByMe ? (
-                              <span className="inline-flex items-center gap-1 px-3.5 py-2 rounded-lg bg-emerald-50 text-emerald-700 font-bold text-xs border border-emerald-200 shadow-2xs">
-                                <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                                  <path d="M5 13l4 4L19 7" />
-                                </svg>
-                                <span>Voted</span>
-                              </span>
-                            ) : !isTop10Active ? (
-                              <span className="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-slate-100 text-slate-400 font-bold text-xs cursor-not-allowed">
-                                <span>🔒 Paused</span>
-                              </span>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setVotingProject(project);
-                                  setVoteError('');
-                                  setVoteSuccess('');
-                                }}
-                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-white font-bold text-xs shadow-sm shadow-cyan-900/10 hover:shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                                style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
-                              >
-                                <span>Vote 🗳️</span>
-                              </button>
-                            )}
                           </div>
                         </td>
                       </tr>
@@ -543,7 +392,7 @@ export default function Top10ShowcasePage() {
                   Verified Ballot Integrity
                 </h3>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  Strict single-vote quota enforced per validated email address. Duplicate ballot attempts are cryptographically checked and prevented.
+                  Each email address can cast one vote across all projects.
                 </p>
               </div>
               <div className="pt-3 mt-3 border-t border-slate-100 flex items-center text-[11px] font-semibold text-[#1f6fb2]">
@@ -598,156 +447,6 @@ export default function Top10ShowcasePage() {
         )}
 
       </main>
-
-      {/* ─── VOTE SUBMISSION MODAL ────────────────────────────────────── */}
-      {votingProject && (
-        <div
-          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md"
-          onClick={() => !voteSubmitting && setVotingProject(null)}
-        >
-          <div
-            className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden transform transition-all my-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div
-              className="p-6 text-white"
-              style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
-            >
-              <div className="flex items-center justify-between mb-2.5">
-                <span className="px-3 py-1 rounded-full text-[0.68rem] font-bold uppercase tracking-wider bg-white/20 text-white border border-white/30 backdrop-blur-sm">
-                  Official Public Choice Ballot
-                </span>
-                <button
-                  onClick={() => setVotingProject(null)}
-                  disabled={voteSubmitting}
-                  className="w-8 h-8 rounded-lg bg-black/15 hover:bg-black/30 text-white flex items-center justify-center text-sm font-bold transition-all cursor-pointer border border-white/20"
-                  aria-label="Close"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <h3 className="text-xl font-black text-white leading-snug">
-                {votingProject.title}
-              </h3>
-              <p className="text-xs text-cyan-50/95 mt-1 flex items-center gap-1.5 font-medium">
-                <span>By {formatName(votingProject.lead_student)}</span>
-                <span>•</span>
-                <span>{formatInstitution(votingProject.institution)}</span>
-              </p>
-            </div>
-
-            {/* Modal Body / Form */}
-            <form onSubmit={handleCastVote} className="p-6 space-y-4">
-              {/* Duplicate Error Message Alert */}
-              {voteError && (
-                <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium space-y-1 animate-pulse">
-                  <div className="font-bold flex items-center gap-1.5 text-rose-900">
-                    <span>⚠️ Duplicate Vote Blocked</span>
-                  </div>
-                  <p>{voteError}</p>
-                </div>
-              )}
-
-              {/* Success Message Alert */}
-              {voteSuccess && (
-                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold space-y-2 text-center">
-                  <div className="text-3xl">🎉</div>
-                  <p>{voteSuccess}</p>
-                  <button
-                    type="button"
-                    onClick={() => setVotingProject(null)}
-                    className="mt-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all"
-                  >
-                    Close Window
-                  </button>
-                </div>
-              )}
-
-              {!voteSuccess && (
-                <>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Your Full Name <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Anand Kumar"
-                      value={voterName}
-                      onChange={(e) => setVoterName(e.target.value)}
-                      disabled={voteSubmitting}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1f6fb2] focus:bg-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Your Email Address <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="e.g. anand@gmail.com"
-                      value={voterEmail}
-                      onChange={(e) => setVoterEmail(e.target.value)}
-                      disabled={voteSubmitting}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1f6fb2] focus:bg-white"
-                    />
-                    <p className="text-[0.72rem] text-slate-500 mt-1.5 flex items-center gap-1">
-                      <span>🔒</span> Strictly 1 vote per email across all projects. You cannot use this email to vote for another project once submitted.
-                    </p>
-                  </div>
-
-                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 text-[11px] leading-relaxed flex items-start gap-2">
-                    <span className="text-amber-600 font-bold text-xs shrink-0 mt-0.5">⚠️</span>
-                    <div>
-                      <strong>Contest Rule:</strong> Each email address can cast only <strong>1 single vote</strong> across all projects. Once you vote for <em>"{votingProject.title}"</em>, you cannot change your vote or vote for any other project.
-                    </div>
-                  </div>
-
-                  <div className="pt-2 flex items-center justify-end gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setVotingProject(null)}
-                      disabled={voteSubmitting}
-                      className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all cursor-pointer"
-                    >
-                      Cancel
-                    </button>
-
-                    <button
-                      type="submit"
-                      disabled={voteSubmitting || !isTop10Active}
-                      className="px-6 py-2.5 rounded-xl text-xs font-bold text-white transition-all shadow-md shadow-cyan-900/20 cursor-pointer disabled:opacity-60 flex items-center gap-2 hover:scale-105 active:scale-95"
-                      style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
-                    >
-                      {voteSubmitting ? (
-                        <>
-                          <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          <span>Verifying & Recording...</span>
-                        </>
-                      ) : !isTop10Active ? (
-                        <>
-                          <span>🔒 Voting Paused</span>
-                        </>
-                      ) : (
-                        <>
-                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <span>Cast Official Vote</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </>
-              )}
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* ─── FULL INNOVATION DOSSIER MODAL ────────────────────────────────────── */}
       {inspectProject && (
@@ -1020,34 +719,6 @@ export default function Top10ShowcasePage() {
                 </button>
               </div>
 
-              <div>
-                {votedProjectId === inspectProject.id ? (
-                  <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>Voted by You</span>
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const proj = inspectProject;
-                      setInspectProject(null);
-                      setVotingProject(proj);
-                      setVoteError('');
-                      setVoteSuccess('');
-                    }}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white shadow-md shadow-cyan-900/20 hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                    style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
-                  >
-                    <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span>Cast Official Vote</span>
-                  </button>
-                )}
-              </div>
             </div>
           </div>
         </div>

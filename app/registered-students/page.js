@@ -133,14 +133,31 @@ export default function RegisteredStudentsPage() {
   }, []);
 
   useEffect(() => {
-    fetch('/api/student-projects/settings')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && typeof data.isTop10Active === 'boolean') {
-          setIsTop10Active(data.isTop10Active);
+    let cancelled = false;
+    let requestId = 0;
+    async function refreshVotingStatus() {
+      const currentRequest = ++requestId;
+      try {
+        const response = await fetch('/api/student-projects/settings', { cache: 'no-store' });
+        const data = await response.json();
+        if (!cancelled && currentRequest === requestId) {
+          setIsTop10Active(response.ok && data.isTop10Active === true);
         }
-      })
-      .catch(() => {});
+      } catch {
+        if (!cancelled && currentRequest === requestId) setIsTop10Active(false);
+      }
+    }
+
+    refreshVotingStatus();
+    window.addEventListener('focus', refreshVotingStatus);
+    const interval = window.setInterval(() => {
+      if (!document.hidden) refreshVotingStatus();
+    }, 15000);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('focus', refreshVotingStatus);
+      window.clearInterval(interval);
+    };
   }, []);
 
   // Fetch registered student projects
@@ -728,7 +745,7 @@ Proud to be recognized as an Open Intelligence Builder!
 
                   {/* Card Actions Footer */}
                   <div className="px-4 sm:px-5 py-3 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-2 min-w-0">
-                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                       {project.github_url && (
                         <a
                           href={project.github_url}

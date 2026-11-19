@@ -213,9 +213,9 @@ export const PRIZE_TIERS = [
 
 export const TIMELINE_STEPS = [
   {
-    date: 'Phase 1: Deadline Nov 14',
+    date: 'Phase 1: Deadline Nov 23',
     title: 'Project Registration & Submissions',
-    description: 'Register your team and submit your working AI/ML prototypes, code repository, and demo links before November 14.',
+    description: 'Register your team and submit your working AI/ML prototypes, code repository, and demo links before November 23.',
     status: 'active',
   },
   {

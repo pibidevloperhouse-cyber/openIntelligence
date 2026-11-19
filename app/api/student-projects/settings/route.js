@@ -26,7 +26,7 @@ export async function GET() {
       .in('key', ['student_registration_closed', 'student_countdown_deadline', 'top10_showcase_active']);
 
     let isRegistrationClosed = false;
-    let countdownDeadline = '2026-11-14T23:59:59+05:30';
+    let countdownDeadline = '2026-11-23T23:59:59+05:30';
     let isTop10Active = false;
 
     if (!error && data) {
@@ -40,7 +40,7 @@ export async function GET() {
           }
         }
         if (row.key === 'top10_showcase_active') {
-          isTop10Active = Boolean(row.value);
+          isTop10Active = row.value === true;
         }
       });
     }
@@ -54,7 +54,7 @@ export async function GET() {
     console.error('[GET /api/student-projects/settings]', err);
     return NextResponse.json({
       isRegistrationClosed: false,
-      countdownDeadline: '2026-11-14T23:59:59+05:30',
+      countdownDeadline: '2026-11-23T23:59:59+05:30',
       isTop10Active: false,
     });
   }

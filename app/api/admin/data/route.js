@@ -35,7 +35,7 @@ export async function GET() {
       supabaseAdmin.from('meetings').select('*').order('date', { ascending: false }),
       supabaseAdmin.from('users').select('*, resources(id, status)').order('created_at', { ascending: false }),
       supabaseAdmin.from('event_registrations').select('*').order('created_at', { ascending: false }),
-      supabaseAdmin.from('student_project_submissions').select('*').order('created_at', { ascending: false })
+      supabaseAdmin.from('student_project_submissions').select('*, vote_totals:project_votes(count)').order('created_at', { ascending: false })
     ]);
 
     const pending_list = (pendingListRes.data || []).map(r => ({ ...r, categories: (r.resource_categories || []).map(rc => rc.category), tags: r.resource_tags || [] }));
@@ -48,7 +48,11 @@ export async function GET() {
       const match = meetings.find(m => m.id === r.meeting_id);
       return { ...r, meeting: { title: match?.title || 'Unknown Event' } };
     });
-    const studentRegistrationsList = studentSubmissionsRes?.data || [];
+    if (studentSubmissionsRes.error) throw studentSubmissionsRes.error;
+    const studentRegistrationsList = (studentSubmissionsRes.data || []).map(({ vote_totals, ...project }) => ({
+      ...project,
+      votes_count: vote_totals?.[0]?.count ?? 0,
+    }));
 
     return NextResponse.json({
       stats: {

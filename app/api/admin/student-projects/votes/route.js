@@ -35,9 +35,9 @@ export async function GET(request) {
         .maybeSingle();
 
       // Get voters for this project
-      const { data: voters, error } = await supabaseAdmin
+      const { data: voters, count, error } = await supabaseAdmin
         .from('project_votes')
-        .select('id, project_id, voter_name, voter_email, ip_address, user_agent, created_at')
+        .select('id, project_id, voter_name, voter_email, ip_address, user_agent, created_at', { count: 'exact' })
         .eq('project_id', projectId)
         .order('created_at', { ascending: false });
 
@@ -50,7 +50,7 @@ export async function GET(request) {
         success: true,
         project: project || null,
         voters: voters || [],
-        totalVotes: voters?.length || 0,
+        totalVotes: count ?? 0,
       });
     }
 

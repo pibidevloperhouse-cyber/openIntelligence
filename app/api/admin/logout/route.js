@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { whatsappAdminCookie } from '@/lib/whatsapp-admin-session';
 
 export async function POST() {
   const cookieStore = await cookies();
+  cookieStore.delete(whatsappAdminCookie);
   cookieStore.set('admin_session', '', {
     httpOnly: true,
     secure:   process.env.NODE_ENV === 'production',

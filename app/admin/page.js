@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import StatusBadge from '@/components/StatusBadge';
+import WhatsAppVotingCampaign from '@/components/WhatsAppVotingCampaign';
 import './admin.css';
 
 const TABS = ['overview', 'pending', 'resources', 'events', 'users', 'contributors', 'settings'];
@@ -285,8 +286,8 @@ export default function AdminPage() {
   const [togglingTop10, setTogglingTop10] = useState(false);
 
   // Student Countdown Timer Deadline
-  const [countdownDeadline, setCountdownDeadline] = useState('2026-11-14T23:59:59+05:30');
-  const [deadlineInput, setDeadlineInput] = useState('2026-11-14T23:59');
+  const [countdownDeadline, setCountdownDeadline] = useState('2026-11-23T23:59:59+05:30');
+  const [deadlineInput, setDeadlineInput] = useState('2026-11-23T23:59');
   const [showDeadlineModal, setShowDeadlineModal] = useState(false);
   const [savingDeadline, setSavingDeadline] = useState(false);
 
@@ -403,8 +404,17 @@ export default function AdminPage() {
     try {
       const res = await fetch(`/api/admin/student-projects/votes?projectId=${project.id}`);
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to load voters');
       if (data && Array.isArray(data.voters)) {
         setProjectVotersList(data.voters);
+        if (project.id) {
+          setStudentRegistrations(prev => prev.map(p =>
+            p.id === project.id ? { ...p, votes_count: data.totalVotes } : p
+          ));
+          setViewingStudentProject(prev =>
+            prev?.id === project.id ? { ...prev, votes_count: data.totalVotes } : prev
+          );
+        }
       } else {
         setProjectVotersList([]);
       }
@@ -432,7 +442,10 @@ export default function AdminPage() {
 
       setProjectVotersList(prev => prev.filter(v => v.id !== voteId));
       setStudentRegistrations(prev =>
-        prev.map(p => p.id === viewingVotersProject?.id ? { ...p, votes_count: data.newCount } : p)
+        prev.map(p => p.id === data.projectId ? { ...p, votes_count: data.newCount } : p)
+      );
+      setViewingStudentProject(prev =>
+        prev?.id === data.projectId ? { ...prev, votes_count: data.newCount } : prev
       );
       showToast('Vote removed successfully', 'success');
       setVoteToDelete(null);
@@ -2284,7 +2297,7 @@ export default function AdminPage() {
                       gap: '5px'
                     }}>
                       <span>🏆</span>
-                      <span>{isTop10Active ? 'Top 10 Button: ON' : 'Top 10 Button: OFF'}</span>
+                      <span>Top 10 Showcase: {isTop10Active ? 'ON' : 'OFF'}</span>
                     </span>
 
                     {/* The Toggle Switch button */}
@@ -2292,6 +2305,9 @@ export default function AdminPage() {
                       type="button"
                       disabled={togglingTop10}
                       onClick={handleToggleTop10Status}
+                      role="switch"
+                      aria-label="Top 10 Showcase"
+                      aria-checked={isTop10Active}
                       style={{
                         position: 'relative',
                         width: '48px',
@@ -2306,7 +2322,7 @@ export default function AdminPage() {
                         alignItems: 'center',
                         boxShadow: isTop10Active ? '0 0 10px rgba(245, 158, 11, 0.6)' : 'none',
                       }}
-                      title={isTop10Active ? 'Click to turn OFF (Hide Top 10 Button from Home Page)' : 'Click to turn ON (Show Top 10 Button on Home Page)'}
+                      title="Controls the public Top 10 showcase link"
                     >
                       <span
                         style={{
@@ -2356,10 +2372,10 @@ export default function AdminPage() {
                       {(() => {
                         try {
                           const d = new Date(countdownDeadline);
-                          if (isNaN(d.getTime())) return '14 Nov 2026';
+                          if (isNaN(d.getTime())) return '23 Nov 2026';
                           return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
                         } catch {
-                          return '14 Nov 2026';
+                          return '23 Nov 2026';
                         }
                       })()}
                     </span>
@@ -2448,6 +2464,8 @@ export default function AdminPage() {
                   </button>
                 </div>
               </div>
+
+              <WhatsAppVotingCampaign />
 
               {/* KPI Stat Cards */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
@@ -4419,10 +4437,10 @@ export default function AdminPage() {
                   {(() => {
                     try {
                       const d = new Date(countdownDeadline);
-                      if (isNaN(d.getTime())) return 'Nov 14, 2026, 11:59 PM';
+                      if (isNaN(d.getTime())) return 'Nov 23, 2026, 11:59 PM';
                       return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
                     } catch {
-                      return 'Nov 14, 2026, 11:59 PM';
+                      return 'Nov 23, 2026, 11:59 PM';
                     }
                   })()}
                 </div>
@@ -4502,7 +4520,7 @@ export default function AdminPage() {
                 ))}
                 <button
                   type="button"
-                  onClick={() => setDeadlineInput('2026-11-14T23:59')}
+                  onClick={() => setDeadlineInput('2026-11-23T23:59')}
                   style={{
                     padding: '0.35rem 0.7rem',
                     borderRadius: '6px',
@@ -4515,7 +4533,7 @@ export default function AdminPage() {
                     transition: 'all 0.15s',
                   }}
                 >
-                  Nov 14, 2026 (Original)
+                  Nov 23, 2026 (Original)
                 </button>
               </div>
             </div>
@@ -4760,7 +4778,7 @@ export default function AdminPage() {
                       </h4>
                       <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748b', maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto' }}>
                         {projectVotersList.length === 0
-                          ? 'When students and community members vote for this project on /top-10, their name, verified email address, and timestamp will be audited here in real-time.'
+                          ? 'When someone votes, their name, submitted email address, and voting time will appear here.'
                           : 'Try clearing your search query to see all voters.'}
                       </p>
                     </div>
@@ -4869,7 +4887,7 @@ export default function AdminPage() {
               flexShrink: 0
             }}>
               <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                🔒 All votes are verified with single-email duplicate enforcement.
+                🔒 One vote per email across all projects.
               </div>
 
               <button

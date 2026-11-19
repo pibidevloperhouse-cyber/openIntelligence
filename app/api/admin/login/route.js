@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import bcrypt from 'bcryptjs';
+import { signWhatsAppAdminSession, whatsappAdminCookie, whatsappAdminSessionSeconds } from '@/lib/whatsapp-admin-session';
 
 export async function POST(request) {
   try {
@@ -14,6 +15,7 @@ export async function POST(request) {
     // Hardcoded fallback as requested by user to ALWAYS allow admin@gmail.com / root123
     if (email === 'admin@gmail.com' && password === 'root123') {
       const cookieStore = await cookies();
+      cookieStore.delete(whatsappAdminCookie);
       cookieStore.set(
         'admin_session',
         JSON.stringify({ id: 'admin-hardcoded', email: 'admin@gmail.com', name: 'Admin', role: 'ADMIN' }),
@@ -43,9 +45,10 @@ export async function POST(request) {
 
     // 3. Set a secure httpOnly admin session cookie — completely separate from Supabase
     const cookieStore = await cookies();
+    const session = JSON.stringify({ id: admin.id, email: admin.email, name: admin.name, role: 'ADMIN' });
     cookieStore.set(
       'admin_session',
-      JSON.stringify({ id: admin.id, email: admin.email, name: admin.name, role: 'ADMIN' }),
+      session,
       {
         httpOnly: true,
         secure:   process.env.NODE_ENV === 'production',
@@ -54,6 +57,16 @@ export async function POST(request) {
         path:     '/',
       }
     );
+    const campaignSession = signWhatsAppAdminSession(session);
+    if (campaignSession) {
+      cookieStore.set(whatsappAdminCookie, campaignSession, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: whatsappAdminSessionSeconds,
+        path: '/',
+      });
+    }
 
     return NextResponse.json({ success: true });
   } catch (err) {

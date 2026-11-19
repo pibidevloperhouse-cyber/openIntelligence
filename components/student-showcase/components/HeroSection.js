@@ -209,13 +209,13 @@ export const HeroSection = ({
   onOpenSubmitModal,
   currency,
 }) => {
-  const [deadlineString, setDeadlineString] = useState('2026-11-14T23:59:59+05:30');
+  const [deadlineString, setDeadlineString] = useState('2026-11-23T23:59:59+05:30');
 
   const calculateTimeLeft = (dl = deadlineString) => {
     const now = Date.now();
     let targetDate = new Date(dl).getTime();
     if (isNaN(targetDate)) {
-      targetDate = new Date('2026-11-14T23:59:59+05:30').getTime();
+      targetDate = new Date('2026-11-23T23:59:59+05:30').getTime();
     }
     const difference = targetDate - now;
 
@@ -266,7 +266,7 @@ export const HeroSection = ({
   const formattedDeadline = useMemo(() => {
     try {
       const dt = new Date(deadlineString);
-      if (isNaN(dt.getTime())) return 'November 14, 2026 • 11:59 PM IST';
+      if (isNaN(dt.getTime())) return 'November 23, 2026 • 11:59 PM IST';
       return (
         dt.toLocaleDateString('en-US', {
           month: 'long',
@@ -281,7 +281,7 @@ export const HeroSection = ({
         })
       );
     } catch {
-      return 'November 14, 2026 • 11:59 PM IST';
+      return 'November 23, 2026 • 11:59 PM IST';
     }
   }, [deadlineString]);
 

@@ -1,7 +1,7 @@
 import { Inter, Space_Grotesk, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import ConditionalLayout from '@/components/ConditionalLayout';
-import { GoogleAnalytics } from '@next/third-parties/google';
+import SiteAnalytics from '@/components/SiteAnalytics';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -100,7 +100,7 @@ export default function RootLayout({ children }) {
       <body>
         <ConditionalLayout>{children}</ConditionalLayout>
         <ScrollToTop />
-        {gaMeasurementId && <GoogleAnalytics gaId={gaMeasurementId} />}
+        {gaMeasurementId && <SiteAnalytics gaId={gaMeasurementId} />}
       </body>
     </html>
   );
