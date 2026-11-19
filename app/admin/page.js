@@ -286,8 +286,8 @@ export default function AdminPage() {
   const [togglingTop10, setTogglingTop10] = useState(false);
 
   // Student Countdown Timer Deadline
-  const [countdownDeadline, setCountdownDeadline] = useState('2026-11-23T23:59:59+05:30');
-  const [deadlineInput, setDeadlineInput] = useState('2026-11-23T23:59');
+  const [countdownDeadline, setCountdownDeadline] = useState('2026-11-21T23:59:59+05:30');
+  const [deadlineInput, setDeadlineInput] = useState('2026-11-21T23:59');
   const [showDeadlineModal, setShowDeadlineModal] = useState(false);
   const [savingDeadline, setSavingDeadline] = useState(false);
 
@@ -2297,7 +2297,7 @@ export default function AdminPage() {
                       gap: '5px'
                     }}>
                       <span>🏆</span>
-                      <span>Top 10 Showcase: {isTop10Active ? 'ON' : 'OFF'}</span>
+                      <span>Public Voting &amp; Top 10: {isTop10Active ? 'ON' : 'OFF'}</span>
                     </span>
 
                     {/* The Toggle Switch button */}
@@ -2306,7 +2306,7 @@ export default function AdminPage() {
                       disabled={togglingTop10}
                       onClick={handleToggleTop10Status}
                       role="switch"
-                      aria-label="Top 10 Showcase"
+                      aria-label="Public Voting and Top 10"
                       aria-checked={isTop10Active}
                       style={{
                         position: 'relative',
@@ -2322,7 +2322,7 @@ export default function AdminPage() {
                         alignItems: 'center',
                         boxShadow: isTop10Active ? '0 0 10px rgba(245, 158, 11, 0.6)' : 'none',
                       }}
-                      title="Controls the public Top 10 showcase link"
+                      title="Show or hide Vote buttons on registered projects and the Top 10 showcase link"
                     >
                       <span
                         style={{
@@ -2372,10 +2372,10 @@ export default function AdminPage() {
                       {(() => {
                         try {
                           const d = new Date(countdownDeadline);
-                          if (isNaN(d.getTime())) return '23 Nov 2026';
+                          if (isNaN(d.getTime())) return '21 Nov 2026';
                           return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
                         } catch {
-                          return '23 Nov 2026';
+                          return '21 Nov 2026';
                         }
                       })()}
                     </span>
@@ -4437,10 +4437,10 @@ export default function AdminPage() {
                   {(() => {
                     try {
                       const d = new Date(countdownDeadline);
-                      if (isNaN(d.getTime())) return 'Nov 23, 2026, 11:59 PM';
+                      if (isNaN(d.getTime())) return 'Nov 21, 2026, 11:59 PM';
                       return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
                     } catch {
-                      return 'Nov 23, 2026, 11:59 PM';
+                      return 'Nov 21, 2026, 11:59 PM';
                     }
                   })()}
                 </div>
@@ -4520,7 +4520,7 @@ export default function AdminPage() {
                 ))}
                 <button
                   type="button"
-                  onClick={() => setDeadlineInput('2026-11-23T23:59')}
+                  onClick={() => setDeadlineInput('2026-11-21T23:59')}
                   style={{
                     padding: '0.35rem 0.7rem',
                     borderRadius: '6px',
@@ -4533,7 +4533,7 @@ export default function AdminPage() {
                     transition: 'all 0.15s',
                   }}
                 >
-                  Nov 23, 2026 (Original)
+                  Nov 21, 2026 (Original)
                 </button>
               </div>
             </div>

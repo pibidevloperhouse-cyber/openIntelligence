@@ -4,6 +4,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { SubmitProjectModal } from '@/components/student-showcase/components/SubmitProjectModal';
 import DigitalBadge, { generateBadgePng } from '@/components/student-showcase/components/DigitalBadge';
+import ProjectVoteDialog from '@/components/student-showcase/components/ProjectVoteDialog';
+import { ThumbsUp } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import {
   KeyRound,
@@ -76,6 +78,20 @@ function isDirectVideoFile(url) {
 }
 
 export default function RegisteredStudentsPage() {
+  const [votingProject, setVotingProject] = useState(null);
+  const [votedProjectIds, setVotedProjectIds] = useState([]);
+
+  function renderVoteButton(project) {
+    if (!isTop10Active) return null;
+    if (votedProjectIds.includes(project.id)) {
+      return <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-800"><CheckCircle2 className="size-4" /> Voted</span>;
+    }
+    return (
+      <button type="button" onClick={() => setVotingProject(project)} aria-label={`Vote for ${project.title}`} className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-orange-600 bg-linear-to-br from-amber-400 to-orange-500 px-4 py-2 text-sm font-bold text-orange-950 shadow-sm hover:from-amber-300 hover:to-orange-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700">
+        <ThumbsUp className="size-4" aria-hidden="true" /> Vote
+      </button>
+    );
+  }
   const [projects, setProjects] = useState([]);
   const [stats, setStats] = useState({
     totalProjects: 0,
@@ -668,6 +684,7 @@ Proud to be recognized as an Open Intelligence Builder!
                     </div>
 
                     {/* Project Title */}
+                    {isTop10Active && <div className="mb-3 flex justify-end">{renderVoteButton(project)}</div>}
                     <h3 className="font-extrabold text-slate-900 text-sm sm:text-base group-hover:text-[#1f6fb2] transition-colors leading-snug line-clamp-2 break-words">
                       {project.title}
                     </h3>
@@ -845,6 +862,7 @@ Proud to be recognized as an Open Intelligence Builder!
                         </td>
                         <td className="py-4 px-5 text-center whitespace-nowrap">
                           <div className="flex items-center justify-center gap-1.5">
+                            {renderVoteButton(project)}
                             {project.registration_id && (
                               <button
                                 type="button"
@@ -1001,6 +1019,8 @@ Proud to be recognized as an Open Intelligence Builder!
                     ))}
                   </div>
                 )}
+
+                {isTop10Active && <div className="mb-4 flex justify-end">{renderVoteButton(inspectProject)}</div>}
 
                 {/* If Video was shown above, show title here */}
                 {getYouTubeEmbedUrl(inspectProject.video_url) && (
@@ -1195,6 +1215,12 @@ Proud to be recognized as an Open Intelligence Builder!
       })()}
 
       {/* ─── DIRECT SUBMIT PROJECT MODAL ────────────────────────────────── */}
+      {votingProject && (
+        <ProjectVoteDialog project={votingProject} votingEnabled={isTop10Active}
+          onVoted={(id) => setVotedProjectIds(ids => [...ids, id])}
+          onClose={() => setVotingProject(null)} />
+      )}
+
       <SubmitProjectModal
         isOpen={isSubmitModalOpen}
         onClose={() => setIsSubmitModalOpen(false)}

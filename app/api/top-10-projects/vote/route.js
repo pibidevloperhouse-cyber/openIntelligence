@@ -17,8 +17,15 @@ export async function POST(request) {
     const { projectId, voterName, voterEmail, voteToken } = body;
 
     // 1. Validation
-    if (!projectId || readProjectVoteToken(voteToken) !== projectId) {
+    if (typeof projectId !== 'string' || !/^[a-f0-9-]{36}$/i.test(projectId) || (voteToken && readProjectVoteToken(voteToken) !== projectId)) {
       return NextResponse.json({ error: 'Open the voting link for this project to vote.' }, { status: 403 });
+    }
+
+    if (!voteToken) {
+      const { data: setting, error } = await supabaseAdmin.from('app_settings')
+        .select('value').eq('key', 'top10_showcase_active').maybeSingle();
+      if (error) return NextResponse.json({ error: 'Could not check voting status. Try again.' }, { status: 503 });
+      if (setting?.value !== true) return NextResponse.json({ error: 'Public voting is currently closed.' }, { status: 403 });
     }
 
     const cleanName = typeof voterName === 'string' ? voterName.trim() : '';
@@ -43,6 +50,7 @@ export async function POST(request) {
       .from('student_project_submissions')
       .select('id, title, votes_count')
       .eq('id', projectId)
+      .neq('status', 'REJECTED')
       .single();
 
     if (projError || !project) {
@@ -51,11 +59,15 @@ export async function POST(request) {
 
     // 4. DUPLICATE CHECK — Strict prevention against same email voting
     // Check if this email has voted for ANY project in Top 10 Showcase overall (1 email = 1 vote rule)
-    const { data: existingVote } = await supabaseAdmin
+    const { data: existingVote, error: duplicateCheckError } = await supabaseAdmin
       .from('project_votes')
       .select('id, project_id, voter_email, created_at, student_project_submissions ( title )')
       .eq('voter_email', cleanEmail)
       .maybeSingle();
+
+    if (duplicateCheckError) {
+      return NextResponse.json({ error: 'Could not verify your vote. Try again.' }, { status: 503 });
+    }
 
     if (existingVote) {
       const alreadyVotedTitle = existingVote?.student_project_submissions?.title;
@@ -107,12 +119,8 @@ export async function POST(request) {
       return NextResponse.json({ error: insertError.message }, { status: 500 });
     }
 
-    // 6. Increment project votes_count
-    const updatedCount = (project.votes_count || 0) + 1;
-    await supabaseAdmin
-      .from('student_project_submissions')
-      .update({ votes_count: updatedCount })
-      .eq('id', projectId);
+    const { count: updatedCount } = await supabaseAdmin.from('project_votes')
+      .select('id', { count: 'exact', head: true }).eq('project_id', projectId);
 
     return NextResponse.json({
       success: true,

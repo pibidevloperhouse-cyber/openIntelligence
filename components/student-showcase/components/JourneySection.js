@@ -16,14 +16,14 @@ const ROADMAP_STEPS = [
     phasePrefix: 'Phase 1',
     phaseDate: 'Phase 1',
     shortTitle: 'Registration',
-    subtitle: 'Deadline Nov 23',
-    title: 'Phase 1 : Project Registration & Submissions - Deadline Nov 23',
+    subtitle: 'Deadline Nov 21',
+    title: 'Phase 1 : Project Registration & Submissions - Deadline Nov 21',
     description:
-      'Register your team and submit your working AI/ML prototypes, code repository, and demo links before November 23.',
+      'Register your team and submit your working AI/ML prototypes, code repository, and demo links before November 21.',
     status: 'active',
     icon: Rocket,
     highlights: [
-      'Deadline: November 23',
+      'Deadline: November 21',
       'Working Prototype Demo',
       'GitHub / Code Repository',
     ],
