@@ -117,12 +117,24 @@ export default function Footer() {
             </div>
             <p style={{ color: '#000000', fontSize: '0.85rem', lineHeight: 1.6, maxWidth: '350px' }}>
               Pi Bi Open Intelligence is a community-led initiative from the{' '}
-              <span style={{
-                background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                fontWeight: 600
-              }}>Pi Bi Foundation</span> and Madurai AI Community, bringing people together to learn, explore and build with AI and emerging technologies.
+              <a
+                href="https://www.pibitech.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  fontWeight: 700,
+                  textDecoration: 'underline',
+                  textDecorationColor: '#1f6fb2',
+                  textUnderlineOffset: '3px'
+                }}
+                className="hover:opacity-80 transition-opacity"
+              >
+                Pi Bi Tech ↗
+              </a>{' '}
+              and Madurai AI Community, bringing people together to learn, explore and build with AI and emerging technologies.
             </p>
           </div>
 

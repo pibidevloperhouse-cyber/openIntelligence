@@ -17,16 +17,16 @@ const ROADMAP_STEPS = [
     phaseDate: 'Phase 1',
     shortTitle: 'Registration',
     subtitle: 'Deadline Nov 21',
-    title: 'Phase 1 : Project Registration & Submissions – Deadline Nov 21',
+    title: 'Phase 1 : Project Registration & Public Voting Begins November 21',
     description:
-      'Register your team and submit your AI/ML prototype, code repo, and demo links by Nov 21. Registration closes and voting opens the same day.',
+      'Registration closes and public voting officially begins.',
     status: 'active',
     icon: Rocket,
     highlights: [
-      'Registration Deadline: Nov 21',
-      'Working Prototype Demo',
+      'Final project submissions',
+      'Working prototype and demo links',
       'GitHub / Code Repository',
-      'Voting Starts: Nov 21',
+      'Public voting opens',
     ],
   },
   {
@@ -36,15 +36,15 @@ const ROADMAP_STEPS = [
     phaseDate: 'Phase 2',
     shortTitle: 'Shortlist',
     subtitle: 'Announced Nov 30',
-    title: 'Phase 2 : Voting & Shortlist Announcement – Nov 30',
+    title: 'Phase 2 : Voting Closes & Top 10 Announcement November 30 – December 1',
     description:
-      'Public voting runs till Nov 30 while the jury reviews code, architecture, and impact. Shortlisted teams will be announced on Dec 1.',
+      'Public voting closes on November 30. Top 10 shortlisted projects will be announced by December 1.',
     status: 'upcoming',
     icon: Users,
     highlights: [
-      'Voting: Nov 21 – Nov 30',
-      'Code & Architecture Review',
-      'Shortlist Out: Dec 1',
+      'Final public voting',
+      'Top 10 project selection',
+      'Finalist announcement',
     ],
   },
   {
@@ -54,15 +54,15 @@ const ROADMAP_STEPS = [
     phaseDate: 'Phase 3: Dec 12 • Grand Finale',
     shortTitle: 'Finale & Awards',
     subtitle: 'Live Demos & Prizes',
-    title: 'Phase 3 : Grand Finale & Prize Distribution – Dec 12',
+    title: 'Phase 3 : Grand Finale & Prize Distribution December 12',
     description:
-      'Shortlisted teams demo live at our office on Dec 12 before the grand jury. Top 3 projects win ₹30,000 in cash prizes on the spot!',
+      'Shortlisted teams present their projects to the jury, followed by winner announcements and cash prize distribution.',
     status: 'upcoming',
     icon: Trophy,
     highlights: [
-      'Offline Evaluation: Dec 12',
-      'Top 3 Winners Selection',
-      '₹30,000 Cash Prize Awards',
+      'Live project presentations',
+      'Recognition certificates for all participants',
+      'Top 3 Prizes',
     ],
   },
 ];
@@ -95,17 +95,15 @@ export const JourneySection = () => {
               return (
                 <div
                   key={idx}
-                  className={`group relative rounded-3xl bg-white flex flex-col justify-between transition-all duration-500 ease-out hover:-translate-y-2 overflow-hidden ${
-                    isActive
-                      ? 'border-2 border-[#1f6fb2] shadow-xl shadow-[#1f6fb2]/10 ring-4 ring-[#1f6fb2]/5 hover:shadow-2xl hover:shadow-[#1f6fb2]/20'
-                      : 'border border-slate-200/90 shadow-xs hover:border-[#1f6fb2]/60 hover:shadow-2xl hover:shadow-[#1f6fb2]/15'
-                  }`}
+                  className={`group relative rounded-3xl bg-white flex flex-col justify-between transition-all duration-500 ease-out hover:-translate-y-2 overflow-hidden ${isActive
+                    ? 'border-2 border-[#1f6fb2] shadow-xl shadow-[#1f6fb2]/10 ring-4 ring-[#1f6fb2]/5 hover:shadow-2xl hover:shadow-[#1f6fb2]/20'
+                    : 'border border-slate-200/90 shadow-xs hover:border-[#1f6fb2]/60 hover:shadow-2xl hover:shadow-[#1f6fb2]/15'
+                    }`}
                 >
                   {/* Top Accent Strip with smooth reveal on hover */}
                   <div
-                    className={`h-1.5 w-full transition-all duration-500 ${
-                      isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                    }`}
+                    className={`h-1.5 w-full transition-all duration-500 ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                      }`}
                     style={{ background: 'linear-gradient(90deg, #1f6fb2, #2ec4b6)' }}
                   />
 
@@ -123,11 +121,10 @@ export const JourneySection = () => {
                       {/* Header: Icon & Live/Step Badge */}
                       <div className="flex items-center justify-between gap-2 mb-4 relative z-10">
                         <div
-                          className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-xs transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-md ${
-                            isActive
-                              ? 'text-white shadow-md shadow-[#1f6fb2]/25 group-hover:shadow-[#1f6fb2]/40'
-                              : 'bg-[#1f6fb2]/10 border border-[#1f6fb2]/20 text-[#1f6fb2] group-hover:bg-[#1f6fb2]/15 group-hover:border-[#1f6fb2]/40 group-hover:shadow-[#1f6fb2]/20'
-                          }`}
+                          className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-xs transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-md ${isActive
+                            ? 'text-white shadow-md shadow-[#1f6fb2]/25 group-hover:shadow-[#1f6fb2]/40'
+                            : 'bg-[#1f6fb2]/10 border border-[#1f6fb2]/20 text-[#1f6fb2] group-hover:bg-[#1f6fb2]/15 group-hover:border-[#1f6fb2]/40 group-hover:shadow-[#1f6fb2]/20'
+                            }`}
                           style={
                             isActive
                               ? { background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }

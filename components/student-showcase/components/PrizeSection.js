@@ -231,11 +231,17 @@ export const PrizeSection = ({
           {/* 2nd Place (Silver) */}
           <div className="order-2 md:order-1 relative rounded-3xl p-6 sm:p-8 bg-white border border-slate-200 shadow-md flex flex-col justify-between hover:border-slate-300 hover:shadow-lg transition-all group">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200 font-stylized">
-                  2nd Place • Runner Up
-                </span>
-                <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 p-[1.5px] shadow-sm shadow-slate-300/40 group-hover:scale-105 group-hover:shadow-slate-400/25 transition-all duration-300">
+              <div className="flex items-center justify-between gap-3">
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-200/90 text-slate-800 shadow-2xs font-stylized">
+                  <span className="text-[13px] sm:text-sm font-bold text-slate-900 tracking-tight">
+                    2nd Place
+                  </span>
+                  <span className="text-slate-400 text-xs mx-0.5">•</span>
+                  <span className="text-[13px] sm:text-sm font-medium text-slate-600">
+                    Runner Up
+                  </span>
+                </div>
+                <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 p-[1.5px] shadow-sm shadow-slate-300/40 group-hover:scale-105 group-hover:shadow-slate-400/25 transition-all duration-300 shrink-0">
                   <div className="w-full h-full rounded-[14px] bg-gradient-to-b from-white via-slate-50 to-slate-100/90 flex items-center justify-center">
                     <SilverMedalIcon className="w-7 h-7 sm:w-7.5 sm:h-7.5 drop-shadow-xs" />
                   </div>
@@ -249,23 +255,16 @@ export const PrizeSection = ({
                 <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-stylized mt-1">
                   {currency === 'INR' ? PRIZE_TIERS[1].inrAmount : PRIZE_TIERS[1].usdAmount}
                 </div>
-                <div className="text-xs text-slate-500 mt-1">
-                  Direct Bank / UPI Transfer to Team
-                </div>
+               
               </div>
 
               {/* Media Feature Banner - Clean Editorial Highlight */}
-              <div className="py-2.5 px-3.5 rounded-xl bg-slate-50/80 border border-slate-200/80">
-                <div className="font-bold text-slate-900 font-stylized text-xs sm:text-[13px] leading-tight">
-                  Featured on Projects Hub
-                </div>
-                <div className="text-[11px] text-slate-500 mt-0.5 leading-snug">
-                  Spotlight listing on curated directory
-                </div>
-              </div>
+             
 
               <div className="space-y-2.5 pt-2">
-                <div className="text-xs uppercase font-stylized text-slate-500 font-semibold">Included Rewards:</div>
+                <div className="text-xs uppercase font-stylized text-slate-700 font-bold">
+                  Recognition & Opportunities
+                </div>
                 {PRIZE_TIERS[1].perks.map((perk, idx) => (
                   <div key={idx} className="flex items-start gap-2 text-xs text-slate-600">
                     <CheckCircle className="w-4 h-4 text-[#1f6fb2] shrink-0 mt-0.5" />
@@ -279,13 +278,13 @@ export const PrizeSection = ({
           {/* 1st Place (Gold Champion - Center Elevated) */}
           <div className="order-1 md:order-2 relative rounded-3xl p-7 sm:p-9 bg-white border-2 border-amber-300 shadow-xl flex flex-col justify-between md:-translate-y-6 hover:border-amber-400 transition-all group">
             {/* Top Ribbon */}
-            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 text-xs font-extrabold uppercase tracking-wider shadow-sm flex items-center gap-1.5 font-stylized">
-              <Sparkles className="w-3.5 h-3.5" /> Grand Champion • 1st Place
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-5 sm:px-6 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 text-xs sm:text-sm font-black uppercase tracking-wider shadow-md flex items-center gap-1.5 font-stylized whitespace-nowrap">
+              <Sparkles className="w-4 h-4" /> Grand Champion • 1st Place
             </div>
 
             <div className="space-y-5 pt-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-stylized uppercase tracking-wider text-amber-700 font-bold">
+                <span className="text-xs sm:text-sm font-stylized uppercase tracking-wider text-amber-700 font-extrabold">
                   The Gold Pinnacle
                 </span>
                 <div className="relative w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 p-[1.5px] shadow-lg shadow-amber-500/25 group-hover:scale-105 group-hover:shadow-amber-500/35 transition-all duration-300">
@@ -309,24 +308,15 @@ export const PrizeSection = ({
                 >
                   {currency === 'INR' ? PRIZE_TIERS[0].inrAmount : PRIZE_TIERS[0].usdAmount}
                 </div>
-                <div className="text-xs text-slate-500 mt-1 font-medium">
-                  Direct Immediate Bank Transfer + Gold Trophy
-                </div>
+                
               </div>
 
               {/* Media Feature Banner - Clean Editorial Highlight */}
-              <div className="py-3 px-4 rounded-xl bg-slate-50/80 border border-slate-200/80">
-                <div className="font-bold text-slate-900 font-stylized text-xs sm:text-[13px] leading-tight">
-                  Grand Homepage Cover Story
-                </div>
-                <div className="text-[11px] text-slate-500 mt-0.5 leading-snug">
-                  Official launch on PiBi Open Intelligence
-                </div>
-              </div>
+              
 
               <div className="space-y-2.5 pt-1">
-                <div className="text-xs uppercase font-stylized text-slate-700 font-bold">
-                  Grand Winner Benefits:
+                <div className="text-xs uppercase font-stylized text-slate-800 font-bold">
+                  Recognition & Opportunities
                 </div>
                 {PRIZE_TIERS[0].perks.map((perk, idx) => (
                   <div key={idx} className="flex items-start gap-2 text-xs text-slate-700">
@@ -341,11 +331,17 @@ export const PrizeSection = ({
           {/* 3rd Place (Bronze) */}
           <div className="order-3 md:order-3 relative rounded-3xl p-6 sm:p-8 bg-white border border-slate-200 shadow-md flex flex-col justify-between hover:border-slate-300 hover:shadow-lg transition-all group">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200/90 font-stylized">
-                  3rd Place • 2nd Runner Up
-                </span>
-                <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-amber-300 via-orange-400 to-amber-700 p-[1.5px] shadow-sm shadow-orange-500/20 group-hover:scale-105 group-hover:shadow-orange-500/25 transition-all duration-300">
+              <div className="flex items-center justify-between gap-3">
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-50/80 border border-amber-200/80 text-amber-900 shadow-2xs font-stylized">
+                  <span className="text-[13px] sm:text-sm font-bold text-amber-950 tracking-tight">
+                    3rd Place
+                  </span>
+                  <span className="text-amber-400 text-xs mx-0.5">•</span>
+                  <span className="text-[13px] sm:text-sm font-medium text-amber-800">
+                    2nd Runner Up
+                  </span>
+                </div>
+                <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-amber-300 via-orange-400 to-amber-700 p-[1.5px] shadow-sm shadow-orange-500/20 group-hover:scale-105 group-hover:shadow-orange-500/25 transition-all duration-300 shrink-0">
                   <div className="w-full h-full rounded-[14px] bg-gradient-to-b from-orange-50/80 via-white to-amber-100/70 flex items-center justify-center">
                     <BronzeMedalIcon className="w-7 h-7 sm:w-7.5 sm:h-7.5 drop-shadow-xs" />
                   </div>
@@ -359,23 +355,16 @@ export const PrizeSection = ({
                 <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-stylized mt-1">
                   {currency === 'INR' ? PRIZE_TIERS[2].inrAmount : PRIZE_TIERS[2].usdAmount}
                 </div>
-                <div className="text-xs text-slate-500 mt-1">
-                  Direct Bank / UPI Transfer to Team
-                </div>
+                
               </div>
 
               {/* Media Feature Banner - Clean Editorial Highlight */}
-              <div className="py-2.5 px-3.5 rounded-xl bg-slate-50/80 border border-slate-200/80">
-                <div className="font-bold text-slate-900 font-stylized text-xs sm:text-[13px] leading-tight">
-                  Innovation Directory Listing
-                </div>
-                <div className="text-[11px] text-slate-500 mt-0.5 leading-snug">
-                  Permanent archival on ecosystem index
-                </div>
-              </div>
+              
 
               <div className="space-y-2.5 pt-2">
-                <div className="text-xs uppercase font-stylized text-slate-500 font-semibold">Included Rewards:</div>
+                <div className="text-xs uppercase font-stylized text-slate-700 font-bold">
+                  Recognition & Opportunities
+                </div>
                 {PRIZE_TIERS[2].perks.map((perk, idx) => (
                   <div key={idx} className="flex items-start gap-2 text-xs text-slate-600">
                     <CheckCircle className="w-4 h-4 text-[#1f6fb2] shrink-0 mt-0.5" />

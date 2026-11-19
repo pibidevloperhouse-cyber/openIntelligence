@@ -164,12 +164,14 @@ export const PRIZE_TIERS = [
     colorTheme: 'gold',
     tagline: 'The Pinnacle of Student Engineering',
     perks: [
-      '₹15,000 Direct Cash Prize transferred to team',
-      'Exclusive Cover Story & Homepage Launch on PiBi Open Intelligence',
       
-      'Prestigious Gold Distinction Certificate',
-      'Community recognition across 150K+ developers',
-      'Incubation & Patent Filing Mentorship Support',
+      'Featured project showcase on PiBi Open Intelligence homepage.',
+       'Grand Champion Certificate of Excellence.',
+        'Project recognition across the PiBi Open Intelligence community.',
+        'Incubation Support – Guidance to develop and advance their projects.',
+      'Career Guidance – Mentorship and career development support.',
+      'Industry Exposure – Opportunities to connect with the technology ecosystem.',
+      'Innovation Mentorship – Guidance to take their ideas towards practical implementation.',
     ],
     highlight: 'Featured Globally on PiBi Open Intelligence',
   },
@@ -182,12 +184,14 @@ export const PRIZE_TIERS = [
     colorTheme: 'silver',
     tagline: 'Exemplary Technological Execution',
     perks: [
-      '₹10,000 Direct Cash Prize transferred to team',
-      'Official Spotlight Showcase on PiBi Open Intelligence Projects Hub',
-      'PiBi Open Intelligence Verified Innovator Certificate',
-      
-      
-      'Fast-track interview invitations at partnering tech startups',
+      'Featured project spotlight on PiBi Open Intelligence Projects Hub.',
+      'Runner-Up Certificate of Excellence.',
+      'Project recognition across the innovation ecosystem.',
+      'Incubation Support – Guidance to develop and advance their projects.',
+      'Career Guidance – Mentorship and career development support.',
+      'Industry Exposure – Opportunities to connect with the technology ecosystem.',
+      'Innovation Mentorship – Guidance to take their ideas towards practical implementation.',
+
     ],
     highlight: 'Spotlight on PiBi Open Intelligence',
   },
@@ -200,12 +204,13 @@ export const PRIZE_TIERS = [
     colorTheme: 'bronze',
     tagline: 'Outstanding Vision & Impact',
     perks: [
-      '₹5,000 Direct Cash Prize transferred to team',
-      'Featured Project Listing on PiBi Open Intelligence Ecosystem Directory',
-      'PiBi Open Intelligence Student Builder Certificate',
-      
-      'Technical Architecture Review with Senior Staff Engineers',
-      
+      'Featured project listing in PiBi Open Intelligence Ecosystem Directory.',
+      'Student Innovator Certificate.',
+      'Technical project recognition.',
+      'Incubation Support – Guidance to develop and advance their projects.',
+      'Career Guidance – Mentorship and career development support.',
+      'Industry Exposure – Opportunities to connect with the technology ecosystem.',
+      'Innovation Mentorship – Guidance to take their ideas towards practical implementation.',
     ],
     highlight: 'Listed on PiBi Open Intelligence',
   },

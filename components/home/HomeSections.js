@@ -3,7 +3,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import AnimatedFadeIn from './AnimatedFadeIn';
 import Link from 'next/link';
-import { HeartPulse, Leaf, BookOpen, Globe, Accessibility, Building2, Briefcase, TriangleAlert, Bot, Database, Cloud, Cpu, TrendingUp, ShieldCheck, ArrowLeft, ArrowRight, FileText, Download, Eye, X, Sparkles, CheckCircle2, Headphones, Flame, ThumbsUp, Bookmark } from 'lucide-react';
+import { HeartPulse, Leaf, BookOpen, Globe, Accessibility, Building2, Briefcase, TriangleAlert, Bot, Database, Cloud, Cpu, TrendingUp, ShieldCheck, ArrowLeft, ArrowRight, FileText, Download, Eye, X, Sparkles, CheckCircle2, Headphones, Flame, ThumbsUp, Bookmark, ExternalLink } from 'lucide-react';
 
 function TypewriterOnce({ text, typingSpeed = 75, delay = 500, className = "", style = {} }) {
   const ref = useRef(null);
@@ -99,7 +99,17 @@ export function AboutSection() {
               <div className="lg:col-span-7 text-left">
                 <div className="space-y-6 text-lg md:text-xl text-slate-600 leading-relaxed mb-10">
                   <p>
-                    <strong className="text-[#0a192f] font-extrabold">Pi Bi Open Intelligence</strong> is a <strong className="text-[#2ec4b6] font-semibold">community-led initiative</strong> from the <strong className="text-[#2ec4b6] font-semibold">Pi Bi Foundation</strong> and <strong className="text-[#2ec4b6] font-semibold">Madurai AI Community</strong>, bringing people together to learn, explore and build with <strong className="text-[#2ec4b6] font-semibold">AI and emerging technologies</strong>.
+                    <strong className="text-[#0a192f] font-extrabold">Pi Bi Open Intelligence</strong> is a <strong className="text-[#2ec4b6] font-semibold">community-led initiative</strong> from{' '}
+                    <a
+                      href="https://www.pibitech.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 font-bold text-[#1f6fb2] underline underline-offset-[5px] decoration-2 decoration-[#1f6fb2] hover:decoration-[#0a192f] hover:text-[#0a192f] transition-all group"
+                    >
+                      <span>Pi Bi Tech</span>
+                      <ExternalLink className="w-4 h-4 text-[#1f6fb2] group-hover:text-[#0a192f] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform stroke-[2.5]" />
+                    </a>{' '}
+                    and <strong className="text-[#2ec4b6] font-semibold">Madurai AI Community</strong>, bringing people together to learn, explore and build with <strong className="text-[#2ec4b6] font-semibold">AI and emerging technologies</strong>.
                   </p>
                   <p>
                     We believe <strong className="text-[#2ec4b6] font-semibold">useful knowledge</strong> should be shared and technology should be <strong className="text-[#2ec4b6] font-semibold">open to everyone</strong>. Through community learning, open contributions and <strong className="text-[#2ec4b6] font-semibold">practical AI projects</strong>, we turn ideas into solutions that can be shared, built upon and put to use.
