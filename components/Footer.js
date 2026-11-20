@@ -132,7 +132,7 @@ export default function Footer() {
                 }}
                 className="hover:opacity-80 transition-opacity"
               >
-                Pi Bi Tech ↗
+                Pi Bi Technologies ↗
               </a>{' '}
               and Madurai AI Community, bringing people together to learn, explore and build with AI and emerging technologies.
             </p>
