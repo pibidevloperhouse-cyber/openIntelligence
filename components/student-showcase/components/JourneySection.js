@@ -20,7 +20,7 @@ const ROADMAP_STEPS = [
     title: 'Phase 1 : Project Registration & Public Voting Begins November 21',
     description:
       'Registration closes and public voting officially begins.',
-    status: 'active',
+    status: 'completed',
     icon: Rocket,
     highlights: [
       'Final project submissions',
@@ -39,7 +39,7 @@ const ROADMAP_STEPS = [
     title: 'Phase 2 : Voting Closes & Top 10 Announcement November 30 – December 1',
     description:
       'Public voting closes on November 30. Top 10 shortlisted projects will be announced by December 1.',
-    status: 'upcoming',
+    status: 'active',
     icon: Users,
     highlights: [
       'Final public voting',
