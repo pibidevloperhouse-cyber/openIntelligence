@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import TopProjectCard from '@/components/student-showcase/components/TopProjectCard';
 
 // Helper to extract clean YouTube embed URL
 function getYouTubeEmbedUrl(url) {
@@ -54,7 +55,6 @@ export default function Top10ShowcasePage() {
   const [isTop10Active, setIsTop10Active] = useState(true);
 
   // New Showcase Interactive State (Grid vs Leaderboard, Card Tabs, Dossier Modal)
-  const [viewMode, setViewMode] = useState('leaderboard'); // 'grid' | 'leaderboard'
   const [inspectProject, setInspectProject] = useState(null);
   const [cardActiveTabs, setCardActiveTabs] = useState({});
 
@@ -257,192 +257,12 @@ export default function Top10ShowcasePage() {
           </div>
         )}
 
-        {/* COMPETITION LEADERBOARD TABLE */}
         {!loading && filteredProjects.length > 0 && (
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden mb-8">
-            <div className="overflow-x-auto table-scroll">
-              <table className="w-full text-left text-xs text-slate-600">
-                <thead className="bg-slate-50/90 border-b border-slate-200 text-slate-700 font-bold uppercase text-[10px] tracking-wider">
-                  <tr>
-                    <th className="py-4 px-4 sm:px-6 text-center w-20">S NO</th>
-                    <th className="py-4 px-4 sm:px-6">PROJECT & DOMAIN</th>
-                    <th className="py-4 px-4 sm:px-6">INSTITUTION & LEAD</th>
-                    <th className="py-4 px-4 sm:px-6">KEY COMPETITIVE UVP</th>
-                    <th className="py-4 px-4 sm:px-6 text-center w-52">
-                      <div className="flex items-center justify-center text-center">ACTIONS</div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredProjects.map((project, idx) => {
-                    const rank = idx + 1;
-                    return (
-                      <tr key={project.id} className="hover:bg-slate-50/70 transition-colors group">
-                        {/* Rank Medallion */}
-                        <td className="py-4.5 px-4 sm:px-6 text-center whitespace-nowrap">
-                          <div className="inline-flex items-center justify-center">
-                            {rank === 1 ? (
-                              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 text-amber-950 font-black text-sm flex items-center justify-center shadow-xs ring-2 ring-amber-200/80">
-                                1
-                              </div>
-                            ) : rank === 2 ? (
-                              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 text-slate-900 font-black text-sm flex items-center justify-center shadow-xs ring-2 ring-slate-200">
-                                2
-                              </div>
-                            ) : rank === 3 ? (
-                              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 text-amber-50 font-black text-sm flex items-center justify-center shadow-xs ring-2 ring-amber-500/40">
-                                3
-                              </div>
-                            ) : (
-                              <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center border border-slate-200">
-                                {rank}
-                              </div>
-                            )}
-                          </div>
-                        </td>
-
-                        {/* Project Title & Domain */}
-                        <td className="py-4.5 px-4 sm:px-6">
-                          <div>
-                            <div className="font-extrabold text-slate-900 text-sm group-hover:text-[#1f6fb2] transition-colors leading-snug">
-                              {project.title}
-                            </div>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-50 text-[#1f6fb2] border border-sky-200/70">
-                                {project.domain || project.category || 'AI & ML'}
-                              </span>
-                              {project.demo_url && (
-                                <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                  Live Prototype
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-
-                        {/* Institution & Student Lead */}
-                        <td className="py-4.5 px-4 sm:px-6">
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-bold text-slate-900 text-xs">
-                                {formatName(project.lead_student)}
-                              </span>
-                              <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded border border-slate-200">
-                                Lead
-                              </span>
-                            </div>
-                            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1.5 truncate">
-                              <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path d="M3 21h18M3 7v14M21 7v14M6 11h2M6 15h2M16 11h2M16 15h2M10 21V7l4-3v17" />
-                              </svg>
-                              <span className="truncate">{formatInstitution(project.institution)}</span>
-                            </div>
-                          </div>
-                        </td>
-
-                        {/* Key Competitive USP */}
-                        <td className="py-4.5 px-4 sm:px-6 max-w-sm">
-                          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70 text-slate-700 text-xs leading-relaxed font-medium line-clamp-2">
-                            {project.usp || project.tagline || project.description}
-                          </div>
-                        </td>
-
-                        {/* Actions (Strictly Centered) */}
-                        <td className="py-4.5 px-4 sm:px-6 text-center whitespace-nowrap w-52">
-                          <div className="flex items-center justify-center gap-2">
-                            <button
-                              type="button"
-                              onClick={() => setInspectProject(project)}
-                              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200/90 text-slate-700 font-bold text-xs transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
-                              title="Inspect Innovation Architecture"
-                            >
-                              <svg className="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                              </svg>
-                              <span>Inspect</span>
-                            </button>
-
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Executive Competition Protocol & Trust Pillars */}
-        {!loading && filteredProjects.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-4 mb-8">
-            <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between">
-              <div>
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3 shadow-2xs"
-                  style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
-                >
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                </div>
-                <h3 className="font-bold text-slate-900 text-sm mb-1.5">
-                  Verified Ballot Integrity
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Each email address can cast one vote across all projects.
-                </p>
-              </div>
-              <div className="pt-3 mt-3 border-t border-slate-100 flex items-center text-[11px] font-semibold text-[#1f6fb2]">
-                <span>Anti-fraud verification active</span>
-              </div>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between">
-              <div>
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3 shadow-2xs"
-                  style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
-                >
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                  </svg>
-                </div>
-                <h3 className="font-bold text-slate-900 text-sm mb-1.5">
-                  Public Choice Laurels
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Community balloting directly determines the prestigious Public Choice Trophy, weighted alongside academic and industry jury scoring.
-                </p>
-              </div>
-              <div className="pt-3 mt-3 border-t border-slate-100 flex items-center text-[11px] font-semibold text-[#1f6fb2]">
-                <span>Official Grand Finale Prize</span>
-              </div>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between">
-              <div>
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3 shadow-2xs"
-                  style={{ background: 'linear-gradient(135deg, #1f6fb2, #2ec4b6)' }}
-                >
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                  </svg>
-                </div>
-                <h3 className="font-bold text-slate-900 text-sm mb-1.5">
-                  Full Technical Dossiers
-                </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Inspect working live prototype URLs, architectural diagrams, problem statements, and GitHub code repositories before casting your ballot.
-                </p>
-              </div>
-              <div className="pt-3 mt-3 border-t border-slate-100 flex items-center text-[11px] font-semibold text-[#1f6fb2]">
-                <span>100% auditable student code</span>
-              </div>
-            </div>
+          <div className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {filteredProjects.map(project => (
+              <TopProjectCard key={project.id} project={project} votingEnabled={isTop10Active}
+                onInspect={() => setInspectProject(project)} />
+            ))}
           </div>
         )}
 

@@ -233,6 +233,7 @@ export const HeroSection = ({
   };
 
   const [hasMounted, setHasMounted] = useState(false);
+  const [isFinalTop10Published, setIsFinalTop10Published] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, isClosed: false });
 
   // Fetch deadline dynamically from settings API
@@ -240,6 +241,7 @@ export const HeroSection = ({
     fetch('/api/student-projects/settings')
       .then((res) => res.json())
       .then((data) => {
+        setIsFinalTop10Published(data.isFinalTop10Published === true);
         if (data && data.countdownDeadline) {
           setDeadlineString(data.countdownDeadline);
           setTimeLeft(calculateTimeLeft(data.countdownDeadline));
@@ -490,6 +492,15 @@ export const HeroSection = ({
 
                   <span style={{ animation: 'arrowNudgeAnim 1.5s infinite ease-in-out', display: 'inline-block' }} className="text-lg leading-none font-bold">&rarr;</span>
                 </Link>
+
+                {isFinalTop10Published && (
+                  <Link href="/top-10"
+                    className="inline-flex items-center gap-3 rounded-full border border-amber-200 bg-linear-to-r from-orange-500 to-rose-600 px-7 py-4 text-sm font-extrabold text-white shadow-lg shadow-orange-500/30 transition-shadow hover:shadow-xl md:text-base">
+                    <span>🏆 Top 10 Leaderboard</span>
+                    <span className="rounded-full border border-white/60 bg-white/20 px-2 py-0.5 text-[10px] font-bold">FEATURED</span>
+                    <span aria-hidden="true">→</span>
+                  </Link>
+                )}
 
               </div>
             </div>

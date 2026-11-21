@@ -23,14 +23,16 @@ export async function GET() {
     const { data, error } = await supabaseAdmin
       .from('app_settings')
       .select('key, value')
-      .in('key', ['student_registration_closed', 'student_countdown_deadline', 'top10_showcase_active']);
+      .in('key', ['student_registration_closed', 'student_countdown_deadline', 'top10_showcase_active', 'final_top10_published']);
 
     let isRegistrationClosed = false;
     let countdownDeadline = '2026-11-21T23:59:59+05:30';
     let isTop10Active = false;
+    let isFinalTop10Published = false;
 
     if (!error && data) {
       data.forEach((row) => {
+        if (row.key === 'final_top10_published') isFinalTop10Published = row.value === true;
         if (row.key === 'student_registration_closed') {
           isRegistrationClosed = Boolean(row.value);
         }
@@ -49,6 +51,7 @@ export async function GET() {
       isRegistrationClosed,
       countdownDeadline,
       isTop10Active,
+      isFinalTop10Published,
     });
   } catch (err) {
     console.error('[GET /api/student-projects/settings]', err);
@@ -56,6 +59,7 @@ export async function GET() {
       isRegistrationClosed: false,
       countdownDeadline: '2026-11-21T23:59:59+05:30',
       isTop10Active: false,
+      isFinalTop10Published: false,
     });
   }
 }
@@ -101,6 +105,14 @@ export async function PATCH(request) {
           updated_at: new Date().toISOString(),
         })
       );
+    }
+
+    if (typeof body.isFinalTop10Published === 'boolean') {
+      updates.push(supabaseAdmin.from('app_settings').upsert({
+        key: 'final_top10_published',
+        value: body.isFinalTop10Published,
+        updated_at: new Date().toISOString(),
+      }));
     }
 
     if (updates.length > 0) {

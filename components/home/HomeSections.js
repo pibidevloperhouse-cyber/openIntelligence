@@ -193,14 +193,14 @@ export function ContributeSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const isInteractingRef = useRef(false);
   const resumeTimeoutRef = useRef(null);
-  const [isTop10Active, setIsTop10Active] = useState(false);
+  const [isFinalTop10Published, setIsFinalTop10Published] = useState(false);
 
   useEffect(() => {
     fetch('/api/student-projects/settings')
       .then((res) => res.json())
       .then((data) => {
-        if (data && typeof data.isTop10Active === 'boolean') {
-          setIsTop10Active(data.isTop10Active);
+        if (data && typeof data.isFinalTop10Published === 'boolean') {
+          setIsFinalTop10Published(data.isFinalTop10Published);
         }
       })
       .catch(() => { });
@@ -452,8 +452,8 @@ export function ContributeSection() {
                 <span style={{ animation: 'arrowNudgeAnim 1.5s infinite ease-in-out', display: 'inline-block' }} className="text-lg leading-none font-bold">&rarr;</span>
               </Link>
 
-              {/* Public Top 10 Showcase Button (Only visible when isTop10Active is ON in Admin!) */}
-              {isTop10Active && (
+              {/* Public Top 10 Showcase Button (Only visible when isFinalTop10Published is ON in Admin!) */}
+              {isFinalTop10Published && (
                 <Link
                   href="/top-10"
                   className="inline-flex items-center gap-3.5 px-7 py-3.5 md:px-8 md:py-4 rounded-full text-white font-extrabold text-sm md:text-base transition-all duration-300 cursor-pointer shadow-lg hover:scale-[1.02]"

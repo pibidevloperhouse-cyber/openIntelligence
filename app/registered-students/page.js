@@ -127,6 +127,7 @@ export default function RegisteredStudentsPage() {
 
   // Top 10 button toggle state controlled via Admin panel
   const [isTop10Active, setIsTop10Active] = useState(false);
+  const [isFinalTop10Published, setIsFinalTop10Published] = useState(false);
 
   // Check URL query param or hash for ?submit=true or ?regId=...
   useEffect(() => {
@@ -158,6 +159,7 @@ export default function RegisteredStudentsPage() {
         const data = await response.json();
         if (!cancelled && currentRequest === requestId) {
           setIsTop10Active(response.ok && data.isTop10Active === true);
+          setIsFinalTop10Published(response.ok && data.isFinalTop10Published === true);
         }
       } catch {
         if (!cancelled && currentRequest === requestId) setIsTop10Active(false);
@@ -491,7 +493,7 @@ Proud to be recognized as an Open Intelligence Builder!
                 <span>➕ Submit Your Project</span>
               </button>
 
-              {isTop10Active && (
+              {isFinalTop10Published && (
                 <Link
                   href="/top-10"
                   className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl sm:rounded-2xl text-white font-extrabold text-xs sm:text-sm transition-all shadow-md active:scale-95 hover:opacity-95 hover:scale-[1.02] cursor-pointer animate-in fade-in"

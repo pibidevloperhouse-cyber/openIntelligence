@@ -284,6 +284,8 @@ export default function AdminPage() {
   // Top 10 Showcase Button Visibility on Home Page (ON = Visible, OFF = Hidden)
   const [isTop10Active, setIsTop10Active] = useState(false);
   const [togglingTop10, setTogglingTop10] = useState(false);
+  const [isFinalTop10Published, setIsFinalTop10Published] = useState(false);
+  const [publishingFinalTop10, setPublishingFinalTop10] = useState(false);
 
   // Student Countdown Timer Deadline
   const [countdownDeadline, setCountdownDeadline] = useState('2026-11-21T23:59:59+05:30');
@@ -295,6 +297,7 @@ export default function AdminPage() {
     fetch('/api/student-projects/settings')
       .then(r => r.json())
       .then(d => {
+        setIsFinalTop10Published(d.isFinalTop10Published === true);
         if (d && typeof d.isRegistrationClosed === 'boolean') {
           setIsRegistrationClosed(d.isRegistrationClosed);
         }
@@ -334,6 +337,26 @@ export default function AdminPage() {
       showToast(err.message, 'error');
     } finally {
       setTogglingRegistration(false);
+    }
+  };
+
+  const handleToggleFinalTop10 = async () => {
+    setPublishingFinalTop10(true);
+    try {
+      const nextValue = !isFinalTop10Published;
+      const response = await fetch('/api/student-projects/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isFinalTop10Published: nextValue }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Could not update Final Top 10');
+      setIsFinalTop10Published(nextValue);
+      showToast(nextValue ? 'Final Top 10 leaderboard buttons are visible.' : 'Final Top 10 leaderboard buttons are hidden.', 'success');
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setPublishingFinalTop10(false);
     }
   };
 
@@ -2297,7 +2320,7 @@ export default function AdminPage() {
                       gap: '5px'
                     }}>
                       <span>🏆</span>
-                      <span>Public Voting &amp; Top 10: {isTop10Active ? 'ON' : 'OFF'}</span>
+                      <span>Public Voting: {isTop10Active ? 'ON' : 'OFF'}</span>
                     </span>
 
                     {/* The Toggle Switch button */}
@@ -2465,6 +2488,13 @@ export default function AdminPage() {
                 </div>
               </div>
 
+              <div className="mb-5">
+                <button type="button" role="switch" aria-checked={isFinalTop10Published}
+                  disabled={publishingFinalTop10} onClick={handleToggleFinalTop10}
+                  className="cursor-pointer rounded-lg border border-orange-300 bg-orange-50 px-4 py-2 text-sm font-bold text-orange-900 disabled:opacity-50">
+                  🏆 Final Top 10: {publishingFinalTop10 ? 'Saving…' : isFinalTop10Published ? 'ON' : 'OFF'}
+                </button>
+              </div>
               <WhatsAppVotingCampaign />
 
               {/* KPI Stat Cards */}
