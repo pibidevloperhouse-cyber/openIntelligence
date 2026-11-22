@@ -125,7 +125,8 @@ export default function RegisteredStudentsPage() {
   const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'table'
 
   // Modal State
-  const [inspectProject, setInspectProject] = useState(null);
+  const [inspectProjectId, setInspectProjectId] = useState(null);
+  const inspectProject = projects.find(project => String(project.id) === inspectProjectId);
   const [copiedId, setCopiedId] = useState(null);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
@@ -145,6 +146,32 @@ export default function RegisteredStudentsPage() {
   // Top 10 button toggle state controlled via Admin panel
   const [isTop10Active, setIsTop10Active] = useState(false);
   const [isFinalTop10Published, setIsFinalTop10Published] = useState(false);
+
+  useEffect(() => {
+    const syncProjectFromUrl = () => {
+      setInspectProjectId(new URLSearchParams(window.location.search).get('project'));
+    };
+    syncProjectFromUrl();
+    window.addEventListener('popstate', syncProjectFromUrl);
+    return () => window.removeEventListener('popstate', syncProjectFromUrl);
+  }, []);
+
+  const openProjectDetails = (project) => {
+    const url = new URL(window.location.href);
+    const id = String(project.id);
+    url.searchParams.set('project', id);
+    window.history.replaceState(null, '', url);
+    setInspectProjectId(id);
+  };
+
+  const closeProjectDetails = () => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('project')) {
+      url.searchParams.delete('project');
+      window.history.replaceState(null, '', url);
+    }
+    setInspectProjectId(null);
+  };
 
   // Check URL query param or hash for ?submit=true or ?regId=...
   useEffect(() => {
@@ -368,7 +395,7 @@ Proud to be recognized as an Open Intelligence Builder!
     }
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        setInspectProject(null);
+        closeProjectDetails();
         setBadgeModalProject(null);
       }
     };
@@ -424,7 +451,7 @@ Proud to be recognized as an Open Intelligence Builder!
     return Array.from(set).sort();
   }, [projects]);
 
-  // Clean list sorted by latest submission with search and domain filtering
+  // Filter projects, then rank by votes with newest submissions first on ties.
   const filteredProjects = useMemo(() => {
     let list = [...projects];
 
@@ -459,15 +486,21 @@ Proud to be recognized as an Open Intelligence Builder!
       });
     }
 
-    return list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+    return list.sort((a, b) => {
+      const voteDifference = (b.votes_count ?? 0) - (a.votes_count ?? 0);
+      return voteDifference || new Date(b.created_at || 0) - new Date(a.created_at || 0);
+    });
   }, [projects, searchTerm, selectedDomain]);
 
-  const handleCopyShareLink = (projectId) => {
-    if (typeof window !== 'undefined') {
-      const url = `${window.location.origin}/registered-students?project=${projectId}`;
-      navigator.clipboard.writeText(url);
+  const handleCopyShareLink = async (projectId) => {
+    const url = new URL(window.location.pathname, window.location.origin);
+    url.searchParams.set('project', String(projectId));
+    try {
+      await navigator.clipboard.writeText(url.href);
       setCopiedId(projectId);
       setTimeout(() => setCopiedId(null), 2000);
+    } catch {
+      window.prompt('Copy this project link', url.href);
     }
   };
 
@@ -810,7 +843,7 @@ Proud to be recognized as an Open Intelligence Builder!
 
                     <button
                       type="button"
-                      onClick={() => setInspectProject(project)}
+                      onClick={() => openProjectDetails(project)}
                       className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#1f6fb2]/10 to-[#2ec4b6]/15 hover:from-[#1f6fb2]/20 hover:to-[#2ec4b6]/25 text-[#1f6fb2] border border-[#1f6fb2]/30 font-bold text-xs transition-all cursor-pointer flex items-center gap-1 hover:scale-105 active:scale-95 shadow-2xs shrink-0"
                     >
                       <span>Full Details</span>
@@ -894,7 +927,7 @@ Proud to be recognized as an Open Intelligence Builder!
                             )}
                             <button
                               type="button"
-                              onClick={() => setInspectProject(project)}
+                              onClick={() => openProjectDetails(project)}
                               className="px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-[#1f6fb2] border border-sky-200/80 font-bold text-xs transition-all cursor-pointer hover:scale-105 active:scale-95"
                             >
                               Inspect
@@ -921,7 +954,7 @@ Proud to be recognized as an Open Intelligence Builder!
         return (
           <div
             className="fixed inset-0 z-[99999] flex items-center justify-center p-2.5 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-hidden"
-            onClick={() => setInspectProject(null)}
+            onClick={closeProjectDetails}
           >
             <div
               className="bg-white rounded-2xl sm:rounded-3xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden my-auto max-h-[92vh] sm:max-h-[90vh] flex flex-col relative"
@@ -939,7 +972,7 @@ Proud to be recognized as an Open Intelligence Builder!
                   />
                   <button
                     type="button"
-                    onClick={() => setInspectProject(null)}
+                    onClick={closeProjectDetails}
                     className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-white flex items-center justify-center transition-all cursor-pointer z-40 border border-white/20 shadow-md"
                     aria-label="Close"
                   >
@@ -967,7 +1000,7 @@ Proud to be recognized as an Open Intelligence Builder!
                     </a>
                     <button
                       type="button"
-                      onClick={() => setInspectProject(null)}
+                      onClick={closeProjectDetails}
                       className="w-8 h-8 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-white flex items-center justify-center transition-all cursor-pointer border border-white/20 shadow-md"
                       aria-label="Close"
                     >
@@ -1000,7 +1033,7 @@ Proud to be recognized as an Open Intelligence Builder!
 
                     <button
                       type="button"
-                      onClick={() => setInspectProject(null)}
+                      onClick={closeProjectDetails}
                       className="w-8 h-8 rounded-xl bg-white/20 hover:bg-white/30 active:scale-95 text-white flex items-center justify-center text-sm font-bold transition-all cursor-pointer border border-white/30 shrink-0 shadow-xs"
                       aria-label="Close"
                     >
@@ -1039,10 +1072,19 @@ Proud to be recognized as an Open Intelligence Builder!
                   </div>
                 )}
 
-                <div className="mb-4">{renderProjectVoting(projects.find(project => project.id === inspectProject.id) ?? inspectProject)}</div>
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleCopyShareLink(inspectProject.id)}
+                    className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all cursor-pointer"
+                  >
+                    {copiedId === inspectProject.id ? '✓ Link Copied' : 'Copy Project Link'}
+                  </button>
+                  {renderProjectVoting(inspectProject)}
+                </div>
 
                 {/* If Video was shown above, show title here */}
-                {getYouTubeEmbedUrl(inspectProject.video_url) && (
+                {(getYouTubeEmbedUrl(inspectProject.video_url) || isDirectVideoFile(inspectProject.video_url)) && (
                   <div>
                     <div className="flex flex-wrap items-center gap-1.5 mb-2">
                       <span className="inline-block max-w-[200px] sm:max-w-md truncate px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-sky-50 text-[#1f6fb2] border border-sky-200/70">
@@ -1211,7 +1253,7 @@ Proud to be recognized as an Open Intelligence Builder!
                     type="button"
                     onClick={() => {
                       const p = inspectProject;
-                      setInspectProject(null);
+                      closeProjectDetails();
                       handleOpenBadgeModal(p);
                     }}
                     className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#1f6fb2] to-[#2ec4b6] text-white font-bold text-xs hover:opacity-95 shadow-sm transition-all cursor-pointer flex-1 sm:flex-none text-center"
@@ -1219,13 +1261,6 @@ Proud to be recognized as an Open Intelligence Builder!
                     <span>🎖️ Builder Badge</span>
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={() => handleCopyShareLink(inspectProject.id)}
-                    className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all w-full sm:w-auto text-center justify-center sm:ml-auto"
-                  >
-                    {copiedId === inspectProject.id ? '✓ Link Copied' : 'Share Project'}
-                  </button>
                 </div>
               </div>
             </div>
