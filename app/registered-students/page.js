@@ -84,12 +84,29 @@ export default function RegisteredStudentsPage() {
   function renderVoteButton(project) {
     if (!isTop10Active) return null;
     if (votedProjectIds.includes(project.id)) {
-      return <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-800"><CheckCircle2 className="size-4" /> Voted</span>;
+      return <span className="inline-flex h-10 items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 text-sm font-semibold text-teal-800"><CheckCircle2 className="size-4" aria-hidden="true" /> Voted</span>;
     }
     return (
-      <button type="button" onClick={() => setVotingProject(project)} aria-label={`Vote for ${project.title}`} className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-orange-600 bg-linear-to-br from-amber-400 to-orange-500 px-4 py-2 text-sm font-bold text-orange-950 shadow-sm hover:from-amber-300 hover:to-orange-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700">
+      <button type="button" onClick={() => setVotingProject(project)} aria-label={`Vote for ${project.title}`} className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-[#1f6fb2]/30 bg-[linear-gradient(#ffffff33,#ffffff33),linear-gradient(135deg,#1f6fb2,#2ec4b6)] px-4 text-sm font-bold text-slate-950 shadow-sm transition-shadow hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1f6fb2]">
         <ThumbsUp className="size-4" aria-hidden="true" /> Vote
       </button>
+    );
+  }
+
+  function renderProjectVoting(project) {
+    const voteCount = project.votes_count ?? 0;
+
+    return (
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        <span className="group inline-flex h-10 shrink-0 items-center gap-2 rounded-full border border-sky-200 bg-[linear-gradient(135deg,#1f6fb22e,#2ec4b608,#2ec4b638)] bg-size-[220%_100%] bg-center pl-3 pr-2 text-sm font-semibold text-[#184e78] motion-safe:animate-[projectVoteBadgeSweep_3s_ease-in-out_infinite_alternate] motion-safe:transition-[translate,box-shadow] motion-safe:duration-200 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-sm motion-safe:hover:shadow-sky-500/20" aria-live="polite" aria-atomic="true">
+          <Users className="size-4 motion-safe:transition-transform motion-safe:duration-200 motion-safe:group-hover:scale-110" aria-hidden="true" />
+          <span>Votes</span>
+          <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-white px-1.5 text-xs font-bold tabular-nums text-[#1f6fb2] ring-1 ring-inset ring-sky-200">
+            <span key={voteCount} className="motion-safe:animate-[projectVoteCountPop_320ms_ease-out]">{voteCount}</span>
+          </span>
+        </span>
+        {renderVoteButton(project)}
+      </div>
     );
   }
   const [projects, setProjects] = useState([]);
@@ -686,7 +703,7 @@ Proud to be recognized as an Open Intelligence Builder!
                     </div>
 
                     {/* Project Title */}
-                    {isTop10Active && <div className="mb-3 flex justify-end">{renderVoteButton(project)}</div>}
+                    <div className="mb-3">{renderProjectVoting(project)}</div>
                     <h3 className="font-extrabold text-slate-900 text-sm sm:text-base group-hover:text-[#1f6fb2] transition-colors leading-snug line-clamp-2 break-words">
                       {project.title}
                     </h3>
@@ -864,7 +881,7 @@ Proud to be recognized as an Open Intelligence Builder!
                         </td>
                         <td className="py-4 px-5 text-center whitespace-nowrap">
                           <div className="flex items-center justify-center gap-1.5">
-                            {renderVoteButton(project)}
+                            {renderProjectVoting(project)}
                             {project.registration_id && (
                               <button
                                 type="button"
@@ -1022,7 +1039,7 @@ Proud to be recognized as an Open Intelligence Builder!
                   </div>
                 )}
 
-                {isTop10Active && <div className="mb-4 flex justify-end">{renderVoteButton(inspectProject)}</div>}
+                <div className="mb-4">{renderProjectVoting(projects.find(project => project.id === inspectProject.id) ?? inspectProject)}</div>
 
                 {/* If Video was shown above, show title here */}
                 {getYouTubeEmbedUrl(inspectProject.video_url) && (
@@ -1219,7 +1236,14 @@ Proud to be recognized as an Open Intelligence Builder!
       {/* ─── DIRECT SUBMIT PROJECT MODAL ────────────────────────────────── */}
       {votingProject && (
         <ProjectVoteDialog project={votingProject} votingEnabled={isTop10Active}
-          onVoted={(id) => setVotedProjectIds(ids => [...ids, id])}
+          onVoted={(id, voteCount) => {
+            setVotedProjectIds(ids => [...ids, id]);
+            if (typeof voteCount === 'number') {
+              setProjects(current => current.map(project =>
+                project.id === id ? { ...project, votes_count: voteCount } : project
+              ));
+            }
+          }}
           onClose={() => setVotingProject(null)} />
       )}
 

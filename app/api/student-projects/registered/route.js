@@ -32,7 +32,8 @@ export async function GET() {
         team_members,
         tags,
         created_at,
-        status
+        status,
+        vote_totals:project_votes(count)
       `)
       .neq('status', 'REJECTED')
       .order('created_at', { ascending: false });
@@ -42,7 +43,10 @@ export async function GET() {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    const list = projects || [];
+    const list = (projects || []).map(({ vote_totals, ...project }) => ({
+      ...project,
+      votes_count: vote_totals?.[0]?.count ?? 0,
+    }));
 
     // Calculate live aggregated metrics
     const uniqueColleges = new Set();

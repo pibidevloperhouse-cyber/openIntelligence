@@ -37,7 +37,7 @@ export default function ProjectVoteDialog({ project, voteToken, votingEnabled, o
         return;
       }
       setSuccess(true);
-      onVoted(project.id);
+      onVoted(project.id, result.newVoteCount);
     } catch {
       setError('Could not reach the voting server. Try again.');
     } finally {
