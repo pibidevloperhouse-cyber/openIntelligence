@@ -67,7 +67,8 @@ export async function POST(request) {
     }
     const cookieStore = await cookies();
     const session = cookieStore.get('admin_session')?.value;
-    if (!verifyWhatsAppAdminSession(session, cookieStore.get(whatsappAdminCookie)?.value)) {
+    if (!verifyWhatsAppAdminSession(session, cookieStore.get(whatsappAdminCookie)?.value) ||
+        JSON.parse(session).id === 'admin-configured') {
       return NextResponse.json({ error: 'Sign in with a database-backed admin account to send the campaign.' }, { status: 403 });
     }
 

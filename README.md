@@ -20,6 +20,14 @@ You can start editing the page by modifying `app/page.js`. The page auto-updates
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Admin registration editing
+
+With `npm run dev -- --hostname 127.0.0.1`, open `http://127.0.0.1:3000/admin/login` and sign in with `admin@gmail.com` and `root123`. Use a development Supabase project when testing registration edits.
+
+Sign in using an account in the Supabase `admins` table or configure a server-side admin login. For the configured login, set `ADMIN_PASSWORD` to a unique password of at least 16 characters. Set `ADMIN_EMAIL` to choose the login email, which defaults to `admin@gmail.com`. Keep the password in the server environment.
+
+The signed admin session uses the server's `SUPABASE_SERVICE_ROLE_KEY`. After deploying the login changes, sign out and sign in again to get a session that can save registration edits.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

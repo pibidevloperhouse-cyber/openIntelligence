@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import StatusBadge from '@/components/StatusBadge';
 import WhatsAppVotingCampaign from '@/components/WhatsAppVotingCampaign';
+import { studentRegistrationFields, studentRegistrationValue } from '@/lib/student-registration-fields';
 import './admin.css';
 
 const TABS = ['overview', 'pending', 'resources', 'events', 'users', 'contributors', 'settings'];
@@ -272,6 +273,10 @@ export default function AdminPage() {
   const [studentStatusFilter, setStudentStatusFilter] = useState('ALL');
   const [studentCategoryFilter, setStudentCategoryFilter] = useState('ALL');
   const [viewingStudentProject, setViewingStudentProject] = useState(null);
+  const [editingStudentProject, setEditingStudentProject] = useState(null);
+  const [savingStudentProject, setSavingStudentProject] = useState(false);
+  const [studentEditError, setStudentEditError] = useState('');
+  const openStudentEditor = useCallback(dialog => dialog?.showModal(), []);
   const [studentProjectToDelete, setStudentProjectToDelete] = useState(null);
   const [studentProjectToTop10, setStudentProjectToTop10] = useState(null);
   const [studentActionLoading, setStudentActionLoading] = useState('');
@@ -497,6 +502,45 @@ export default function AdminPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleSaveStudentProject = async event => {
+    event.preventDefault();
+    if (savingStudentProject) return;
+
+    const formData = new FormData(event.currentTarget);
+    const details = {};
+    for (const field of studentRegistrationFields) {
+      const value = formData.get(field.key).trim();
+      const original = event.currentTarget.elements.namedItem(field.key).defaultValue;
+      if (value !== original.trim()) details[field.key] = value;
+    }
+    if (!Object.keys(details).length) {
+      setEditingStudentProject(null);
+      return;
+    }
+
+    setSavingStudentProject(true);
+    setStudentEditError('');
+    try {
+      const response = await fetch('/api/admin/student-projects', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: editingStudentProject.id, details }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Could not save registration.');
+      setStudentRegistrations(previous =>
+        previous.map(project => project.id === data.project.id ? data.project : project)
+      );
+      setViewingStudentProject(previous => previous?.id === data.project.id ? data.project : previous);
+      setEditingStudentProject(null);
+      showToast('Registration updated', 'success');
+    } catch (error) {
+      setStudentEditError(error.message);
+    } finally {
+      setSavingStudentProject(false);
+    }
   };
 
   const handleUpdateStudentStatus = async (id, newStatus) => {
@@ -2824,11 +2868,17 @@ export default function AdminPage() {
                               )}
                             </div>
 
-                            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                               <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                               <span>
                                 {proj.created_at ? new Date(proj.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Recent'}
                               </span>
+                              <Btn variant="outline" onClick={() => {
+                                setStudentEditError('');
+                                setEditingStudentProject(proj);
+                              }}>
+                                Edit Registration
+                              </Btn>
                             </div>
                           </div>
 
@@ -3456,6 +3506,51 @@ export default function AdminPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {editingStudentProject && (
+        <dialog
+          ref={openStudentEditor}
+          aria-labelledby="student-edit-heading"
+          className="light-theme"
+          onCancel={event => {
+            event.preventDefault();
+            if (!savingStudentProject) setEditingStudentProject(null);
+          }}
+          style={{
+            margin: 'auto', width: 'min(760px, calc(100% - 2rem))', maxHeight: '90vh',
+            padding: '1.5rem', border: '1px solid var(--border)', borderRadius: '16px',
+            background: '#fff', color: 'var(--text-primary)',
+          }}
+        >
+          <h2 id="student-edit-heading" style={{ margin: '0 0 1rem' }}>Edit Registration</h2>
+          <form onSubmit={handleSaveStudentProject} noValidate>
+            <fieldset disabled={savingStudentProject} style={{
+              display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
+              gap: '1rem', margin: 0, padding: 0, border: 0,
+            }}>
+              {studentRegistrationFields.map(field => {
+                const value = studentRegistrationValue(editingStudentProject, field);
+                return (
+                  <label key={field.key} style={{ display: 'grid', gap: '0.3rem' }}>
+                    {field.label}
+                    {field.multiline ? (
+                      <textarea name={field.key} className="input-field" rows={3} defaultValue={value} />
+                    ) : (
+                      <input name={field.key} type={field.type || 'text'} className="input-field"
+                        defaultValue={field.type === 'date' ? value.slice(0, 10) : value} />
+                    )}
+                  </label>
+                );
+              })}
+            </fieldset>
+            {studentEditError && <p role="alert" style={{ color: '#b91c1c' }}>{studentEditError}</p>}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem' }}>
+              <Btn variant="outline" disabled={savingStudentProject} onClick={() => setEditingStudentProject(null)}>Cancel</Btn>
+              <Btn type="submit" disabled={savingStudentProject}>{savingStudentProject ? 'Saving…' : 'Save Changes'}</Btn>
+            </div>
+          </form>
+        </dialog>
       )}
 
       {/* ── STUDENT PROJECT DETAIL MODAL ────────────────────────────────────── */}

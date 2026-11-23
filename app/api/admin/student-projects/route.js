@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { supabaseAdmin } from '@/lib/supabase-admin';
+import { studentRegistrationFields } from '@/lib/student-registration-fields';
+import { verifyWhatsAppAdminSession, whatsappAdminCookie } from '@/lib/whatsapp-admin-session';
 
 async function isAdmin() {
   try {
@@ -34,16 +36,100 @@ export async function GET() {
   }
 }
 
-// PATCH /api/admin/student-projects — update submission status (APPROVED, REJECTED, PENDING) or toggle is_top_10
+async function updateRegistration(id, details) {
+  const cookieStore = await cookies();
+  if (!verifyWhatsAppAdminSession(
+    cookieStore.get('admin_session')?.value,
+    cookieStore.get(whatsappAdminCookie)?.value,
+  )) {
+    return NextResponse.json({ error: 'Your admin session is missing or expired. Sign out and sign in again before saving.' }, { status: 403 });
+  }
+
+  if (!details || typeof details !== 'object' || Array.isArray(details)) {
+    return NextResponse.json({ error: 'Invalid registration details' }, { status: 400 });
+  }
+
+  const updates = {};
+  for (const { key, label, required, type } of studentRegistrationFields) {
+    if (!Object.hasOwn(details, key)) continue;
+    const value = typeof details[key] === 'string' ? details[key].trim() : null;
+    let valid = value !== null && (!required || Boolean(value));
+    if (value && type === 'email') valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    if (value && type === 'date') {
+      const date = new Date(value);
+      valid = /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+        !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+    }
+    if (value && type === 'url') {
+      const url = URL.canParse(value) ? new URL(value) : null;
+      valid = url?.protocol === 'https:' || url?.protocol === 'http:';
+    }
+    if (!valid) return NextResponse.json({ error: `Enter a valid value for ${label}.` }, { status: 400 });
+    updates[key] = value || null;
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json({ error: 'No registration details provided' }, { status: 400 });
+  }
+
+  const table = supabaseAdmin.from('student_project_submissions');
+  const { data: current, error: readError } = await table.select('*').eq('id', id).maybeSingle();
+  if (readError) throw readError;
+  if (!current) return NextResponse.json({ error: 'Submission not found' }, { status: 404 });
+
+  if ('city' in updates) updates.state = updates.city;
+  if ('domain' in updates) updates.category = updates.domain;
+  if ('email' in updates) {
+    updates.email = updates.email.toLowerCase();
+    if (updates.email !== current.email) {
+      updates.is_email_sent = false;
+      updates.email_sent_at = null;
+    }
+  }
+  if ('team_members' in updates || 'lead_student' in updates) {
+    const members = 'team_members' in updates
+      ? (updates.team_members || '').split('\n').map(name => name.trim()).filter(Boolean)
+      : (Array.isArray(current.team_members) ? current.team_members : []);
+    const lead = updates.lead_student || current.lead_student;
+    const updatedMembers = members.map(name => name === current.lead_student ? lead : name);
+    updates.team_members = [...new Set([lead, ...updatedMembers].filter(Boolean))];
+  }
+
+  const project = { ...current, ...updates };
+  if ('pitch' in updates || 'usp' in updates) {
+    updates.tagline = project.pitch || (project.usp ? `UVP: ${project.usp.slice(0, 100)}` : null);
+  }
+  const descriptionSections = {
+    problem_statement: 'Problem Statement',
+    solution: 'Proposed Solution',
+    usp: 'Unique Value Proposition (UVP)',
+    outcome: 'Expected Outcome',
+    technical_summary: 'Technical Summary',
+  };
+  if (Object.keys(descriptionSections).some(key => key in updates)) {
+    updates.description = Object.entries(descriptionSections)
+      .filter(([key]) => project[key])
+      .map(([key, label]) => `### ${label}\n${project[key]}`)
+      .join('\n\n') || 'Student innovation project for 2026 National Showcase';
+  }
+
+  const { data, error } = await table.update(updates).eq('id', id).select().single();
+  if (error) throw error;
+  return NextResponse.json({ success: true, project: data });
+}
+
+// PATCH /api/admin/student-projects — update details, status, or Top 10 placement
 export async function PATCH(request) {
   if (!(await isAdmin())) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   try {
-    const { id, status, action, is_top_10, top_10_rank } = await request.json();
+    const { id, details, status, action, is_top_10, top_10_rank } = await request.json();
 
     if (!id) {
       return NextResponse.json({ error: 'Submission ID is required' }, { status: 400 });
     }
+
+    if (details !== undefined) return await updateRegistration(id, details);
 
     const updates = {};
 
