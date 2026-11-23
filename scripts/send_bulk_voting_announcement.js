@@ -30,15 +30,15 @@ async function main() {
     process.exit(1);
   }
 
-  // Deduplicate and filter students with valid emails
+  // Validate email for all 47 project submissions
   const validStudents = [];
-  const seenEmails = new Set();
 
   for (const s of students || []) {
     const cleaned = cleanRecipientEmail(s.email);
-    if (!cleaned) continue;
-    if (seenEmails.has(cleaned)) continue;
-    seenEmails.add(cleaned);
+    if (!cleaned) {
+      console.warn(`⚠️ Skipping project "${s.title}" due to invalid email: ${s.email}`);
+      continue;
+    }
 
     validStudents.push({
       ...s,
@@ -47,7 +47,7 @@ async function main() {
   }
 
   console.log(`Found ${students?.length || 0} total submissions.`);
-  console.log(`Identified ${validStudents.length} unique valid recipient emails.\n`);
+  console.log(`Prepared ${validStudents.length} project submissions for dispatch.\n`);
 
   if (validStudents.length === 0) {
     console.log('No recipients found to email.');
