@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useCallback, useRef, useState, useEffect } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import AnimatedFadeIn from './AnimatedFadeIn';
 import Link from 'next/link';
@@ -677,29 +677,55 @@ export function ApplySection() {
   );
 }
 
+const guideDetails = {
+  cicd: { title: 'CI/CD for Data Engineering' },
+  cloud: {
+    title: 'Cloud & AI Infrastructure',
+    subtitle: 'GPU Clusters • Edge • Modern DevOps',
+    icon: Cloud,
+    intro: 'Design an AI platform around the latency, availability, and cost targets of each workload. Start by measuring inference with representative models and traffic before choosing hardware or scaling policies.',
+    sections: [
+      ['Schedule GPU workloads', 'Use dedicated Kubernetes node pools for GPU workloads. Set GPU resource requests explicitly, and separate latency-sensitive inference from batch jobs so they can scale independently.'],
+      ['Improve inference latency', 'Measure queue time and model execution separately. Keep warm replicas for priority models, tune batching against the latency target, and place edge inference close to users when network delay dominates.'],
+      ['Control operating costs', 'Track GPU utilization, cost per successful request, and idle capacity. Use interruptible capacity for retryable batch jobs and test rollouts with a small share of production traffic.'],
+    ],
+  },
+  rag: {
+    title: 'Enterprise RAG & AI Orchestration',
+    subtitle: 'Retrieval • Guardrails • Scale',
+    icon: Database,
+    intro: 'Build retrieval-augmented generation around trusted sources, permission-aware search, and measurable answer quality. Keep retrieval, generation, and workflow steps independently observable.',
+    sections: [
+      ['Build a permission-aware index', 'Store source identifiers, document versions, and access rules with each chunk. Apply those rules during retrieval and update or remove indexed content when the original document changes.'],
+      ['Evaluate retrieval and answers', 'Maintain a test set with expected sources and questions that should remain unanswered. Measure retrieval recall, citation accuracy, and whether the response stays within the evidence.'],
+      ['Orchestrate with explicit limits', 'Set timeouts and retry limits for each step. Require approval before actions that modify external systems, and log which sources and tools contributed to each response.'],
+    ],
+  },
+};
+
 export function EmpowerSection() {
   const [activeTab, setActiveTab] = useState('article');
-  const [openGuideModal, setOpenGuideModal] = useState(false);
+  const [activeGuide, setActiveGuide] = useState(null);
+  const guideDialog = useRef(null);
+  const openGuideDialog = useCallback(dialog => {
+    guideDialog.current = dialog;
+    if (dialog && !dialog.open) dialog.showModal();
+  }, []);
+  const selectedGuide = activeGuide ? guideDetails[activeGuide] : null;
+  const GuideIcon = selectedGuide?.icon;
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(142);
   const [bookmarked, setBookmarked] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') setOpenGuideModal(false);
-    };
-    if (openGuideModal) {
-      document.body.style.overflow = 'hidden';
-      window.addEventListener('keydown', handleKeyDown);
-    } else {
-      document.body.style.overflow = '';
-    }
+    if (!activeGuide) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     return () => {
-      document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = previousOverflow;
     };
-  }, [openGuideModal]);
+  }, [activeGuide]);
 
   const topics = [
     { title: "AI & Machine Learning", desc: "Explore practical knowledge, research, tools and emerging developments across modern AI and machine learning.", icon: <img src="/11.png" className="w-full h-full object-contain scale-[1.7] grayscale contrast-[3] invert mix-blend-screen transition-all duration-500 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" alt="AI logo" /> },
@@ -778,9 +804,9 @@ export function EmpowerSection() {
             {/* CARD 1: CI/CD for Data Engineering (Click to open full-screen view) */}
             <AnimatedFadeIn delay={0.05} className="h-full">
               <div
-                onClick={() => setOpenGuideModal(true)}
                 className="h-full bg-black/20 backdrop-blur-md border border-white/20 hover:border-[#2ec4b6] p-7 rounded-[2rem] hover:bg-black/40 hover:-translate-y-2 hover:shadow-[0_20px_45px_rgba(0,0,0,0.45)] transition-all duration-500 group flex flex-col text-left relative overflow-hidden cursor-pointer"
               >
+                <button type="button" aria-label="Open CI/CD for Data Engineering" onClick={() => setActiveGuide('cicd')} className="absolute inset-0 z-10 cursor-pointer rounded-[2rem] focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white" />
                 {/* Subtle Glow */}
                 <div className="absolute top-0 right-0 w-48 h-48 bg-[#2ec4b6]/10 rounded-full blur-3xl -translate-y-12 translate-x-12 group-hover:bg-[#2ec4b6]/25 transition-all duration-700"></div>
 
@@ -830,10 +856,10 @@ export function EmpowerSection() {
 
             {/* CARD 2: Cloud & AI Infrastructure */}
             <AnimatedFadeIn delay={0.1} className="h-full">
-              <Link
-                href="/open-intelligence"
+              <div
                 className="h-full bg-black/20 backdrop-blur-md border border-white/20 hover:border-[#2ec4b6] p-7 rounded-[2rem] hover:bg-black/40 hover:-translate-y-2 hover:shadow-[0_20px_45px_rgba(0,0,0,0.45)] transition-all duration-500 group flex flex-col text-left relative overflow-hidden"
               >
+                <button type="button" aria-label="Open Cloud & AI Infrastructure" onClick={() => setActiveGuide('cloud')} className="absolute inset-0 z-10 cursor-pointer rounded-[2rem] focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white" />
                 <div className="w-full h-44 bg-slate-950/60 rounded-2xl overflow-hidden mb-5 flex items-center justify-center p-3 border border-white/10 group-hover:border-[#2ec4b6]/50 transition-all duration-300">
                   <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-[#2ec4b6] group-hover:scale-110 transition-transform">
                     <Cloud className="w-8 h-8" />
@@ -865,17 +891,15 @@ export function EmpowerSection() {
                     Explore Guide &rarr;
                   </span>
                 </div>
-              </Link>
+              </div>
             </AnimatedFadeIn>
 
             {/* CARD 3: Enterprise RAG & AI Systems */}
             <AnimatedFadeIn delay={0.15} className="h-full">
-              <a
-                href="/docs/pibi.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
+              <div
                 className="h-full bg-black/20 backdrop-blur-md border border-white/20 hover:border-[#2ec4b6] p-7 rounded-[2rem] hover:bg-black/40 hover:-translate-y-2 hover:shadow-[0_20px_45px_rgba(0,0,0,0.45)] transition-all duration-500 group flex flex-col text-left relative overflow-hidden"
               >
+                <button type="button" aria-label="Open Enterprise RAG & AI Orchestration" onClick={() => setActiveGuide('rag')} className="absolute inset-0 z-10 cursor-pointer rounded-[2rem] focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white" />
                 <div className="w-full h-44 bg-slate-950/60 rounded-2xl overflow-hidden mb-5 flex items-center justify-center p-3 border border-white/10 group-hover:border-[#2ec4b6]/50 transition-all duration-300">
                   <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-[#2ec4b6] group-hover:scale-110 transition-transform">
                     <Database className="w-8 h-8" />
@@ -901,13 +925,13 @@ export function EmpowerSection() {
 
                 <div className="mt-auto pt-4 border-t border-white/10 flex items-center justify-between">
                   <span className="text-xs text-white/70 font-semibold bg-white/10 px-2.5 py-1 rounded-full">
-                    Read Guide (PDF)
+                    Online Guide
                   </span>
                   <span className="text-sm font-bold text-white flex items-center gap-1 group-hover:translate-x-1.5 transition-transform">
                     Read Online &rarr;
                   </span>
                 </div>
-              </a>
+              </div>
             </AnimatedFadeIn>
           </div>
         )}
@@ -983,16 +1007,20 @@ export function EmpowerSection() {
 
       </div>
 
-      {/* ── CI/CD FULL-SCREEN EMAG PAGE (Clean, No Cutoff, Full-Width View) ── */}
-      {openGuideModal && (
-        <div className="fixed inset-0 z-[100] bg-white text-slate-900 overflow-y-auto w-full h-full flex flex-col animate-in fade-in duration-200">
+      {selectedGuide && (
+        <dialog
+          ref={openGuideDialog}
+          onClose={() => setActiveGuide(null)}
+          aria-labelledby="guide-reader-title"
+          className="fixed inset-0 m-0 max-w-none max-h-none bg-white text-slate-900 overflow-y-auto w-full h-full open:flex flex-col animate-in fade-in duration-200"
+        >
 
           {/* ── Fixed Clean Top Navigation Bar ────────────────────────── */}
           <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-3 md:gap-5">
               <button
                 type="button"
-                onClick={() => setOpenGuideModal(false)}
+                onClick={() => guideDialog.current?.close()}
                 className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm transition-all hover:-translate-x-0.5 active:scale-95"
               >
                 <ArrowLeft className="w-4 h-4 text-slate-700" />
@@ -1002,23 +1030,23 @@ export function EmpowerSection() {
               <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-slate-500">
                 <span>Open Intelligence</span>
                 <span>/</span>
-                <span className="text-[#0066cc]">CI/CD for Data Engineering</span>
+                <span className="text-[#0066cc]">{selectedGuide.title}</span>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <a
+              {activeGuide === 'cicd' && <a
                 href="/cicd.pdf"
                 download="CI-CD-Pipeline-for-Data-Engineering.pdf"
                 className="hidden sm:inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#0066cc] hover:bg-[#0052a3] text-white font-bold text-xs rounded-lg shadow-sm transition-all"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>DOWNLOAD PDF</span>
-              </a>
+              </a>}
 
               <button
                 type="button"
-                onClick={() => setOpenGuideModal(false)}
+                onClick={() => guideDialog.current?.close()}
                 className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-950 transition-colors"
                 aria-label="Close"
                 title="Close (Esc)"
@@ -1030,10 +1058,33 @@ export function EmpowerSection() {
 
           {/* ── Main Scrollable Content Container ─────────────────────── */}
           <main className="flex-1 max-w-5xl w-full mx-auto px-5 sm:px-8 py-8 md:py-12 space-y-12 text-left">
+          {GuideIcon ? (
+            <div>
+              <h1 id="guide-reader-title" className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 mb-8 tracking-tight leading-tight">
+                {selectedGuide.title}
+              </h1>
+              <div className="grid md:grid-cols-12 gap-8 lg:gap-14 items-start">
+                <div className="md:col-span-5 w-full max-w-[320px] aspect-[4/3] rounded-2xl bg-slate-950 shadow-xl flex items-center justify-center">
+                  <GuideIcon aria-hidden="true" className="w-20 h-20 text-[#2ec4b6]" />
+                </div>
+                <div className="md:col-span-7 space-y-7 text-slate-700 text-base md:text-lg leading-relaxed">
+                  <p className="font-semibold text-[#0066cc]">{selectedGuide.subtitle}</p>
+                  <p>{selectedGuide.intro}</p>
+                  {selectedGuide.sections.map(([heading, body]) => (
+                    <section key={heading} className="space-y-2">
+                      <h2 className="text-xl font-bold text-slate-950">{heading}</h2>
+                      <p>{body}</p>
+                    </section>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+          <>
 
             {/* ── TOP SECTION (Matching Image 2) ────────────────────────── */}
             <div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 mb-8 tracking-tight leading-tight">
+              <h1 id="guide-reader-title" className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-950 mb-8 tracking-tight leading-tight">
                 CI/CD Pipeline for Data Engineering in DevOps
               </h1>
 
@@ -1265,8 +1316,10 @@ export function EmpowerSection() {
 
             </div>
 
+          </>
+          )}
           </main>
-        </div>
+        </dialog>
       )}
 
     </section>
