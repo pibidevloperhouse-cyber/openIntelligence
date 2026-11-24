@@ -609,14 +609,14 @@ export const HeroSection = ({
                       className="text-lg sm:text-xl lg:text-2xl font-black text-slate-900 tracking-tight leading-none"
                       style={{ fontFamily: 'var(--font-plus-jakarta)' }}
                     >
-                      Submissions Countdown
+                      Public Voting Has Started!
                     </h3>
                     <HandDrawnUnderline className="w-28 sm:w-36 h-2 text-slate-800 mt-1" />
                   </div>
                 </div>
 
                 <p className="text-xs sm:text-[13px] text-slate-500 max-w-md leading-relaxed pt-1">
-                  Deadline: <strong className="text-slate-900 font-bold">{formattedDeadline}</strong>. Submit your working project before the timer expires to qualify for Top 3 evaluations.
+                  Deadline: <strong className="text-slate-900 font-bold">{formattedDeadline}</strong>. Share your project with friends and family and ask them to vote. Your support matters. Every vote counts!
                 </p>
               </div>
 
